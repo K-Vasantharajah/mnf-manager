@@ -46,11 +46,11 @@ public class PlayerService {
 
     @Transactional
     public void deactivatePlayer(Long id) {
-        log.info("Deactivating player with id: {}", id);
-        Player player = getPlayerById(id);
-        player.setActive(false);
-        playerRepository.save(player);
-    }
+    log.info("Deactivating player with id: {}", id);
+    playerRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Player", id));
+    playerRepository.deleteById(id);
+}
 
     public double calculateWinRate(Player player) {
         int totalPlayed = player.getSeasonStats().stream()
