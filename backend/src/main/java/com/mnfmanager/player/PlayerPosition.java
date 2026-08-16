@@ -1,5 +1,6 @@
 package com.mnfmanager.player;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +18,7 @@ public class PlayerPosition {
     @EmbeddedId
     private PlayerPositionId id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("playerId")
     @JoinColumn(name = "player_id")

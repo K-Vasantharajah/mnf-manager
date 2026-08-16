@@ -57,4 +57,11 @@ public class PlayerController {
                 .contributionScore(playerService.calculateContributionScore(player))
                 .build());
     }
+
+    @PostMapping("/{id}/ratings")
+    public ResponseEntity<Player> ratePlayer(
+        @PathVariable Long id,
+        @Valid @RequestBody PlayerRatingRequest request) {
+            return ResponseEntity.ok(playerService.ratePlayer(id, request));
+        }   
 }

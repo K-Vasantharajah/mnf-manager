@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "players")
@@ -34,16 +35,17 @@ public class Player {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<PlayerPosition> positions = new ArrayList<>();
+    private Set<PlayerPosition> positions = new HashSet<>();
 
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private PlayerRating rating;
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<PlayerSeasonStats> seasonStats = new ArrayList<>();
+    private Set<PlayerSeasonStats> seasonStats = new HashSet<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
