@@ -47,9 +47,10 @@ public class PlayerService {
     @Transactional
     public void deactivatePlayer(Long id) {
         log.info("Deactivating player with id: {}", id);
-        playerRepository.findById(id)
+        Player player = playerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Player", id));
-        playerRepository.deleteById(id);
+        player.setActive(false);
+        playerRepository.save(player);
     }
 
     @Transactional
