@@ -1,6 +1,5 @@
 package com.mnfmanager.player;
 
-import com.mnfmanager.common.exception.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
