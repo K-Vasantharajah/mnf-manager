@@ -12,6 +12,13 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
     List<Match> findBySeasonYearOrderByMatchDateDesc(Short seasonYear);
 
+    @Query("""
+        SELECT m FROM Match m
+        LEFT JOIN FETCH m.captainA
+        LEFT JOIN FETCH m.captainB
+        LEFT JOIN FETCH m.winner
+        ORDER BY m.matchDate DESC
+    """)
     List<Match> findAllByOrderByMatchDateDesc();
 
     @Query("""
