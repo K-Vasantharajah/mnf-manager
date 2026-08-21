@@ -18,7 +18,7 @@ export default function DashboardLayout({
             </div>
             <div className="flex gap-1">
               <Link
-                href="/"
+                href="/dashboard"
                 className="px-4 py-2 text-sm font-medium text-green-100 hover:text-white hover:bg-green-800 rounded transition-colors"
               >
                 Dashboard
