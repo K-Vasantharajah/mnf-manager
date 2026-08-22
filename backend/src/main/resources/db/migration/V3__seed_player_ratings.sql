@@ -35,7 +35,10 @@ VALUES
 (33, 9,  7,  10, 'Kobi'),
 (34, 7,  4,  1,  'Kobi'),
 (35, 10, 10, 1,  'Kobi'),
-(36, 8,  7,  2,  'Kobi')
+(36, 8,  7,  2,  'Kobi'),
+(37, 6,  7,  6,  'Kobi'),
+(38, 5,  5,  3,  'Kobi'),
+(39, 6,  6,  7,  'Kobi')
 ON CONFLICT (player_id) DO UPDATE
 SET ability = EXCLUDED.ability,
     reliability = EXCLUDED.reliability,

@@ -34,6 +34,9 @@ INSERT INTO players (id, name, active, strong_foot, notes, created_at, updated_a
 (33, 'Abdi',       true, 'Right', 'Finisher',             NOW(), NOW()),
 (34, 'Mit',        true, 'Left',  'RB',                   NOW(), NOW()),
 (35, 'Nim',        true, 'Right', 'GK',                   NOW(), NOW()),
-(36, 'Abdulmalik', true, 'Right', 'Defender',             NOW(), NOW());
+(36, 'Abdulmalik', true, 'Right', 'Defender',             NOW(), NOW()),
+(37, 'Jamie',      true, 'Right', 'Midfielder',           NOW(), NOW()),
+(38, 'Hassan',     true, 'Right', 'RB/Midfielder',        NOW(), NOW()),
+(39, 'Suvi',       true, 'Right', 'Midfielder',           NOW(), NOW());
 
-SELECT setval('players_id_seq', 36);
+SELECT setval('players_id_seq', 39);
