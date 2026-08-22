@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { usePlayers } from '@/lib/hooks';
-import { Player } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 
@@ -96,7 +95,7 @@ export default function NewMatchPage() {
         goalScorers,
       });
       router.push('/matches');
-    } catch (err) {
+    } catch {
       setError('Failed to save match. Please try again.');
       setSubmitting(false);
     }
@@ -219,7 +218,7 @@ export default function NewMatchPage() {
           return (
             <div key={team} className="bg-white rounded-xl border border-gray-100 p-5">
               <h2 className="font-semibold text-gray-900 mb-1">
-                {captainName}'s team
+                {captainName}&apos;s team
               </h2>
               <p className="text-xs text-gray-400 mb-3">
                 {teamPlayerIds.length} players selected
@@ -317,7 +316,7 @@ export default function NewMatchPage() {
 
             return (
               <div key={team}>
-                <p className="text-xs text-gray-400 mb-2">{captainName}'s team scorers</p>
+                <p className="text-xs text-gray-400 mb-2">{captainName}&apos;s team scorers</p>
                 {availablePlayers.length === 0 ? (
                   <p className="text-xs text-gray-300 italic">
                     {teamPlayerIds.length === 0
