@@ -126,7 +126,7 @@ export default function NewMatchPage() {
               type="date"
               value={matchDate}
               onChange={(e) => setMatchDate(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
             />
           </div>
           <div>
@@ -135,7 +135,7 @@ export default function NewMatchPage() {
               type="number"
               value={seasonYear}
               onChange={(e) => setSeasonYear(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
             />
           </div>
           <div>
@@ -144,7 +144,7 @@ export default function NewMatchPage() {
               type="number"
               value={durationMins}
               onChange={(e) => setDurationMins(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
             />
           </div>
         </div>
@@ -159,7 +159,7 @@ export default function NewMatchPage() {
             <select
               value={captainAId}
               onChange={(e) => setCaptainAId(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
             >
               <option value="">Select captain</option>
               {activePlayers.map((p) => (
@@ -176,7 +176,7 @@ export default function NewMatchPage() {
                 min={0}
                 value={scoreA}
                 onChange={(e) => setScoreA(Number(e.target.value))}
-                className="w-16 border border-gray-200 rounded-lg px-3 py-2 text-sm text-center font-bold focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-16 border border-gray-200 rounded-lg px-3 py-2 text-sm text-center font-bold focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
               />
             </div>
             <span className="text-gray-300 text-lg font-light mb-2">—</span>
@@ -187,7 +187,7 @@ export default function NewMatchPage() {
                 min={0}
                 value={scoreB}
                 onChange={(e) => setScoreB(Number(e.target.value))}
-                className="w-16 border border-gray-200 rounded-lg px-3 py-2 text-sm text-center font-bold focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-16 border border-gray-200 rounded-lg px-3 py-2 text-sm text-center font-bold focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
               />
             </div>
           </div>
@@ -197,7 +197,7 @@ export default function NewMatchPage() {
             <select
               value={captainBId}
               onChange={(e) => setCaptainBId(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
             >
               <option value="">Select captain</option>
               {activePlayers.map((p) => (
