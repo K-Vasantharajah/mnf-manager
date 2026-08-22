@@ -1,6 +1,7 @@
 'use client';
 
 import { useMatches } from '@/lib/hooks';
+import Link from 'next/link';
 
 export default function MatchesPage() {
   const { data: matches, isLoading, isError } = useMatches();
@@ -25,11 +26,16 @@ export default function MatchesPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Match history</h1>
-        <p className="text-sm text-gray-400 mt-1">
-          {matches?.length} matches recorded
-        </p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Match history</h1>
+          <p className="text-sm text-gray-400 mt-1">
+            {matches?.length} matches recorded
+          </p>
+        </div>
+        <Link href="/matches/new" className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors">
+        + Record match
+        </Link>
       </div>
 
       {matches?.length === 0 && (
