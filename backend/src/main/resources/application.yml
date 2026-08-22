@@ -35,6 +35,10 @@ spring:
       properties:
         spring.json.trusted.packages: "com.mnfmanager.*"
 
+  sql:
+    init:
+      mode: always
+
 server:
   port: 8080
 

@@ -62,5 +62,11 @@ public class PlayerController {
         @PathVariable Long id,
         @Valid @RequestBody PlayerRatingRequest request) {
             return ResponseEntity.ok(playerService.ratePlayer(id, request));
-        }   
+        }
+
+    @GetMapping("/leaderboard")
+    public ResponseEntity<List<PlayerLeaderboardEntry>> getLeaderboard(
+        @RequestParam(required = false) Integer seasonYear) {
+            return ResponseEntity.ok(playerService.getLeaderboard(seasonYear));
+        }
 }

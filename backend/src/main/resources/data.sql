@@ -37,6 +37,49 @@ INSERT INTO players (id, name, active, strong_foot, notes, created_at, updated_a
 (36, 'Abdulmalik', true, 'Right', 'Defender',             NOW(), NOW()),
 (37, 'Jamie',      true, 'Right', 'Midfielder',           NOW(), NOW()),
 (38, 'Hassan',     true, 'Right', 'RB/Midfielder',        NOW(), NOW()),
-(39, 'Suvi',       true, 'Right', 'Midfielder',           NOW(), NOW());
+(39, 'Suvi',       true, 'Right', 'Midfielder',           NOW(), NOW())
+ON CONFLICT (id) DO NOTHING;
 
 SELECT setval('players_id_seq', 39);
+
+INSERT INTO player_ratings (player_id, ability, reliability, goal_threat, rated_by) VALUES
+(1,  8,  8,  6,  'Kobi'),
+(2,  6,  4,  4,  'Kobi'),
+(3,  7,  8,  7,  'Kobi'),
+(4,  8,  8,  7,  'Kobi'),
+(5,  7,  6,  7,  'Kobi'),
+(6,  10, 10, 10, 'Kobi'),
+(7,  8,  7,  1,  'Kobi'),
+(8,  9,  8,  9,  'Kobi'),
+(9,  9,  2,  9,  'Kobi'),
+(10, 8,  8,  6,  'Kobi'),
+(11, 7,  3,  1,  'Kobi'),
+(12, 4,  2,  5,  'Kobi'),
+(13, 8,  4,  7,  'Kobi'),
+(14, 8,  8,  8,  'Kobi'),
+(15, 7,  9,  1,  'Kobi'),
+(16, 9,  9,  6,  'Kobi'),
+(17, 7,  7,  2,  'Kobi'),
+(18, 6,  5,  3,  'Kobi'),
+(19, 2,  1,  1,  'Kobi'),
+(20, 6,  5,  7,  'Kobi'),
+(21, 1,  1,  1,  'Kobi'),
+(22, 9,  7,  9,  'Kobi'),
+(23, 9,  8,  9,  'Kobi'),
+(24, 6,  4,  6,  'Kobi'),
+(25, 6,  7,  7,  'Kobi'),
+(26, 6,  7,  6,  'Kobi'),
+(27, 7,  5,  8,  'Kobi'),
+(28, 8,  4,  8,  'Kobi'),
+(29, 2,  1,  1,  'Kobi'),
+(30, 1,  1,  1,  'Kobi'),
+(31, 5,  3,  1,  'Kobi'),
+(32, 9,  9,  1,  'Kobi'),
+(33, 9,  7,  10, 'Kobi'),
+(34, 7,  4,  1,  'Kobi'),
+(35, 10, 10, 1,  'Kobi'),
+(36, 8,  7,  2,  'Kobi'),
+(37, 6,  7,  6,  'Kobi'),
+(38, 5,  5,  3,  'Kobi'),
+(39, 6,  6,  7,  'Kobi')
+ON CONFLICT (player_id) DO NOTHING;

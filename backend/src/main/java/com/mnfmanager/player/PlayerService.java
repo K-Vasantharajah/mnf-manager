@@ -102,4 +102,48 @@ public class PlayerService {
                         + reliability * 2.5 + ability + goalThreat) / 4.0 * 10.0
         ) / 10.0;
     }
+
+    public List<PlayerLeaderboardEntry> getLeaderboard(Integer seasonYear) {
+        List<Player> players = playerRepository.findAllActiveWithRatings();
+        return players.stream()
+            .map(p -> buildLeaderboardEntry(p, seasonYear))
+            .filter(e -> seasonYear == null || e.getMatchesPlayed() > 0)
+            .sorted((a, b) -> Double.compare(b.getWinRate(), a.getWinRate()))
+            .toList();
+    }
+
+    private PlayerLeaderboardEntry buildLeaderboardEntry(Player player, Integer seasonYear) {
+        var stats = player.getSeasonStats().stream()
+            .filter(s -> seasonYear == null || s.getSeasonYear() == seasonYear.shortValue())
+            .toList();
+
+        int matchesPlayed = stats.stream().mapToInt(s -> s.getMatchesPlayed()).sum();
+        int wins = stats.stream().mapToInt(s -> s.getWins()).sum();
+        int draws = stats.stream().mapToInt(s -> s.getDraws()).sum();
+        int losses = stats.stream().mapToInt(s -> s.getLosses()).sum();
+        int goals = stats.stream().mapToInt(s -> s.getGoals()).sum();
+        int assists = stats.stream().mapToInt(s -> s.getAssists()).sum();
+
+        double winRate = matchesPlayed == 0 ? 0.0 :
+            Math.round((wins * 100.0 / matchesPlayed) * 10.0) / 10.0;
+        double goalsPerGame = matchesPlayed == 0 ? 0.0 :
+            Math.round((goals * 1.0 / matchesPlayed) * 10.0) / 10.0;
+
+        return PlayerLeaderboardEntry.builder()
+            .playerId(player.getId())
+            .name(player.getName())
+            .matchesPlayed(matchesPlayed)
+            .wins(wins)
+            .draws(draws)
+            .losses(losses)
+            .goals(goals)
+            .assists(assists)
+            .winRate(winRate)
+            .goalsPerGame(goalsPerGame)
+            .ability(player.getRating() != null ? player.getRating().getAbility() : null)
+            .reliability(player.getRating() != null ? player.getRating().getReliability() : null)
+            .goalThreat(player.getRating() != null ? player.getRating().getGoalThreat() : null)
+            .seasonYear(seasonYear)
+            .build();
+    }
 }
