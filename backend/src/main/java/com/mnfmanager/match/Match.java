@@ -12,7 +12,9 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -63,17 +65,17 @@ public class Match {
     @JsonIgnore
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private Set<MatchPlayer> matchPlayers = new HashSet<>();
+    private List<MatchPlayer> matchPlayers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @Builder.Default
+    private List<GoalScorer> goalScorers = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private Set<GoalScorer> goalScorers = new HashSet<>();
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private Set<DraftPick> draftPicks = new HashSet<>();
+    private List<DraftPick> draftPicks = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
