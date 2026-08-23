@@ -85,16 +85,16 @@ public class MatchService {
         }
 
         if (request.getGoalScorers() != null) {
-            request.getGoalScorers().forEach(gs -> {
+            for (CreateMatchRequest.GoalScorerRequest gs : request.getGoalScorers()) {
                 Player scorer = playerRepository.findById(gs.getPlayerId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Player", gs.getPlayerId()));
-                match.getGoalScorers().add(GoalScorer.builder()
-                        .match(match)
-                        .player(scorer)
-                        .goals(gs.getGoals())
-                        .team(gs.getTeam())
-                        .build());
-            });
+                .orElseThrow(() -> new ResourceNotFoundException("Player", gs.getPlayerId()));
+                GoalScorer goalScorer = new GoalScorer();
+                goalScorer.setMatch(match);
+                goalScorer.setPlayer(scorer);
+                goalScorer.setGoals(gs.getGoals());
+                goalScorer.setTeam(gs.getTeam());
+                match.getGoalScorers().add(goalScorer);
+            }
         }
 
         Match saved = matchRepository.save(match);
