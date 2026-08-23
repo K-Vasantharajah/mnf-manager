@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import api from './api';
-import { Player, PlayerStats, Match } from './types';
+import { Player, PlayerStats, Match, PlayerLeaderboardEntry } from './types';
 
 export function usePlayers() {
   return useQuery<Player[]>({
@@ -37,6 +37,19 @@ export function useMatches() {
     queryKey: ['matches'],
     queryFn: async () => {
       const { data } = await api.get('/api/v1/matches');
+      return data;
+    },
+  });
+}
+
+export function useLeaderboard(seasonYear?: number) {
+  return useQuery<PlayerLeaderboardEntry[]>({
+    queryKey: ['leaderboard', seasonYear],
+    queryFn: async () => {
+      const url = seasonYear
+        ? `/api/v1/players/leaderboard?seasonYear=${seasonYear}`
+        : '/api/v1/players/leaderboard';
+      const { data } = await api.get(url);
       return data;
     },
   });

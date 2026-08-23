@@ -104,13 +104,13 @@ public class PlayerService {
     }
 
     public List<PlayerLeaderboardEntry> getLeaderboard(Integer seasonYear) {
-        List<Player> players = playerRepository.findAllActiveWithRatings();
+        List<Player> players = playerRepository.findAllActiveWithRatingsAndStats();
         return players.stream()
             .map(p -> buildLeaderboardEntry(p, seasonYear))
             .filter(e -> seasonYear == null || e.getMatchesPlayed() > 0)
             .sorted((a, b) -> Double.compare(b.getWinRate(), a.getWinRate()))
             .toList();
-    }
+        }
 
     private PlayerLeaderboardEntry buildLeaderboardEntry(Player player, Integer seasonYear) {
         var stats = player.getSeasonStats().stream()

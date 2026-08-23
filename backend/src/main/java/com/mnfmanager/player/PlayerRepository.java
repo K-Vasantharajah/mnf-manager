@@ -31,4 +31,13 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
         WHERE p.id = :id
     """)
     Optional<Player> findByIdWithFullDetails(Long id);
+
+    @Query("""
+    SELECT DISTINCT p FROM Player p
+    LEFT JOIN FETCH p.rating
+    LEFT JOIN FETCH p.seasonStats
+    WHERE p.active = true
+    ORDER BY p.name
+    """)
+    List<Player> findAllActiveWithRatingsAndStats();
 }

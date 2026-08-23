@@ -38,3 +38,20 @@ export interface Match {
   durationMins: number;
   createdAt: string;
 }
+
+export interface PlayerLeaderboardEntry {
+  playerId: number;
+  name: string;
+  matchesPlayed: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  goals: number;
+  assists: number;
+  winRate: number;
+  goalsPerGame: number;
+  ability: number;
+  reliability: number;
+  goalThreat: number;
+  seasonYear: number | null;
+}
