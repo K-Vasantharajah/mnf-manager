@@ -270,11 +270,11 @@ export default function NewMatchPage() {
         {goalScorers.length > 0 && (
           <div className="mb-4 space-y-2">
             {goalScorers.map((gs) => (
-              <div key={gs.playerId} className="flex items-center gap-3 bg-gray-50 rounded-lg px-3 py-2">
-                <span className="text-sm font-medium flex-1">
+              <div key={gs.playerId} className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                <span className="text-sm font-semibold text-gray-900 flex-1">
                   {getPlayerName(gs.playerId)}
-                  <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
-                    gs.team === 'A' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                  <span className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full ${
+                    gs.team === 'A' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
                   }`}>
                     Team {gs.team}
                   </span>
@@ -282,21 +282,21 @@ export default function NewMatchPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => updateGoals(gs.playerId, Math.max(1, gs.goals - 1))}
-                    className="w-6 h-6 rounded bg-gray-200 text-gray-600 text-sm font-bold hover:bg-gray-300 flex items-center justify-center"
+                    className="w-7 h-7 rounded bg-gray-200 text-gray-800 text-sm font-bold hover:bg-gray-300 flex items-center justify-center"
                   >
                     −
                   </button>
-                  <span className="text-sm font-bold min-w-4 text-center">{gs.goals}</span>
+                  <span className="text-sm font-bold text-gray-900 min-w-4 text-center">{gs.goals}</span>
                   <button
                     onClick={() => updateGoals(gs.playerId, gs.goals + 1)}
-                    className="w-6 h-6 rounded bg-gray-200 text-gray-600 text-sm font-bold hover:bg-gray-300 flex items-center justify-center"
+                    className="w-7 h-7 rounded bg-gray-200 text-gray-800 text-sm font-bold hover:bg-gray-300 flex items-center justify-center"
                   >
                     +
                   </button>
                 </div>
                 <button
                   onClick={() => removeGoalScorer(gs.playerId)}
-                  className="text-red-400 hover:text-red-600 text-sm ml-2"
+                  className="text-red-500 hover:text-red-700 text-sm ml-2 font-bold"
                 >
                   ✕
                 </button>
