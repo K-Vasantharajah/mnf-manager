@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { usePlayers } from '@/lib/hooks';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { usePlayers, useMatchDetail  } from '@/lib/hooks';
+import { useRouter, useParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 
@@ -12,14 +12,15 @@ interface GoalScorerEntry {
   team: 'A' | 'B';
 }
 
-export default function NewMatchPage() {
+export default function EditMatchPage() {
   const router = useRouter();
-  const { data: players } = usePlayers();
+  const params = useParams();
+  const matchId = Number(params.id);
   const queryClient = useQueryClient();
+  const { data: players } = usePlayers();
+  const { data: match, isLoading } = useMatchDetail (matchId);
 
-  const [matchDate, setMatchDate] = useState(
-    new Date().toISOString().split('T')[0]
-  );
+  const [matchDate, setMatchDate] = useState('');
   const [seasonYear, setSeasonYear] = useState(2026);
   const [captainAId, setCaptainAId] = useState<number | ''>('');
   const [captainBId, setCaptainBId] = useState<number | ''>('');
@@ -29,8 +30,29 @@ export default function NewMatchPage() {
   const [teamAPlayerIds, setTeamAPlayerIds] = useState<number[]>([]);
   const [teamBPlayerIds, setTeamBPlayerIds] = useState<number[]>([]);
   const [goalScorers, setGoalScorers] = useState<GoalScorerEntry[]>([]);
+  const [initialised, setInitialised] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  if (match && !initialised) {
+  setMatchDate(match.matchDate ? match.matchDate.toString().split('T')[0] : '');
+  setSeasonYear(match.seasonYear);
+  setCaptainAId(match.captainAId);
+  setCaptainBId(match.captainBId);
+  setScoreA(match.scoreA);
+  setScoreB(match.scoreB);
+  setDurationMins(match.durationMins || 60);
+  setTeamAPlayerIds(match.teamAPlayerIds || []);
+  setTeamBPlayerIds(match.teamBPlayerIds || []);
+  setGoalScorers(
+    (match.goalScorers || []).map((gs) => ({
+      playerId: gs.playerId,
+      goals: gs.goals,
+      team: gs.team,
+    }))
+  );
+  setInitialised(true);
+}
 
   const activePlayers = players || [];
 
@@ -72,19 +94,19 @@ export default function NewMatchPage() {
 
   async function handleSubmit() {
     if (!captainAId || !captainBId) {
-      setError('Please select both captains');
-      return;
+        setError('Please select both captains');
+        return;
     }
     if (captainAId === captainBId) {
-      setError('Captains must be different players');
-      return;
+        setError('Captains must be different players');
+        return;
     }
 
     setSubmitting(true);
     setError(null);
 
     try {
-      await api.put(`/api/v1/matches/${matchId}`, {
+        await api.put(`/api/v1/matches/${matchId}`, {
         matchDate,
         seasonYear,
         captainAId,
@@ -95,21 +117,29 @@ export default function NewMatchPage() {
         teamAPlayerIds,
         teamBPlayerIds,
         goalScorers,
-      });
-      await queryClient.invalidateQueries({ queryKey: ['matches'] });
-      router.push('/matches');
+        });
+        await queryClient.invalidateQueries({ queryKey: ['matches'] });
+        router.push('/matches');
     } catch {
-      setError('Failed to update match. Please try again.');
-      setSubmitting(false);
+        setError('Failed to update match. Please try again.');
+        setSubmitting(false);
     }
+    }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-gray-400">Loading match...</div>
+      </div>
+    );
   }
 
   return (
     <div className="max-w-4xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Record a match</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Edit match</h1>
         <p className="text-sm text-gray-400 mt-1">
-          Enter the result from Monday night
+          Update the match details, teams and goal scorers
         </p>
       </div>
 
@@ -124,30 +154,30 @@ export default function NewMatchPage() {
         <h2 className="font-semibold text-gray-900 mb-4">Match details</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <label className="text-xs text-gray-400 block mb-1">Date</label>
+            <label className="text-xs text-gray-600 block mb-1">Date</label>
             <input
               type="date"
               value={matchDate}
               onChange={(e) => setMatchDate(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 block mb-1">Season</label>
+            <label className="text-xs text-gray-600 block mb-1">Season</label>
             <input
               type="number"
               value={seasonYear}
               onChange={(e) => setSeasonYear(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 block mb-1">Duration (mins)</label>
+            <label className="text-xs text-gray-600 block mb-1">Duration (mins)</label>
             <input
               type="number"
               value={durationMins}
               onChange={(e) => setDurationMins(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
         </div>
@@ -158,11 +188,11 @@ export default function NewMatchPage() {
         <h2 className="font-semibold text-gray-900 mb-4">Captains and score</h2>
         <div className="flex items-center gap-4">
           <div className="flex-1">
-            <label className="text-xs text-gray-400 block mb-1">Captain A</label>
+            <label className="text-xs text-gray-600 block mb-1">Captain A</label>
             <select
               value={captainAId}
               onChange={(e) => setCaptainAId(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="">Select captain</option>
               {activePlayers.map((p) => (
@@ -173,34 +203,34 @@ export default function NewMatchPage() {
 
           <div className="flex items-end gap-2 pb-0.5">
             <div className="text-center">
-              <label className="text-xs text-gray-400 block mb-1">Score A</label>
+              <label className="text-xs text-gray-600 block mb-1">Score A</label>
               <input
                 type="number"
                 min={0}
                 value={scoreA}
                 onChange={(e) => setScoreA(Number(e.target.value))}
-                className="w-16 border border-gray-200 rounded-lg px-3 py-2 text-sm text-center font-bold focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+                className="w-16 border border-gray-200 rounded-lg px-3 py-2 text-sm text-center font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
             <span className="text-gray-300 text-lg font-light mb-2">—</span>
             <div className="text-center">
-              <label className="text-xs text-gray-400 block mb-1">Score B</label>
+              <label className="text-xs text-gray-600 block mb-1">Score B</label>
               <input
                 type="number"
                 min={0}
                 value={scoreB}
                 onChange={(e) => setScoreB(Number(e.target.value))}
-                className="w-16 border border-gray-200 rounded-lg px-3 py-2 text-sm text-center font-bold focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+                className="w-16 border border-gray-200 rounded-lg px-3 py-2 text-sm text-center font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
           </div>
 
           <div className="flex-1">
-            <label className="text-xs text-gray-400 block mb-1">Captain B</label>
+            <label className="text-xs text-gray-600 block mb-1">Captain B</label>
             <select
               value={captainBId}
               onChange={(e) => setCaptainBId(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="">Select captain</option>
               {activePlayers.map((p) => (
@@ -215,7 +245,9 @@ export default function NewMatchPage() {
       <div className="grid grid-cols-2 gap-4 mb-4">
         {(['A', 'B'] as const).map((team) => {
           const captainId = team === 'A' ? captainAId : captainBId;
-          const captainName = captainId ? getPlayerName(Number(captainId)) : `Team ${team}`;
+          const captainName = captainId
+            ? getPlayerName(Number(captainId))
+            : `Team ${team}`;
           const teamPlayerIds = team === 'A' ? teamAPlayerIds : teamBPlayerIds;
 
           return (
@@ -237,7 +269,9 @@ export default function NewMatchPage() {
                   return (
                     <button
                       key={player.id}
-                      onClick={() => !onOtherTeam && toggleTeamPlayer(player.id, team)}
+                      onClick={() =>
+                        !onOtherTeam && toggleTeamPlayer(player.id, team)
+                      }
                       disabled={onOtherTeam}
                       className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
                         selected
@@ -273,23 +307,34 @@ export default function NewMatchPage() {
         {goalScorers.length > 0 && (
           <div className="mb-4 space-y-2">
             {goalScorers.map((gs) => (
-              <div key={gs.playerId} className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+              <div
+                key={gs.playerId}
+                className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2"
+              >
                 <span className="text-sm font-semibold text-gray-900 flex-1">
                   {getPlayerName(gs.playerId)}
-                  <span className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full ${
-                    gs.team === 'A' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                  }`}>
+                  <span
+                    className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full ${
+                      gs.team === 'A'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-blue-100 text-blue-800'
+                    }`}
+                  >
                     Team {gs.team}
                   </span>
                 </span>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => updateGoals(gs.playerId, Math.max(1, gs.goals - 1))}
+                    onClick={() =>
+                      updateGoals(gs.playerId, Math.max(1, gs.goals - 1))
+                    }
                     className="w-7 h-7 rounded bg-gray-200 text-gray-800 text-sm font-bold hover:bg-gray-300 flex items-center justify-center"
                   >
                     −
                   </button>
-                  <span className="text-sm font-bold text-gray-900 min-w-4 text-center">{gs.goals}</span>
+                  <span className="text-sm font-bold text-gray-900 min-w-4 text-center">
+                    {gs.goals}
+                  </span>
                   <button
                     onClick={() => updateGoals(gs.playerId, gs.goals + 1)}
                     className="w-7 h-7 rounded bg-gray-200 text-gray-800 text-sm font-bold hover:bg-gray-300 flex items-center justify-center"
@@ -310,18 +355,26 @@ export default function NewMatchPage() {
 
         <div className="grid grid-cols-2 gap-3">
           {(['A', 'B'] as const).map((team) => {
-            const teamPlayerIds = team === 'A' ? teamAPlayerIds : teamBPlayerIds;
-            const captainId = team === 'A' ? captainAId : captainBId;
-            const captainName = captainId ? getPlayerName(Number(captainId)) : `Team ${team}`;
+            const teamPlayerIds =
+              team === 'A' ? teamAPlayerIds : teamBPlayerIds;
+            const captainId =
+              team === 'A' ? captainAId : captainBId;
+            const captainName = captainId
+              ? getPlayerName(Number(captainId))
+              : `Team ${team}`;
             const availablePlayers = activePlayers.filter(
-              (p) => teamPlayerIds.includes(p.id) && !goalScorers.find((g) => g.playerId === p.id)
+              (p) =>
+                teamPlayerIds.includes(p.id) &&
+                !goalScorers.find((g) => g.playerId === p.id)
             );
 
             return (
               <div key={team}>
-                <p className="text-xs text-gray-400 mb-2">{captainName}&apos;s team scorers</p>
+                <p className="text-xs text-gray-500 mb-2">
+                  {captainName}&apos;s team scorers
+                </p>
                 {availablePlayers.length === 0 ? (
-                  <p className="text-xs text-gray-300 italic">
+                  <p className="text-xs text-gray-400 italic">
                     {teamPlayerIds.length === 0
                       ? 'Select team players first'
                       : 'All players added'}
@@ -358,7 +411,7 @@ export default function NewMatchPage() {
           disabled={submitting}
           className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-colors disabled:opacity-50"
         >
-          {submitting ? 'Saving...' : 'Save match'}
+          {submitting ? 'Saving...' : 'Save changes'}
         </button>
       </div>
     </div>

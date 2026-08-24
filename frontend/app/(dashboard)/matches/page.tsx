@@ -1,6 +1,7 @@
 'use client';
 
 import { useMatches } from '@/lib/hooks';
+import { match } from 'assert/strict';
 import Link from 'next/link';
 
 export default function MatchesPage() {
@@ -127,7 +128,7 @@ export default function MatchesPage() {
                     </div>
                 </div>
 
-                <div className="mt-3 pt-3 border-t border-gray-50 text-center">
+                <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-between">
                     <span
                     className={`text-xs font-semibold px-3 py-1 rounded-full ${
                         isDraw
@@ -137,8 +138,14 @@ export default function MatchesPage() {
                     >
                     {isDraw ? 'Draw' : `${winnerName} wins`}
                     </span>
+                    <Link
+                      href={`/matches/${match.id}/edit`}
+                      className="text-xs text-green-600 hover:text-green-700 font-medium"
+                    >
+                      Edit match
+                    </Link>
                 </div>
-                </div>
+              </div>
             );
             })}
       </div>

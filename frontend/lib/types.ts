@@ -55,3 +55,28 @@ export interface PlayerLeaderboardEntry {
   goalThreat: number;
   seasonYear: number | null;
 }
+
+export interface GoalScorerDetail {
+  playerId: number;
+  playerName: string;
+  goals: number;
+  team: 'A' | 'B';
+}
+
+export interface MatchDetail {
+  id: number;
+  matchDate: string;
+  seasonYear: number;
+  captainAId: number;
+  captainAName: string;
+  captainBId: number;
+  captainBName: string;
+  scoreA: number;
+  scoreB: number;
+  winnerId: number | null;
+  isDraw: boolean;
+  durationMins: number;
+  teamAPlayerIds: number[];
+  teamBPlayerIds: number[];
+  goalScorers: GoalScorerDetail[];
+}

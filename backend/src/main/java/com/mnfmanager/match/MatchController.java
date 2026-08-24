@@ -35,4 +35,16 @@ public class MatchController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(matchService.createMatch(request));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Match> updateMatch(
+            @PathVariable Long id,
+            @Valid @RequestBody CreateMatchRequest request) {
+        return ResponseEntity.ok(matchService.updateMatch(id, request));
+    }
+
+    @GetMapping("/{id}/detail")
+    public ResponseEntity<MatchDetailResponse> getMatchDetail(@PathVariable Long id) {
+        return ResponseEntity.ok(matchService.getMatchDetail(id));
+    }
 }

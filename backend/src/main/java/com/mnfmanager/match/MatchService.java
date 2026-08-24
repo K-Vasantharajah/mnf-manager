@@ -102,6 +102,171 @@ public class MatchService {
         return saved;
     }
 
+    @Transactional
+    public Match updateMatch(Long id, CreateMatchRequest request) {
+        log.info("Updating match with id: {}", id);
+
+        Match match = matchRepository.findByIdWithFullDetails(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Match", id));
+
+        Player captainA = playerRepository.findById(request.getCaptainAId())
+                .orElseThrow(() -> new ResourceNotFoundException("Player", request.getCaptainAId()));
+        Player captainB = playerRepository.findById(request.getCaptainBId())
+                .orElseThrow(() -> new ResourceNotFoundException("Player", request.getCaptainBId()));
+
+        boolean isDraw = request.getScoreA().equals(request.getScoreB());
+        Player winner = isDraw ? null :
+                request.getScoreA() > request.getScoreB() ? captainA : captainB;
+
+        match.setCaptainA(captainA);
+        match.setCaptainB(captainB);
+        match.setMatchDate(request.getMatchDate());
+        match.setSeasonYear(request.getSeasonYear());
+        match.setScoreA(request.getScoreA());
+        match.setScoreB(request.getScoreB());
+        match.setWinner(winner);
+        match.setIsDraw(isDraw);
+        match.setDurationMins(request.getDurationMins());
+
+        reversePlayerSeasonStats(match);
+
+        match.getMatchPlayers().clear();
+        match.getGoalScorers().clear();
+
+        if (request.getTeamAPlayerIds() != null) {
+            request.getTeamAPlayerIds().forEach(playerId -> {
+                Player player = playerRepository.findById(playerId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Player", playerId));
+                MatchPlayer mp = new MatchPlayer();
+                mp.setId(new MatchPlayerId(match.getId(), playerId));
+                mp.setMatch(match);
+                mp.setPlayer(player);
+                mp.setTeam('A');
+                match.getMatchPlayers().add(mp);
+            });
+        }
+
+        if (request.getTeamBPlayerIds() != null) {
+            request.getTeamBPlayerIds().forEach(playerId -> {
+                Player player = playerRepository.findById(playerId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Player", playerId));
+                MatchPlayer mp = new MatchPlayer();
+                mp.setId(new MatchPlayerId(match.getId(), playerId));
+                mp.setMatch(match);
+                mp.setPlayer(player);
+                mp.setTeam('B');
+                match.getMatchPlayers().add(mp);
+            });
+        }
+
+        if (request.getGoalScorers() != null) {
+            for (CreateMatchRequest.GoalScorerRequest gs : request.getGoalScorers()) {
+                Player scorer = playerRepository.findById(gs.getPlayerId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Player", gs.getPlayerId()));
+                GoalScorer goalScorer = new GoalScorer();
+                goalScorer.setMatch(match);
+                goalScorer.setPlayer(scorer);
+                goalScorer.setGoals(gs.getGoals());
+                goalScorer.setTeam(gs.getTeam());
+                match.getGoalScorers().add(goalScorer);
+            }
+        }
+
+        Match saved = matchRepository.save(match);
+        updatePlayerSeasonStats(saved);
+        return saved;
+    }
+
+    private void reversePlayerSeasonStats(Match match) {
+        log.info("Reversing season stats for match id: {}", match.getId());
+
+        match.getMatchPlayers().forEach(mp -> {
+            Player player = playerRepository.findById(mp.getPlayer().getId())
+                    .orElse(null);
+            if (player == null) return;
+
+            Short seasonYear = match.getSeasonYear();
+            player.getSeasonStats().stream()
+                    .filter(s -> s.getSeasonYear().equals(seasonYear))
+                    .findFirst()
+                    .ifPresent(stats -> {
+                        stats.setMatchesPlayed((short) Math.max(0, stats.getMatchesPlayed() - 1));
+                        if (match.getIsDraw()) {
+                            stats.setDraws((short) Math.max(0, stats.getDraws() - 1));
+                        } else if (match.getWinner() != null) {
+                            boolean wasOnWinningTeam =
+                                    (match.getWinner().getId().equals(match.getCaptainA().getId()) && mp.getTeam() == 'A') ||
+                                    (match.getWinner().getId().equals(match.getCaptainB().getId()) && mp.getTeam() == 'B');
+                            if (wasOnWinningTeam) {
+                                stats.setWins((short) Math.max(0, stats.getWins() - 1));
+                            } else {
+                                stats.setLosses((short) Math.max(0, stats.getLosses() - 1));
+                            }
+                        }
+                    });
+            playerRepository.save(player);
+        });
+
+        match.getGoalScorers().forEach(gs -> {
+            Player scorer = playerRepository.findById(gs.getPlayer().getId())
+                    .orElse(null);
+            if (scorer == null) return;
+
+            scorer.getSeasonStats().stream()
+                    .filter(s -> s.getSeasonYear().equals(match.getSeasonYear()))
+                    .findFirst()
+                    .ifPresent(stats ->
+                        stats.setGoals((short) Math.max(0, stats.getGoals() - gs.getGoals()))
+                    );
+            playerRepository.save(scorer);
+        });
+    }
+
+    public MatchDetailResponse getMatchDetail(Long id) {
+        Match match = matchRepository.findByIdWithFullDetails(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Match", id));
+        
+        Match matchWithGoals = matchRepository.findByIdWithGoalScorers(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Match", id));
+
+        List<Long> teamAPlayerIds = match.getMatchPlayers().stream()
+                .filter(mp -> mp.getTeam() == 'A')
+                .map(mp -> mp.getPlayer().getId())
+                .toList();
+
+        List<Long> teamBPlayerIds = match.getMatchPlayers().stream()
+                .filter(mp -> mp.getTeam() == 'B')
+                .map(mp -> mp.getPlayer().getId())
+                .toList();
+
+        List<MatchDetailResponse.GoalScorerDetail> goalScorers = matchWithGoals.getGoalScorers().stream()
+                .map(gs -> MatchDetailResponse.GoalScorerDetail.builder()
+                        .playerId(gs.getPlayer().getId())
+                        .playerName(gs.getPlayer().getName())
+                        .goals(gs.getGoals())
+                        .team(gs.getTeam())
+                        .build())
+                .toList();
+
+        return MatchDetailResponse.builder()
+                .id(match.getId())
+                .matchDate(match.getMatchDate())
+                .seasonYear(match.getSeasonYear())
+                .captainAId(match.getCaptainA().getId())
+                .captainAName(match.getCaptainA().getName())
+                .captainBId(match.getCaptainB().getId())
+                .captainBName(match.getCaptainB().getName())
+                .scoreA(match.getScoreA())
+                .scoreB(match.getScoreB())
+                .winnerId(match.getWinner() != null ? match.getWinner().getId() : null)
+                .isDraw(match.getIsDraw())
+                .durationMins(match.getDurationMins())
+                .teamAPlayerIds(teamAPlayerIds)
+                .teamBPlayerIds(teamBPlayerIds)
+                .goalScorers(goalScorers)
+                .build();
+    }
+
     private void updatePlayerSeasonStats(Match match) {
         log.info("Updating season stats for match id: {}", match.getId());
 

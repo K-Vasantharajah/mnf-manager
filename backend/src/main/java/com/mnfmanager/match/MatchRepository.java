@@ -23,12 +23,22 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
     @Query("""
         SELECT m FROM Match m
+        LEFT JOIN FETCH m.captainA
+        LEFT JOIN FETCH m.captainB
+        LEFT JOIN FETCH m.winner
         LEFT JOIN FETCH m.matchPlayers mp
-        LEFT JOIN FETCH m.goalScorers
-        LEFT JOIN FETCH m.draftPicks
+        LEFT JOIN FETCH mp.player
         WHERE m.id = :id
     """)
     Optional<Match> findByIdWithFullDetails(Long id);
+
+    @Query("""
+        SELECT m FROM Match m
+        LEFT JOIN FETCH m.goalScorers gs
+        LEFT JOIN FETCH gs.player
+        WHERE m.id = :id
+    """)
+    Optional<Match> findByIdWithGoalScorers(Long id);
 
     @Query("""
         SELECT m FROM Match m
