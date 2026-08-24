@@ -1,7 +1,6 @@
 'use client';
 
 import { useMatches } from '@/lib/hooks';
-import { match } from 'assert/strict';
 import Link from 'next/link';
 
 export default function MatchesPage() {

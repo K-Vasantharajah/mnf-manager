@@ -84,7 +84,7 @@ export default function NewMatchPage() {
     setError(null);
 
     try {
-      await api.put(`/api/v1/matches/${matchId}`, {
+      await api.post('/api/v1/matches', {
         matchDate,
         seasonYear,
         captainAId,
@@ -99,7 +99,7 @@ export default function NewMatchPage() {
       await queryClient.invalidateQueries({ queryKey: ['matches'] });
       router.push('/matches');
     } catch {
-      setError('Failed to update match. Please try again.');
+      setError('Failed to save match. Please try again.');
       setSubmitting(false);
     }
   }
