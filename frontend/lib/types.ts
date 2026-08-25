@@ -80,3 +80,37 @@ export interface MatchDetail {
   teamBPlayerIds: number[];
   goalScorers: GoalScorerDetail[];
 }
+
+export interface SeasonStatsDetail {
+  seasonYear: number;
+  matchesPlayed: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  goals: number;
+  assists: number;
+  winRate: number;
+  goalsPerGame: number;
+}
+
+export interface PlayerProfile {
+  id: number;
+  name: string;
+  strongFoot: string;
+  notes: string;
+  active: boolean;
+  ability: number | null;
+  reliability: number | null;
+  goalThreat: number | null;
+  seasonStats: SeasonStatsDetail[];
+  careerStats: {
+    totalMatches: number;
+    totalWins: number;
+    totalDraws: number;
+    totalLosses: number;
+    totalGoals: number;
+    totalAssists: number;
+    careerWinRate: number;
+    careerGoalsPerGame: number;
+  };
+}

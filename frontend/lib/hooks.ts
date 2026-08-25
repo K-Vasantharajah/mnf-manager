@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import api from './api';
-import { Player, PlayerStats, Match, PlayerLeaderboardEntry, MatchDetail } from './types';
+import { Player, PlayerStats, Match, PlayerLeaderboardEntry, MatchDetail, PlayerProfile } from './types';
 
 export function usePlayers() {
   return useQuery<Player[]>({
@@ -71,6 +71,17 @@ export function useMatchDetail(id: number) {
     queryKey: ['matches', id, 'detail'],
     queryFn: async () => {
       const { data } = await api.get(`/api/v1/matches/${id}/detail`);
+      return data;
+    },
+    enabled: !!id,
+  });
+}
+
+export function usePlayerProfile(id: number) {
+  return useQuery<PlayerProfile>({
+    queryKey: ['players', id, 'profile'],
+    queryFn: async () => {
+      const { data } = await api.get(`/api/v1/players/${id}/profile`);
       return data;
     },
     enabled: !!id,

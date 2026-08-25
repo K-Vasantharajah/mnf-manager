@@ -63,10 +63,22 @@ public class PlayerController {
         @Valid @RequestBody PlayerRatingRequest request) {
             return ResponseEntity.ok(playerService.ratePlayer(id, request));
         }
+        
+    @PutMapping("/{id}/ratings")
+    public ResponseEntity<Player> updateRatings(
+            @PathVariable Long id,
+            @Valid @RequestBody PlayerRatingRequest request) {
+        return ResponseEntity.ok(playerService.ratePlayer(id, request));
+    }    
 
     @GetMapping("/leaderboard")
     public ResponseEntity<List<PlayerLeaderboardEntry>> getLeaderboard(
         @RequestParam(required = false) Integer seasonYear) {
             return ResponseEntity.ok(playerService.getLeaderboard(seasonYear));
         }
+
+    @GetMapping("/{id}/profile")
+    public ResponseEntity<PlayerProfileResponse> getPlayerProfile(@PathVariable Long id) {
+        return ResponseEntity.ok(playerService.getPlayerProfile(id));
+    }
 }

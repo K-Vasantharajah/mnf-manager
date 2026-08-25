@@ -146,4 +146,66 @@ public class PlayerService {
             .seasonYear(seasonYear)
             .build();
     }
+
+
+    public PlayerProfileResponse getPlayerProfile(Long id) {
+        Player player = playerRepository.findByIdWithFullDetails(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Player", id));
+
+        List<PlayerProfileResponse.SeasonStatsDetail> seasonStats = player.getSeasonStats()
+                .stream()
+                .sorted((a, b) -> Short.compare(b.getSeasonYear(), a.getSeasonYear()))
+                .map(s -> {
+                    double winRate = s.getMatchesPlayed() == 0 ? 0.0 :
+                            Math.round((s.getWins() * 100.0 / s.getMatchesPlayed()) * 10.0) / 10.0;
+                    double goalsPerGame = s.getMatchesPlayed() == 0 ? 0.0 :
+                            Math.round((s.getGoals() * 1.0 / s.getMatchesPlayed()) * 10.0) / 10.0;
+                    return PlayerProfileResponse.SeasonStatsDetail.builder()
+                    .seasonYear(s.getSeasonYear())
+                    .matchesPlayed((int) s.getMatchesPlayed())
+                    .wins((int) s.getWins())
+                    .draws((int) s.getDraws())
+                    .losses((int) s.getLosses())
+                    .goals((int) s.getGoals())
+                    .assists((int) s.getAssists())
+                    .winRate(winRate)
+                    .goalsPerGame(goalsPerGame)
+                    .build();
+                })
+                .toList();
+
+        int totalMatches = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getMatchesPlayed).sum();
+        int totalWins = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getWins).sum();
+        int totalDraws = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getDraws).sum();
+        int totalLosses = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getLosses).sum();
+        int totalGoals = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getGoals).sum();
+        int totalAssists = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getAssists).sum();
+
+        double careerWinRate = totalMatches == 0 ? 0.0 :
+                Math.round((totalWins * 100.0 / totalMatches) * 10.0) / 10.0;
+        double careerGoalsPerGame = totalMatches == 0 ? 0.0 :
+                Math.round((totalGoals * 1.0 / totalMatches) * 10.0) / 10.0;
+
+        return PlayerProfileResponse.builder()
+                .id(player.getId())
+                .name(player.getName())
+                .strongFoot(player.getStrongFoot())
+                .notes(player.getNotes())
+                .active(player.getActive())
+                .ability(player.getRating() != null ? player.getRating().getAbility() : null)
+                .reliability(player.getRating() != null ? player.getRating().getReliability() : null)
+                .goalThreat(player.getRating() != null ? player.getRating().getGoalThreat() : null)
+                .seasonStats(seasonStats)
+                .careerStats(PlayerProfileResponse.CareerStats.builder()
+                        .totalMatches(totalMatches)
+                        .totalWins(totalWins)
+                        .totalDraws(totalDraws)
+                        .totalLosses(totalLosses)
+                        .totalGoals(totalGoals)
+                        .totalAssists(totalAssists)
+                        .careerWinRate(careerWinRate)
+                        .careerGoalsPerGame(careerGoalsPerGame)
+                        .build())
+                .build();
+    }
 }

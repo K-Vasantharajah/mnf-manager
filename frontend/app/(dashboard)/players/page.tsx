@@ -2,6 +2,8 @@
 
 import { usePlayers } from '@/lib/hooks';
 import { Player } from '@/lib/types';
+import Link from 'next/link';
+
 
 function RatingBar({ value, color }: { value: number; color: string }) {
   return (
@@ -21,52 +23,54 @@ function PlayerCard({ player }: { player: Player }) {
   const initials = player.name.slice(0, 2).toUpperCase();
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-10 h-10 rounded-full bg-green-700 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
-          {initials}
+    <Link href={`/players/${player.id}`}>
+      <div className="bg-white rounded-xl border border-gray-100 p-5 hover:shadow-md transition-shadow cursor-pointer">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-green-700 flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+            {initials}
+          </div>
+          <div>
+            <div className="font-semibold text-gray-900">{player.name}</div>
+            <div className="text-xs text-gray-400">{player.notes}</div>
+          </div>
+          <div className="ml-auto">
+            <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded">
+              {player.strongFoot} foot
+            </span>
+          </div>
         </div>
-        <div>
-          <div className="font-semibold text-gray-900">{player.name}</div>
-          <div className="text-xs text-gray-400">{player.notes}</div>
-        </div>
-        <div className="ml-auto">
-          <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded">
-            {player.strongFoot} foot
-          </span>
-        </div>
-      </div>
 
-      {player.rating ? (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400 w-20">Ability</span>
-            <RatingBar value={player.rating.ability} color="bg-green-500" />
+        {player.rating ? (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-400 w-20">Ability</span>
+              <RatingBar value={player.rating.ability} color="bg-green-500" />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-400 w-20">Reliability</span>
+              <RatingBar
+                value={player.rating.reliability}
+                color={
+                  player.rating.reliability >= 8
+                    ? 'bg-green-500'
+                    : player.rating.reliability >= 6
+                    ? 'bg-amber-400'
+                    : 'bg-red-400'
+                }
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-400 w-20">Goal threat</span>
+              <RatingBar value={player.rating.goalThreat} color="bg-blue-500" />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400 w-20">Reliability</span>
-            <RatingBar
-              value={player.rating.reliability}
-              color={
-                player.rating.reliability >= 8
-                  ? 'bg-green-500'
-                  : player.rating.reliability >= 6
-                  ? 'bg-amber-400'
-                  : 'bg-red-400'
-              }
-            />
+        ) : (
+          <div className="text-xs text-gray-400 text-center py-2">
+            No ratings yet
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400 w-20">Goal threat</span>
-            <RatingBar value={player.rating.goalThreat} color="bg-blue-500" />
-          </div>
-        </div>
-      ) : (
-        <div className="text-xs text-gray-400 text-center py-2">
-          No ratings yet
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </Link>
   );
 }
 
