@@ -38,7 +38,7 @@ jobs:
 
       - name: Build and test
         working-directory: backend
-        run: mvn clean verify
+        run: mvn clean verify -Dspring.profiles.active=test
 
       - name: Upload test results
         if: always()
