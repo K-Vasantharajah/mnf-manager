@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import java.util.List;
 
@@ -19,6 +21,9 @@ public class MatchService {
 
     private final MatchRepository matchRepository;
     private final PlayerRepository playerRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public List<Match> getAllMatches() {
         return matchRepository.findAllByOrderByMatchDateDesc();
@@ -114,6 +119,12 @@ public class MatchService {
         Player captainB = playerRepository.findById(request.getCaptainBId())
                 .orElseThrow(() -> new ResourceNotFoundException("Player", request.getCaptainBId()));
 
+        // Reverse stats FIRST using the OLD match state
+        reversePlayerSeasonStats(match);
+        entityManager.flush();
+        entityManager.clear();
+
+        // NOW mutate the match with new data
         boolean isDraw = request.getScoreA().equals(request.getScoreB());
         Player winner = isDraw ? null :
                 request.getScoreA() > request.getScoreB() ? captainA : captainB;
@@ -127,8 +138,6 @@ public class MatchService {
         match.setWinner(winner);
         match.setIsDraw(isDraw);
         match.setDurationMins(request.getDurationMins());
-
-        reversePlayerSeasonStats(match);
 
         match.getMatchPlayers().clear();
         match.getGoalScorers().clear();
@@ -181,7 +190,7 @@ public class MatchService {
         log.info("Reversing season stats for match id: {}", match.getId());
 
         match.getMatchPlayers().forEach(mp -> {
-            Player player = playerRepository.findById(mp.getPlayer().getId())
+            Player player = playerRepository.findByIdWithFullDetails(mp.getPlayer().getId())
                     .orElse(null);
             if (player == null) return;
 
@@ -204,11 +213,11 @@ public class MatchService {
                             }
                         }
                     });
-            playerRepository.save(player);
+            playerRepository.saveAndFlush(player);
         });
 
         match.getGoalScorers().forEach(gs -> {
-            Player scorer = playerRepository.findById(gs.getPlayer().getId())
+            Player scorer = playerRepository.findByIdWithFullDetails(gs.getPlayer().getId())
                     .orElse(null);
             if (scorer == null) return;
 
@@ -218,7 +227,7 @@ public class MatchService {
                     .ifPresent(stats ->
                         stats.setGoals((short) Math.max(0, stats.getGoals() - gs.getGoals()))
                     );
-            playerRepository.save(scorer);
+            playerRepository.saveAndFlush(scorer);
         });
     }
 
