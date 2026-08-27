@@ -6,10 +6,12 @@ services:
       POSTGRES_DB: mnfmanager
       POSTGRES_USER: mnf
       POSTGRES_PASSWORD: mnf_local_password
+      POSTGRES_MULTIPLE_DATABASES: mnfmanager,mnfmanager_test
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./scripts/create-multiple-dbs.sh:/docker-entrypoint-initdb.d/create-multiple-dbs.sh
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U mnf -d mnfmanager"]
       interval: 10s
