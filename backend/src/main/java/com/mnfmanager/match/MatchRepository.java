@@ -42,8 +42,9 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
     @Query("""
         SELECT m FROM Match m
-        LEFT JOIN FETCH m.matchPlayers
-        LEFT JOIN FETCH m.goalScorers
+        LEFT JOIN FETCH m.captainA
+        LEFT JOIN FETCH m.captainB
+        LEFT JOIN FETCH m.winner
         WHERE m.seasonYear = :seasonYear
         ORDER BY m.matchDate DESC
     """)
