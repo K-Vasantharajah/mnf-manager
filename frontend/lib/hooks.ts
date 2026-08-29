@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import api from './api';
-import { Player, PlayerStats, Match, PlayerLeaderboardEntry, MatchDetail, PlayerProfile } from './types';
+import { Player, PlayerStats, Match, PlayerLeaderboardEntry, MatchDetail, PlayerProfile, CaptainStats } from './types';
 
 export function usePlayers() {
   return useQuery<Player[]>({
@@ -85,5 +85,18 @@ export function usePlayerProfile(id: number) {
       return data;
     },
     enabled: !!id,
+  });
+}
+
+export function useCaptainStats(seasonYear?: number) {
+  return useQuery<CaptainStats[]>({
+    queryKey: ['captains', seasonYear],
+    queryFn: async () => {
+      const url = seasonYear
+        ? `/api/v1/players/captains/stats?seasonYear=${seasonYear}`
+        : '/api/v1/players/captains/stats';
+      const { data } = await api.get(url);
+      return data;
+    },
   });
 }

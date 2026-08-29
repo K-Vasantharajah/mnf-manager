@@ -114,3 +114,15 @@ export interface PlayerProfile {
     careerGoalsPerGame: number;
   };
 }
+
+export interface CaptainStats {
+  playerId: number;
+  name: string;
+  matchesCaptained: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  winRate: number;
+  mostPickedPlayers: string[];
+  seasonYear: number | null;
+}
