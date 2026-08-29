@@ -30,5 +30,6 @@ public class PlayerPosition {
     private Player player;
 
     @Column(name = "is_primary", nullable = false)
+    @Builder.Default
     private Boolean isPrimary = false;
 }

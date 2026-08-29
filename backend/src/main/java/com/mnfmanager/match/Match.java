@@ -47,9 +47,11 @@ public class Match {
     private Player captainB;
 
     @Column(name = "score_a", nullable = false)
+    @Builder.Default
     private Short scoreA = 0;
 
     @Column(name = "score_b", nullable = false)
+    @Builder.Default
     private Short scoreB = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -57,6 +59,7 @@ public class Match {
     private Player winner;
 
     @Column(name = "is_draw", nullable = false)
+    @Builder.Default
     private Boolean isDraw = false;
 
     @Column(name = "duration_mins")

@@ -34,9 +34,11 @@ public class Player {
     private String name;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean active = true;
 
     @Column(name = "strong_foot", nullable = false, length = 5)
+    @Builder.Default
     private String strongFoot = "Right";
 
     @Column(columnDefinition = "TEXT")

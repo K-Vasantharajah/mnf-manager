@@ -12,6 +12,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -335,5 +336,68 @@ public class MatchService {
                 .distinct()
                 .toList()
         );
+    }
+
+    public List<CaptainStatsResponse> getCaptainStats(Integer seasonYear) {
+        List<Match> matches = seasonYear != null
+                ? matchRepository.findBySeasonWithDetails((short) seasonYear.shortValue())
+                : matchRepository.findAllByOrderByMatchDateDesc();
+
+        Map<Long, List<Match>> matchesByCaptain = new java.util.HashMap<>();
+
+        matches.forEach(m -> {
+            matchesByCaptain.computeIfAbsent(m.getCaptainA().getId(), k -> new java.util.ArrayList<>()).add(m);
+            matchesByCaptain.computeIfAbsent(m.getCaptainB().getId(), k -> new java.util.ArrayList<>()).add(m);
+        });
+
+        return matchesByCaptain.entrySet().stream()
+                .map(entry -> {
+                    Long captainId = entry.getKey();
+                    List<Match> captainMatches = entry.getValue();
+
+                    Match firstMatch = captainMatches.get(0);
+                    String captainName = firstMatch.getCaptainA().getId().equals(captainId)
+                            ? firstMatch.getCaptainA().getName()
+                            : firstMatch.getCaptainB().getName();
+
+                    int wins = (int) captainMatches.stream()
+                            .filter(m -> m.getWinner() != null && m.getWinner().getId().equals(captainId))
+                            .count();
+                    int draws = (int) captainMatches.stream()
+                            .filter(Match::getIsDraw)
+                            .count();
+                    int losses = captainMatches.size() - wins - draws;
+
+                    double winRate = captainMatches.isEmpty() ? 0.0 :
+                            Math.round((wins * 100.0 / captainMatches.size()) * 10.0) / 10.0;
+
+                    Map<String, Long> playerCounts = new java.util.HashMap<>();
+                    captainMatches.forEach(m -> {
+                        boolean isCaptainA = m.getCaptainA().getId().equals(captainId);
+                        m.getMatchPlayers().stream()
+                                .filter(mp -> isCaptainA ? mp.getTeam() == 'A' : mp.getTeam() == 'B')
+                                .forEach(mp -> playerCounts.merge(mp.getPlayer().getName(), 1L, Long::sum));
+                    });
+
+                    List<String> mostPicked = playerCounts.entrySet().stream()
+                            .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                            .limit(5)
+                            .map(Map.Entry::getKey)
+                            .toList();
+
+                    return CaptainStatsResponse.builder()
+                            .playerId(captainId)
+                            .name(captainName)
+                            .matchesCaptained(captainMatches.size())
+                            .wins(wins)
+                            .draws(draws)
+                            .losses(losses)
+                            .winRate(winRate)
+                            .mostPickedPlayers(mostPicked)
+                            .seasonYear(seasonYear)
+                            .build();
+                })
+                .sorted((a, b) -> Double.compare(b.getWinRate(), a.getWinRate()))
+                .toList();
     }
 }

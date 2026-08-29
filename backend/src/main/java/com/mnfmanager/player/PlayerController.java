@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.mnfmanager.match.MatchService;
+
 import java.util.List;
 
 @RestController
@@ -16,6 +18,7 @@ import java.util.List;
 public class PlayerController {
 
     private final PlayerService playerService;
+    private final MatchService matchService;
 
     @GetMapping
     public ResponseEntity<List<Player>> getAllPlayers() {
@@ -80,5 +83,11 @@ public class PlayerController {
     @GetMapping("/{id}/profile")
     public ResponseEntity<PlayerProfileResponse> getPlayerProfile(@PathVariable Long id) {
         return ResponseEntity.ok(playerService.getPlayerProfile(id));
+    }
+
+    @GetMapping("/captains/stats")
+    public ResponseEntity<List<com.mnfmanager.match.CaptainStatsResponse>> getCaptainStats(
+            @RequestParam(required = false) Integer seasonYear) {
+        return ResponseEntity.ok(matchService.getCaptainStats(seasonYear));
     }
 }

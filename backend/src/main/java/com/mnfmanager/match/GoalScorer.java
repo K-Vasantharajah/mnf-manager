@@ -35,6 +35,7 @@ public class GoalScorer {
     private Player player;
 
     @Column(nullable = false)
+    @Builder.Default
     private Short goals = 1;
 
     @Column(name = "team", nullable = false)
