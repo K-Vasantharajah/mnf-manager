@@ -55,6 +55,7 @@ public class MatchService {
         Match match = Match.builder()
                 .matchDate(request.getMatchDate())
                 .seasonYear(request.getSeasonYear())
+                .gameWeek(request.getGameWeek())
                 .captainA(captainA)
                 .captainB(captainB)
                 .scoreA(request.getScoreA())

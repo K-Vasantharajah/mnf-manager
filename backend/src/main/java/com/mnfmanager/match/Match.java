@@ -32,11 +32,14 @@ public class Match {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "match_date", nullable = false)
+    @Column(name = "match_date")
     private LocalDate matchDate;
 
     @Column(name = "season_year", nullable = false)
     private Short seasonYear;
+
+    @Column(name = "game_week", length = 10)
+    private String gameWeek;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "captain_a_id", nullable = false)

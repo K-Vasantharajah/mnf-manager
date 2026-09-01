@@ -11,7 +11,7 @@ INSERT INTO players (id, name, active, strong_foot, notes, created_at, updated_a
 (10, 'Isa',           true, 'Right',  'CAM/CM',               NOW(), NOW()),
 (11, 'Jana',          true, 'Right',  'Defender',             NOW(), NOW()),
 (12, 'Mashkoor',      true, 'Right',  'CM',                   NOW(), NOW()),
-(13, 'Mathusan',      true, 'Right',  'CAM/CM',               NOW(), NOW()),
+(13, 'Matt',      true, 'Right',  'CAM/CM',               NOW(), NOW()),
 (14, 'Nabeel',        true, 'Right',  'Midfielder/ST',        NOW(), NOW()),
 (15, 'Shahan',        true, 'Right',  'DEF/CM',               NOW(), NOW()),
 (16, 'Syed',          true, 'Right',  'Defender',             NOW(), NOW()),

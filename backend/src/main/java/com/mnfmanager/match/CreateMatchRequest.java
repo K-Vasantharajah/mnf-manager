@@ -9,11 +9,12 @@ import java.util.List;
 @Data
 public class CreateMatchRequest {
 
-    @NotNull
     private LocalDate matchDate;
 
     @NotNull
     private Short seasonYear;
+
+    private String gameWeek;
 
     @NotNull
     private Long captainAId;
