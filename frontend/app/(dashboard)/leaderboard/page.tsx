@@ -18,6 +18,7 @@ function getWinRateColor(value: number) {
 
 function LeaderboardTable({
   title,
+  subtitle,
   entries,
   getValue,
   formatValue,
@@ -25,6 +26,7 @@ function LeaderboardTable({
   emptyMessage,
 }: {
   title: string;
+  subtitle?: string;
   entries: PlayerLeaderboardEntry[];
   getValue: (e: PlayerLeaderboardEntry) => number;
   formatValue: (e: PlayerLeaderboardEntry) => string;
@@ -38,6 +40,7 @@ function LeaderboardTable({
     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-50">
         <h2 className="font-semibold text-gray-900">{title}</h2>
+        {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
       </div>
       {sorted.length === 0 ? (
         <div className="px-5 py-8 text-center text-sm text-gray-400">
@@ -155,6 +158,9 @@ export default function LeaderboardPage() {
 
   const allEntries = entries || [];
   const playedEntries = allEntries.filter(e => e.matchesPlayed > 0);
+  const qualifiedEntries = playedEntries.filter(e => 
+    seasonYear === undefined ? e.matchesPlayed >= 28 : e.matchesPlayed >= 14
+  );
 
   return (
     <div>
@@ -201,12 +207,13 @@ export default function LeaderboardPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <LeaderboardTable
-          title="🏆 Win rate"
-          entries={playedEntries}
-          getValue={(e) => e.winRate}
-          formatValue={(e) => `${e.winRate}%`}
+          title="🏆 Points percentage"
+          subtitle="Min. 14 matches (season) · 28 matches (all time)"
+          entries={qualifiedEntries}
+          getValue={(e) => e.pointsPercentage}
+          formatValue={(e) => `${e.pointsPercentage}%`}
           colorFn={getWinRateColor}
-          emptyMessage="Record some matches to see win rates"
+          emptyMessage="Record more matches to qualify"
         />
         <LeaderboardTable
           title="⚽ Goals scored"

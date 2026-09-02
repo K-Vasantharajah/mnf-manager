@@ -108,7 +108,7 @@ public class PlayerService {
         return players.stream()
             .map(p -> buildLeaderboardEntry(p, seasonYear))
             .filter(e -> seasonYear == null || e.getMatchesPlayed() > 0)
-            .sorted((a, b) -> Double.compare(b.getWinRate(), a.getWinRate()))
+            .sorted((a, b) -> Double.compare(b.getPointsPercentage(), a.getPointsPercentage()))
             .toList();
         }
 
@@ -126,6 +126,8 @@ public class PlayerService {
 
         double winRate = matchesPlayed == 0 ? 0.0 :
             Math.round((wins * 100.0 / matchesPlayed) * 10.0) / 10.0;
+        double pointsPercentage = matchesPlayed == 0 ? 0.0 :
+            Math.round(((wins * 3.0 + draws * 1.0) / (matchesPlayed * 3.0)) * 100.0 * 10.0) / 10.0;
         double goalsPerGame = matchesPlayed == 0 ? 0.0 :
             Math.round((goals * 1.0 / matchesPlayed) * 10.0) / 10.0;
 
@@ -139,6 +141,7 @@ public class PlayerService {
             .goals(goals)
             .assists(assists)
             .winRate(winRate)
+            .pointsPercentage(pointsPercentage)
             .goalsPerGame(goalsPerGame)
             .ability(player.getRating() != null ? player.getRating().getAbility() : null)
             .reliability(player.getRating() != null ? player.getRating().getReliability() : null)

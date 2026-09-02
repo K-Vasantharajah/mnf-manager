@@ -49,6 +49,7 @@ export interface PlayerLeaderboardEntry {
   goals: number;
   assists: number;
   winRate: number;
+  pointsPercentage: number;
   goalsPerGame: number;
   ability: number;
   reliability: number;
