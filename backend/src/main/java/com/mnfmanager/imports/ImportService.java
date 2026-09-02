@@ -72,8 +72,8 @@ public class ImportService {
                     int seasonYear = seasonNum == 1 ? 2025 : 2026;
 
                     // Resolve captain ids
-                    String mappedCaptainA = mapName(captainAName);
-                    String mappedCaptainB = mapName(captainBName);
+                    String mappedCaptainA = captainAName;
+                    String mappedCaptainB = captainBName;
 
                     Long captainAId = playerIdMap.get(mappedCaptainA);
                     Long captainBId = playerIdMap.get(mappedCaptainB);
@@ -95,7 +95,7 @@ public class ImportService {
                     List<CreateMatchRequest.GoalScorerRequest> goalScorers = new ArrayList<>();
 
                     for (PlayerPerformance perf : matchPerf) {
-                        String mappedName = mapName(perf.playerName);
+                        String mappedName = perf.playerName;
                         Long playerId = playerIdMap.get(mappedName);
 
                         if (playerId == null) {
@@ -184,10 +184,6 @@ public class ImportService {
             }
         }
         return map;
-    }
-
-    private String mapName(String name) {
-        return NAME_MAPPING.getOrDefault(name, name);
     }
 
     private String getCellString(Cell cell) {
