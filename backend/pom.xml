@@ -95,6 +95,13 @@
       <artifactId>jackson-datatype-hibernate6</artifactId>
     </dependency>
 
+    <!-- Apache POI for Excel import -->
+    <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>5.2.5</version>
+    </dependency>
+
     <!-- Testing -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

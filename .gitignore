@@ -32,3 +32,8 @@ buildNumber.properties
 # OS
 .DS_Store
 Thumbs.db
+
+# Data files
+data/
+*.xlsx
+*.csv
