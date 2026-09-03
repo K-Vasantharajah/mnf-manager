@@ -42,14 +42,14 @@ export default function MatchesPage() {
         <div className="flex items-center gap-3">
           <div className="flex gap-1">
             <button
-              onClick={() => setSeasonFilter('all')}
+              onClick={() => setSeasonFilter(2026)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                seasonFilter === 'all'
+                seasonFilter === 2026
                   ? 'bg-green-600 text-white'
                   : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
-              All
+              2026
             </button>
             <button
               onClick={() => setSeasonFilter(2025)}
@@ -62,14 +62,14 @@ export default function MatchesPage() {
               2025
             </button>
             <button
-              onClick={() => setSeasonFilter(2026)}
+              onClick={() => setSeasonFilter('all')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                seasonFilter === 2026
+                seasonFilter === 'all'
                   ? 'bg-green-600 text-white'
                   : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
-              2026
+              All
             </button>
           </div>
           <Link
@@ -183,12 +183,14 @@ export default function MatchesPage() {
                 >
                   {isDraw ? 'Draw' : `${winnerName} wins`}
                 </span>
-                <Link
-                  href={`/matches/${match.id}/edit`}
-                  className="text-xs text-green-600 hover:text-green-700 font-medium"
-                >
-                  Edit match
-                </Link>
+                {match.seasonYear === 2026 && (
+                  <Link
+                    href={`/matches/${match.id}/edit`}
+                    className="text-xs text-green-600 hover:text-green-700 font-medium"
+                  >
+                    Edit match
+                  </Link>
+                )}
               </div>
             </div>
           );

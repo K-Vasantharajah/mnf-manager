@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -129,6 +130,12 @@ public class MatchService {
 
         Match match = matchRepository.findByIdWithFullDetails(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Match", id));
+
+        // Prevent editing matches from previous seasons
+        int currentYear = LocalDate.now().getYear();
+        if (match.getSeasonYear() < currentYear) {
+            throw new IllegalStateException("Cannot edit matches from previous seasons");
+        }
 
         Player captainA = playerRepository.findById(request.getCaptainAId())
                 .orElseThrow(() -> new ResourceNotFoundException("Player", request.getCaptainAId()));
