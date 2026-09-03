@@ -23,12 +23,11 @@ export default function NewMatchPage() {
   const [matchDate, setMatchDate] = useState(
     new Date().toISOString().split('T')[0]
   );
-  const [seasonYear, setSeasonYear] = useState(2026);
+  const [seasonYear] = useState(2026);
   const [captainAId, setCaptainAId] = useState<number | ''>('');
   const [captainBId, setCaptainBId] = useState<number | ''>('');
   const [scoreA, setScoreA] = useState(0);
   const [scoreB, setScoreB] = useState(0);
-  const [durationMins, setDurationMins] = useState(60);
   const [teamAPlayerIds, setTeamAPlayerIds] = useState<number[]>([]);
   const [teamBPlayerIds, setTeamBPlayerIds] = useState<number[]>([]);
   const [goalScorers, setGoalScorers] = useState<GoalScorerEntry[]>([]);
@@ -114,7 +113,6 @@ export default function NewMatchPage() {
         captainBId,
         scoreA,
         scoreB,
-        durationMins,
         teamAPlayerIds,
         teamBPlayerIds,
         goalScorers,
@@ -145,7 +143,7 @@ export default function NewMatchPage() {
       {/* Match details */}
       <div className="bg-white rounded-xl border border-gray-100 p-5 mb-4">
         <h2 className="font-semibold text-gray-900 mb-4">Match details</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
           <div>
             <label className="text-xs text-gray-400 block mb-1">Date</label>
             <input
@@ -160,16 +158,6 @@ export default function NewMatchPage() {
             <input
               type="number"
               value={seasonYear}
-              onChange={(e) => setSeasonYear(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 block mb-1">Duration (mins)</label>
-            <input
-              type="number"
-              value={durationMins}
-              onChange={(e) => setDurationMins(Number(e.target.value))}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
             />
           </div>

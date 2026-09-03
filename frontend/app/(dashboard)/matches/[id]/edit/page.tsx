@@ -21,13 +21,12 @@ export default function EditMatchPage() {
   const { data: match, isLoading } = useMatchDetail (matchId);
 
   const [matchDate, setMatchDate] = useState('');
-  const [seasonYear, setSeasonYear] = useState(2026);
+  const seasonYear = match?.seasonYear ?? 2026;
   const [gameWeek, setGameWeek] = useState('');
   const [captainAId, setCaptainAId] = useState<number | ''>('');
   const [captainBId, setCaptainBId] = useState<number | ''>('');
   const [scoreA, setScoreA] = useState(0);
   const [scoreB, setScoreB] = useState(0);
-  const [durationMins, setDurationMins] = useState(60);
   const [teamAPlayerIds, setTeamAPlayerIds] = useState<number[]>([]);
   const [teamBPlayerIds, setTeamBPlayerIds] = useState<number[]>([]);
   const [goalScorers, setGoalScorers] = useState<GoalScorerEntry[]>([]);
@@ -37,13 +36,11 @@ export default function EditMatchPage() {
 
   if (match && !initialised) {
   setMatchDate(match.matchDate ? match.matchDate.toString().split('T')[0] : '');
-  setSeasonYear(match.seasonYear);
   setGameWeek(match.gameWeek || '');
   setCaptainAId(match.captainAId);
   setCaptainBId(match.captainBId);
   setScoreA(match.scoreA);
   setScoreB(match.scoreB);
-  setDurationMins(match.durationMins || 60);
   setTeamAPlayerIds(match.teamAPlayerIds || []);
   setTeamBPlayerIds(match.teamBPlayerIds || []);
   setGoalScorers(
@@ -110,13 +107,12 @@ export default function EditMatchPage() {
     try {
         await api.put(`/api/v1/matches/${matchId}`, {
         matchDate,
-        seasonYear,
+        seasonYear: match?.seasonYear ?? 2026,
         gameWeek,
         captainAId,
         captainBId,
         scoreA,
         scoreB,
-        durationMins,
         teamAPlayerIds,
         teamBPlayerIds,
         goalScorers,
@@ -155,7 +151,7 @@ export default function EditMatchPage() {
       {/* Match details */}
       <div className="bg-white rounded-xl border border-gray-100 p-5 mb-4">
         <h2 className="font-semibold text-gray-900 mb-4">Match details</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div>
             <label className="text-xs text-gray-600 block mb-1">Date</label>
             <input
@@ -170,16 +166,7 @@ export default function EditMatchPage() {
             <input
               type="number"
               value={seasonYear}
-              onChange={(e) => setSeasonYear(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-gray-600 block mb-1">Duration (mins)</label>
-            <input
-              type="number"
-              value={durationMins}
-              onChange={(e) => setDurationMins(Number(e.target.value))}
+              readOnly
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>

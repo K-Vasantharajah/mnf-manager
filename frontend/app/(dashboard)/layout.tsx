@@ -1,10 +1,23 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
+  const navItems = [
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/players', label: 'Players' },
+    { href: '/matches', label: 'Matches' },
+    { href: '/leaderboard', label: 'Leaderboard' },
+    { href: '/captains', label: 'Captains' },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="bg-green-900 text-white shadow-lg">
@@ -17,36 +30,19 @@ export default function DashboardLayout({
               <span className="font-bold text-lg tracking-tight">Manager</span>
             </div>
             <div className="flex gap-1">
-              <Link
-                href="/dashboard"
-                className="px-4 py-2 text-sm font-medium text-green-100 hover:text-white hover:bg-green-800 rounded transition-colors"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/players"
-                className="px-4 py-2 text-sm font-medium text-green-100 hover:text-white hover:bg-green-800 rounded transition-colors"
-              >
-                Players
-              </Link>
-              <Link
-                href="/matches"
-                className="px-4 py-2 text-sm font-medium text-green-100 hover:text-white hover:bg-green-800 rounded transition-colors"
-              >
-                Matches
-              </Link>
-              <Link
-                href="/leaderboard"
-                className="px-4 py-2 text-sm font-medium text-green-100 hover:text-white hover:bg-green-800 rounded transition-colors"
-              >
-                Leaderboard
-              </Link>
-              <Link
-                href="/captains"
-                className="px-4 py-2 text-sm font-medium text-green-100 hover:text-white hover:bg-green-800 rounded transition-colors"
-              >
-                Captains
-              </Link>
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`px-4 py-2 text-sm font-medium rounded transition-colors ${
+                    pathname.startsWith(item.href)
+                      ? 'bg-green-700 text-white'
+                      : 'text-green-100 hover:text-white hover:bg-green-800'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </div>
         </div>
