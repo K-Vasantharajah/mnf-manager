@@ -21,7 +21,7 @@ export default function EditMatchPage() {
   const { data: match, isLoading } = useMatchDetail (matchId);
 
   const [matchDate, setMatchDate] = useState('');
-  const seasonYear = match?.seasonYear ?? 2026;
+  const seasonYear = matchDate ? new Date(matchDate).getFullYear() : new Date().getFullYear();
   const [gameWeek, setGameWeek] = useState('');
   const [captainAId, setCaptainAId] = useState<number | ''>('');
   const [captainBId, setCaptainBId] = useState<number | ''>('');
@@ -107,7 +107,7 @@ export default function EditMatchPage() {
     try {
         await api.put(`/api/v1/matches/${matchId}`, {
         matchDate,
-        seasonYear: match?.seasonYear ?? 2026,
+        seasonYear,
         gameWeek,
         captainAId,
         captainBId,
@@ -151,22 +151,13 @@ export default function EditMatchPage() {
       {/* Match details */}
       <div className="bg-white rounded-xl border border-gray-100 p-5 mb-4">
         <h2 className="font-semibold text-gray-900 mb-4">Match details</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
           <div>
             <label className="text-xs text-gray-600 block mb-1">Date</label>
             <input
               type="date"
               value={matchDate}
               onChange={(e) => setMatchDate(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-gray-600 block mb-1">Season</label>
-            <input
-              type="number"
-              value={seasonYear}
-              readOnly
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
