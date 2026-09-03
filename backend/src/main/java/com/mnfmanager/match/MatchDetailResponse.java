@@ -13,6 +13,7 @@ public class MatchDetailResponse {
     private Long id;
     private LocalDate matchDate;
     private Short seasonYear;
+    private String gameWeek;
     private Long captainAId;
     private String captainAName;
     private Long captainBId;

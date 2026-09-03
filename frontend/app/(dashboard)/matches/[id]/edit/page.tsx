@@ -22,6 +22,7 @@ export default function EditMatchPage() {
 
   const [matchDate, setMatchDate] = useState('');
   const [seasonYear, setSeasonYear] = useState(2026);
+  const [gameWeek, setGameWeek] = useState('');
   const [captainAId, setCaptainAId] = useState<number | ''>('');
   const [captainBId, setCaptainBId] = useState<number | ''>('');
   const [scoreA, setScoreA] = useState(0);
@@ -37,6 +38,7 @@ export default function EditMatchPage() {
   if (match && !initialised) {
   setMatchDate(match.matchDate ? match.matchDate.toString().split('T')[0] : '');
   setSeasonYear(match.seasonYear);
+  setGameWeek(match.gameWeek || '');
   setCaptainAId(match.captainAId);
   setCaptainBId(match.captainBId);
   setScoreA(match.scoreA);
@@ -109,6 +111,7 @@ export default function EditMatchPage() {
         await api.put(`/api/v1/matches/${matchId}`, {
         matchDate,
         seasonYear,
+        gameWeek,
         captainAId,
         captainBId,
         scoreA,
@@ -180,6 +183,16 @@ export default function EditMatchPage() {
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
+          <div>
+            <label className="text-xs text-gray-600 block mb-1">Game week</label>
+            <input
+              type="text"
+              value={gameWeek}
+              onChange={(e) => setGameWeek(e.target.value)}
+              placeholder="e.g. GW29"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
         </div>
       </div>
 
@@ -191,7 +204,15 @@ export default function EditMatchPage() {
             <label className="text-xs text-gray-600 block mb-1">Captain A</label>
             <select
               value={captainAId}
-              onChange={(e) => setCaptainAId(Number(e.target.value))}
+              onChange={(e) => {
+                const id = Number(e.target.value);
+                setCaptainAId(id);
+                if (id) {
+                  setTeamAPlayerIds(prev =>
+                    prev.includes(id) ? prev : [...prev, id]
+                  );
+                }
+              }}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="">Select captain</option>
@@ -229,7 +250,15 @@ export default function EditMatchPage() {
             <label className="text-xs text-gray-600 block mb-1">Captain B</label>
             <select
               value={captainBId}
-              onChange={(e) => setCaptainBId(Number(e.target.value))}
+              onChange={(e) => {
+                const id = Number(e.target.value);
+                setCaptainBId(id);
+                if (id) {
+                  setTeamBPlayerIds(prev =>
+                    prev.includes(id) ? prev : [...prev, id]
+                  );
+                }
+              }}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="">Select captain</option>
@@ -269,28 +298,32 @@ export default function EditMatchPage() {
                   return (
                     <button
                       key={player.id}
-                      onClick={() =>
-                        !onOtherTeam && toggleTeamPlayer(player.id, team)
-                      }
-                      disabled={onOtherTeam}
+                      onClick={() => {
+                        const isCaptain = player.id === Number(captainAId) || player.id === Number(captainBId);
+                        if (!isCaptain && !onOtherTeam) toggleTeamPlayer(player.id, team);
+                      }}
+                      disabled={onOtherTeam || (team === 'A' && player.id === Number(captainAId)) || (team === 'B' && player.id === Number(captainBId))}
                       className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
                         selected
                           ? 'bg-green-50 text-green-700 font-medium'
                           : onOtherTeam
                           ? 'opacity-30 cursor-not-allowed text-gray-400'
+                          : (team === 'A' && player.id === Number(captainAId)) || (team === 'B' && player.id === Number(captainBId))
+                          ? 'bg-green-50 text-green-700 font-medium cursor-not-allowed'
                           : 'hover:bg-gray-50 text-gray-700'
                       }`}
                     >
-                      <div
-                        className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center text-xs ${
-                          selected
-                            ? 'bg-green-500 border-green-500 text-white'
-                            : 'border-gray-300'
-                        }`}
-                      >
+                      <div className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center text-xs ${
+                        selected
+                          ? 'bg-green-500 border-green-500 text-white'
+                          : 'border-gray-300'
+                      }`}>
                         {selected && '✓'}
                       </div>
                       {player.name}
+                      {((team === 'A' && player.id === Number(captainAId)) || (team === 'B' && player.id === Number(captainBId))) && (
+                        <span className="ml-auto text-xs text-green-600 font-medium">Captain</span>
+                      )}
                     </button>
                   );
                 })}

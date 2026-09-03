@@ -58,12 +58,23 @@ export default function MatchesPage() {
                 >
                 <div className="flex items-center justify-between mb-3">
                     <span className="text-xs text-gray-400">
-                    {new Date(match.matchDate).toLocaleDateString('en-GB', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                    })}
+                      {match.gameWeek ? (
+                        <span className="font-medium text-gray-600">{match.gameWeek} · Season {match.seasonYear}</span>
+                      ) : (
+                        <>
+                          Season {match.seasonYear}
+                          {match.matchDate && (
+                            <span className="block mt-0.5">
+                              {new Date(match.matchDate).toLocaleDateString('en-GB', {
+                                weekday: 'long',
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric',
+                              })}
+                            </span>
+                          )}
+                        </>
+                      )}
                     </span>
                     <div className="flex items-center gap-2">
                     <span className="text-xs text-gray-400">

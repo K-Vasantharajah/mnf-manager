@@ -17,7 +17,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
         LEFT JOIN FETCH m.captainA
         LEFT JOIN FETCH m.captainB
         LEFT JOIN FETCH m.winner
-        ORDER BY m.matchDate DESC
+        ORDER BY m.seasonYear DESC, m.id DESC
     """)
     List<Match> findAllByOrderByMatchDateDesc();
 
@@ -49,4 +49,12 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
         ORDER BY m.matchDate DESC
     """)
     List<Match> findBySeasonWithDetails(Short seasonYear);
+
+    @Query("""
+        SELECT m.gameWeek FROM Match m
+        WHERE m.seasonYear = :seasonYear
+        AND m.gameWeek LIKE 'GW%'
+        ORDER BY m.id DESC
+    """)
+    List<String> findLastGameWeekForSeason(Short seasonYear);
 }

@@ -52,6 +52,20 @@ public class MatchService {
         Player winner = isDraw ? null :
                 request.getScoreA() > request.getScoreB() ? captainA : captainB;
 
+        // Auto-calculate game week if not provided
+        List<String> gameWeeks = matchRepository.findLastGameWeekForSeason(request.getSeasonYear());
+        String lastGameWeek = gameWeeks.isEmpty() ? null : gameWeeks.get(0);
+        if (lastGameWeek != null && lastGameWeek.startsWith("GW")) {
+            try {
+                int lastGW = Integer.parseInt(lastGameWeek.substring(2));
+                request.setGameWeek("GW" + (lastGW + 1));
+            } catch (NumberFormatException e) {
+                log.warn("Could not parse game week: {}", lastGameWeek);
+            }
+        } else {
+            request.setGameWeek("GW1");
+        }
+
         Match match = Match.builder()
                 .matchDate(request.getMatchDate())
                 .seasonYear(request.getSeasonYear())
@@ -131,10 +145,31 @@ public class MatchService {
         Player winner = isDraw ? null :
                 request.getScoreA() > request.getScoreB() ? captainA : captainB;
 
+        // Only auto-calculate if no game week provided AND match doesn't already have one
+        if ((request.getGameWeek() == null || request.getGameWeek().isBlank()) 
+                && (match.getGameWeek() == null || match.getGameWeek().isBlank())) {
+            List<String> gameWeeksUpdate = matchRepository.findLastGameWeekForSeason(request.getSeasonYear());
+            String lastGameWeek = gameWeeksUpdate.isEmpty() ? null : gameWeeksUpdate.get(0);
+            if (lastGameWeek != null && lastGameWeek.startsWith("GW")) {
+                try {
+                    int lastGW = Integer.parseInt(lastGameWeek.substring(2));
+                    request.setGameWeek("GW" + (lastGW + 1));
+                } catch (NumberFormatException e) {
+                    log.warn("Could not parse game week: {}", lastGameWeek);
+                }
+            } else {
+                request.setGameWeek("GW1");
+            }
+        } else if (request.getGameWeek() == null || request.getGameWeek().isBlank()) {
+            // Keep existing game week if no new one provided
+            request.setGameWeek(match.getGameWeek());
+        }
+
         match.setCaptainA(captainA);
         match.setCaptainB(captainB);
         match.setMatchDate(request.getMatchDate());
         match.setSeasonYear(request.getSeasonYear());
+        match.setGameWeek(request.getGameWeek());
         match.setScoreA(request.getScoreA());
         match.setScoreB(request.getScoreB());
         match.setWinner(winner);
@@ -263,6 +298,7 @@ public class MatchService {
                 .id(match.getId())
                 .matchDate(match.getMatchDate())
                 .seasonYear(match.getSeasonYear())
+                .gameWeek(match.getGameWeek())
                 .captainAId(match.getCaptainA().getId())
                 .captainAName(match.getCaptainA().getName())
                 .captainBId(match.getCaptainB().getId())

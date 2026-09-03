@@ -11,7 +11,7 @@ INSERT INTO players (id, name, active, strong_foot, notes, created_at, updated_a
 (10, 'Isa',           true, 'Right',  'CAM/CM',               NOW(), NOW()),
 (11, 'Jana',          true, 'Right',  'Defender',             NOW(), NOW()),
 (12, 'Mashkoor',      true, 'Right',  'CM',                   NOW(), NOW()),
-(13, 'Matt',      true, 'Right',  'CAM/CM',               NOW(), NOW()),
+(13, 'Matt',          true, 'Right',  'CAM/CM',               NOW(), NOW()),
 (14, 'Nabeel',        true, 'Right',  'Midfielder/ST',        NOW(), NOW()),
 (15, 'Shahan',        true, 'Right',  'DEF/CM',               NOW(), NOW()),
 (16, 'Syed',          true, 'Right',  'Defender',             NOW(), NOW()),
@@ -65,10 +65,11 @@ INSERT INTO players (id, name, active, strong_foot, notes, created_at, updated_a
 (64,  'Umar',         false, 'Right', 'Unknown',              NOW(), NOW()),
 (65,  'Vithu',        false, 'Right', 'Midfielder',           NOW(), NOW()),
 (66,  'Yousaf',       false, 'Right', 'Defender',             NOW(), NOW()),
-(67,  'Zain',         false, 'Right', 'Defender',             NOW(), NOW())
+(67,  'Zain',         false, 'Right', 'Defender',             NOW(), NOW()),
+(68,  'Junaid',       true,  'Right', 'Midfielder',           NOW(), NOW())
 ON CONFLICT (id) DO NOTHING;
 
-SELECT setval('players_id_seq', 67);
+SELECT setval('players_id_seq', 68);
 
 INSERT INTO player_ratings (player_id, ability, reliability, goal_threat, rated_by) VALUES
 (1,  8,  8,  6,  'Kobi'),

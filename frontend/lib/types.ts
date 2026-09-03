@@ -29,6 +29,7 @@ export interface Match {
   id: number;
   matchDate: string;
   seasonYear: number;
+  gameWeek: string | null;
   captainA: Player;
   captainB: Player;
   scoreA: number;
@@ -68,6 +69,7 @@ export interface MatchDetail {
   id: number;
   matchDate: string;
   seasonYear: number;
+  gameWeek: string | null;
   captainAId: number;
   captainAName: string;
   captainBId: number;

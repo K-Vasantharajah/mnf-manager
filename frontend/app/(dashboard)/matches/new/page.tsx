@@ -13,10 +13,13 @@ interface GoalScorerEntry {
 }
 
 export default function NewMatchPage() {
+  const [showAddPlayer, setShowAddPlayer] = useState(false);
+  const [newPlayerName, setNewPlayerName] = useState('');
+  const [addingPlayer, setAddingPlayer] = useState(false);
   const router = useRouter();
   const { data: players } = usePlayers();
   const queryClient = useQueryClient();
-
+  
   const [matchDate, setMatchDate] = useState(
     new Date().toISOString().split('T')[0]
   );
@@ -33,6 +36,26 @@ export default function NewMatchPage() {
   const [error, setError] = useState<string | null>(null);
 
   const activePlayers = players || [];
+
+  async function handleAddPlayer() {
+    if (!newPlayerName.trim()) return;
+    setAddingPlayer(true);
+    try {
+      const { data } = await api.post('/api/v1/players', {
+        name: newPlayerName.trim(),
+        strongFoot: 'Right',
+        active: true,
+        notes: 'Added during match recording',
+      });
+      await queryClient.invalidateQueries({ queryKey: ['players'] });
+      setNewPlayerName('');
+      setShowAddPlayer(false);
+    } catch {
+      alert('Failed to add player');
+    } finally {
+      setAddingPlayer(false);
+    }
+  }
 
   function toggleTeamPlayer(playerId: number, team: 'A' | 'B') {
     if (team === 'A') {
@@ -161,7 +184,15 @@ export default function NewMatchPage() {
             <label className="text-xs text-gray-400 block mb-1">Captain A</label>
             <select
               value={captainAId}
-              onChange={(e) => setCaptainAId(Number(e.target.value))}
+              onChange={(e) => {
+                const id = Number(e.target.value);
+                setCaptainAId(id);
+                if (id) {
+                  setTeamAPlayerIds(prev =>
+                    prev.includes(id) ? prev : [...prev, id]
+                  );
+                }
+              }}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
             >
               <option value="">Select captain</option>
@@ -199,7 +230,15 @@ export default function NewMatchPage() {
             <label className="text-xs text-gray-400 block mb-1">Captain B</label>
             <select
               value={captainBId}
-              onChange={(e) => setCaptainBId(Number(e.target.value))}
+              onChange={(e) => {
+                const id = Number(e.target.value);
+                setCaptainBId(id);
+                if (id) {
+                  setTeamBPlayerIds(prev =>
+                    prev.includes(id) ? prev : [...prev, id]
+                  );
+                }
+              }}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
             >
               <option value="">Select captain</option>
@@ -237,26 +276,32 @@ export default function NewMatchPage() {
                   return (
                     <button
                       key={player.id}
-                      onClick={() => !onOtherTeam && toggleTeamPlayer(player.id, team)}
-                      disabled={onOtherTeam}
+                      onClick={() => {
+                        const isCaptain = player.id === Number(captainAId) || player.id === Number(captainBId);
+                        if (!isCaptain && !onOtherTeam) toggleTeamPlayer(player.id, team);
+                      }}
+                      disabled={onOtherTeam || (team === 'A' && player.id === Number(captainAId)) || (team === 'B' && player.id === Number(captainBId))}
                       className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
                         selected
                           ? 'bg-green-50 text-green-700 font-medium'
                           : onOtherTeam
                           ? 'opacity-30 cursor-not-allowed text-gray-400'
+                          : (team === 'A' && player.id === Number(captainAId)) || (team === 'B' && player.id === Number(captainBId))
+                          ? 'bg-green-50 text-green-700 font-medium cursor-not-allowed'
                           : 'hover:bg-gray-50 text-gray-700'
                       }`}
                     >
-                      <div
-                        className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center text-xs ${
-                          selected
-                            ? 'bg-green-500 border-green-500 text-white'
-                            : 'border-gray-300'
-                        }`}
-                      >
+                      <div className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center text-xs ${
+                        selected
+                          ? 'bg-green-500 border-green-500 text-white'
+                          : 'border-gray-300'
+                      }`}>
                         {selected && '✓'}
                       </div>
                       {player.name}
+                      {((team === 'A' && player.id === Number(captainAId)) || (team === 'B' && player.id === Number(captainBId))) && (
+                        <span className="ml-auto text-xs text-green-600 font-medium">Captain</span>
+                      )}
                     </button>
                   );
                 })}
@@ -265,6 +310,38 @@ export default function NewMatchPage() {
           );
         })}
       </div>
+
+      {/* Add new players */}
+      <div className="bg-white rounded-xl border border-gray-100 p-5 mb-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-gray-900">New player?</h2>
+          <button
+            onClick={() => setShowAddPlayer(!showAddPlayer)}
+            className="text-xs text-green-600 hover:text-green-700 font-medium border border-green-200 px-3 py-1 rounded-lg"
+          >
+            {showAddPlayer ? 'Cancel' : '+ Add player'}
+          </button>
+        </div>
+        {showAddPlayer && (
+          <div className="flex items-center gap-3 mt-4">
+            <input
+              type="text"
+              placeholder="Player name"
+              value={newPlayerName}
+              onChange={(e) => setNewPlayerName(e.target.value)}
+              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <button
+              onClick={handleAddPlayer}
+              disabled={addingPlayer || !newPlayerName.trim()}
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+            >
+              {addingPlayer ? 'Adding...' : 'Add'}
+            </button>
+          </div>
+        )}
+      </div>
+
 
       {/* Goal scorers */}
       <div className="bg-white rounded-xl border border-gray-100 p-5 mb-4">
