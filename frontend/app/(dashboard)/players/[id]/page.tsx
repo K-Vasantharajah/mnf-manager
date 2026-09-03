@@ -5,7 +5,6 @@ import { useParams, useRouter } from 'next/navigation';
 import { usePlayerProfile } from '@/lib/hooks';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
-import Link from 'next/link';
 
 function RatingBar({ value, color }: { value: number; color: string }) {
   return (
