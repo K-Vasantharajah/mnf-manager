@@ -113,3 +113,12 @@ Given a pool of available players, suggest the most balanced two teams.
 - Uses ability, reliability, goal threat ratings
 - Weighted by historical co-occurrence and chemistry data
 - Output: two balanced squads with predicted match outcome
+## Authentication and authorisation (pre-deployment)
+
+Required before Azure deployment:
+- Spring Security JWT authentication
+- Google OAuth 2.0 login
+- Role-based access: ADMIN and USER roles
+- Admin-only features: delete match, edit ratings, manage players
+- Protected API endpoints
+- NextAuth.js integration on frontend
