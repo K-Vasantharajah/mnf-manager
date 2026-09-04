@@ -14,6 +14,7 @@ import jakarta.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -443,5 +444,129 @@ public class MatchService {
                 })
                 .sorted((a, b) -> Double.compare(b.getWinRate(), a.getWinRate()))
                 .toList();
+    }
+
+    public Map<String, Object> getCaptainDashboardStats() {
+        List<Match> allMatches = matchRepository.findAllByOrderByMatchDateDesc();
+
+        List<Match> allMatchesSorted = allMatches.stream()
+                .sorted((a, b) -> Long.compare(a.getId(), b.getId()))
+                .toList();
+
+        int currentSeasonYear = LocalDate.now().getYear();
+
+        List<Match> currentSeasonMatches = allMatchesSorted.stream()
+                .filter(m -> m.getSeasonYear() == currentSeasonYear)
+                .toList();
+
+        // Current winning captain (most recent non-draw match winner)
+        Match mostRecentMatch = allMatches.stream().findFirst().orElse(null);
+        String currentWinningCaptain;
+        if (mostRecentMatch == null) {
+            currentWinningCaptain = "None";
+        } else if (mostRecentMatch.getIsDraw()) {
+            currentWinningCaptain = mostRecentMatch.getCaptainA().getName() 
+                    + " vs " + mostRecentMatch.getCaptainB().getName() + " (Draw - replay)";
+        } else {
+            currentWinningCaptain = mostRecentMatch.getWinner().getName();
+        }
+
+        // Get all unique captain ids
+        Set<Long> captainIds = new java.util.HashSet<>();
+        allMatchesSorted.forEach(m -> {
+            captainIds.add(m.getCaptainA().getId());
+            captainIds.add(m.getCaptainB().getId());
+        });
+
+        String longestAllTimeStreakCaptain = "";
+        int longestAllTimeStreak = 0;
+        String longestCurrentSeasonStreakCaptain = "";
+        int longestCurrentSeasonStreak = 0;
+        String currentStreakCaptain = "";
+        int currentStreak = 0;
+
+        for (Long captainId : captainIds) {
+            // Get captain name
+            String captainName = allMatchesSorted.stream()
+                    .filter(m -> m.getCaptainA().getId().equals(captainId)
+                            || m.getCaptainB().getId().equals(captainId))
+                    .findFirst()
+                    .map(m -> m.getCaptainA().getId().equals(captainId)
+                            ? m.getCaptainA().getName()
+                            : m.getCaptainB().getName())
+                    .orElse("Unknown");
+
+            // Only matches where this player was captain
+            List<Match> captainedMatches = allMatchesSorted.stream()
+                    .filter(m -> m.getCaptainA().getId().equals(captainId)
+                            || m.getCaptainB().getId().equals(captainId))
+                    .toList();
+
+            List<Match> captainedCurrentSeason = captainedMatches.stream()
+                    .filter(m -> m.getSeasonYear() == currentSeasonYear)
+                    .toList();
+
+            // All time longest streak
+            int allTimeMax = calculateLongestStreak(captainedMatches, captainId);
+            if (allTimeMax > longestAllTimeStreak) {
+                longestAllTimeStreak = allTimeMax;
+                longestAllTimeStreakCaptain = captainName;
+            }
+
+            // Current season longest streak
+            int currentSeasonMax = calculateLongestStreak(captainedCurrentSeason, captainId);
+            if (currentSeasonMax > longestCurrentSeasonStreak) {
+                longestCurrentSeasonStreak = currentSeasonMax;
+                longestCurrentSeasonStreakCaptain = captainName;
+            }
+
+            // Current active streak (from end of current season matches)
+            int curStreak = calculateCurrentStreak(captainedCurrentSeason, captainId);
+            if (curStreak > currentStreak) {
+                currentStreak = curStreak;
+                currentStreakCaptain = captainName;
+            }
+        }
+
+        Map<String, Object> stats = new java.util.LinkedHashMap<>();
+        stats.put("currentWinningCaptain", currentWinningCaptain);
+        stats.put("currentStreakCaptain", currentStreakCaptain);
+        stats.put("currentStreak", currentStreak);
+        stats.put("longestCurrentSeasonStreakCaptain", longestCurrentSeasonStreakCaptain);
+        stats.put("longestCurrentSeasonStreak", longestCurrentSeasonStreak);
+        stats.put("longestAllTimeStreakCaptain", longestAllTimeStreakCaptain);
+        stats.put("longestAllTimeStreak", longestAllTimeStreak);
+        return stats;
+    }
+
+    private int calculateLongestStreak(List<Match> matches, Long captainId) {
+        int streak = 0;
+        int maxStreak = 0;
+        for (Match m : matches) {
+            boolean won = m.getWinner() != null && m.getWinner().getId().equals(captainId);
+            boolean drew = m.getIsDraw();
+            if (won || drew) {
+                streak++;
+                maxStreak = Math.max(maxStreak, streak);
+            } else {
+                streak = 0;
+            }
+        }
+        return maxStreak;
+    }
+
+    private int calculateCurrentStreak(List<Match> matches, Long captainId) {
+        int streak = 0;
+        for (int i = matches.size() - 1; i >= 0; i--) {
+            Match m = matches.get(i);
+            boolean won = m.getWinner() != null && m.getWinner().getId().equals(captainId);
+            boolean drew = m.getIsDraw();
+            if (won || drew) {
+                streak++;
+            } else {
+                break;
+            }
+        }
+        return streak;
     }
 }

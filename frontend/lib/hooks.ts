@@ -100,3 +100,22 @@ export function useCaptainStats(seasonYear?: number) {
     },
   });
 }
+
+export function useDashboardStats() {
+  return useQuery<{
+    currentWinningCaptain: string;
+    currentStreakCaptain: string;
+    currentStreak: number;
+    longestCurrentSeasonStreakCaptain: string;
+    longestCurrentSeasonStreak: number;
+    longestAllTimeStreakCaptain: string;
+    longestAllTimeStreak: number;
+  }>({
+    queryKey: ['stats-dashboard'],
+    queryFn: async () => {
+      const { data } = await api.get('/api/v1/dashboard/stats');
+      return data;
+    },
+  });
+}
+

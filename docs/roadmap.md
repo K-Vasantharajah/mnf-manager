@@ -122,3 +122,17 @@ Required before Azure deployment:
 - Admin-only features: delete match, edit ratings, manage players
 - Protected API endpoints
 - NextAuth.js integration on frontend
+
+## MNF Rules Reference
+
+### Captaincy system
+- The winning captain retains captaincy the following week
+- The winning captain picks second (challenging captain picks first)
+- On a draw: both captains return the following week, pick order reverses
+- If the winning captain is absent: the most recent winning captain resumes when they return
+- Streaks carry forwards through absences
+
+### Streak definitions
+- Undefeated streak: consecutive matches as captain without a loss (draws count)
+- Winning streak: consecutive wins as captain (draws break the streak)
+- Dashboard shows undefeated streak as primary metric
