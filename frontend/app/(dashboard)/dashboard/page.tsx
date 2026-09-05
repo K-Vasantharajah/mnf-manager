@@ -1,23 +1,19 @@
 'use client';
 
-import { usePlayers, useMatches, useDashboardStats } from '@/lib/hooks';
+import { usePlayers, useMatches, useDashboardStats, useLeaderboard } from '@/lib/hooks';
 import Link from 'next/link';
 
 export default function DashboardPage() {
+  const currentYear = new Date().getFullYear();
+
   const { data: players, isLoading: playersLoading } = usePlayers();
   const { data: matches, isLoading: matchesLoading } = useMatches();
   const { data: dashboardStats, isLoading: statsLoading } = useDashboardStats();
+  const { data: leaderboard } = useLeaderboard(currentYear);
+
 
   const isLoading = playersLoading || matchesLoading || statsLoading;
-
-  const currentYear = new Date().getFullYear();
-
   const currentSeasonMatches = matches?.filter(m => m.seasonYear === currentYear) || [];
-
-  const topGoalScorer = players
-    ? [...players].sort((a, b) => (b.rating?.goalThreat || 0) - (a.rating?.goalThreat || 0))[0]
-    : null;
-
   const recentMatches = matches?.slice(0, 5) || [];
 
   if (isLoading) {
@@ -189,24 +185,64 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Captain leaderboard */}
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between">
+          <div className="px-5 py-4 border-b border-gray-50">
             <h2 className="font-semibold text-gray-900">
-              Top captains · Season {currentYear}
+              Season {currentYear} top performers
             </h2>
-            <Link
-              href="/captains"
-              className="text-xs text-green-600 hover:text-green-700 font-medium"
-            >
-              View all
-            </Link>
           </div>
-          <div className="px-5 py-3 text-center text-gray-400 text-sm">
-            <Link href="/captains" className="text-green-600 hover:text-green-700">
-              View captain stats →
-            </Link>
-          </div>
+          
+          {/* Pt% leader */}
+          {(() => {
+            const qualified = leaderboard?.filter(e => e.matchesPlayed >= 14) || [];
+            const ptLeader = qualified.sort((a, b) => b.pointsPercentage - a.pointsPercentage)[0];
+            return ptLeader ? (
+              <div className="px-5 py-3 border-b border-gray-50">
+                <div className="text-xs text-gray-600 uppercase tracking-wide mb-2">🏆 Pt% leader</div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold">
+                    {ptLeader.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <span className="font-medium text-gray-900 flex-1">{ptLeader.name}</span>
+                  <span className="font-black text-green-600">{ptLeader.pointsPercentage}%</span>
+                </div>
+              </div>
+            ) : null;
+          })()}
+
+          {/* Top scorer */}
+          {(() => {
+            const topScorer = [...(leaderboard || [])].sort((a, b) => b.goals - a.goals)[0];
+            return topScorer ? (
+              <div className="px-5 py-3 border-b border-gray-50">
+                <div className="text-xs text-gray-600 uppercase tracking-wide mb-2">⚽ Top scorer</div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold">
+                    {topScorer.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <span className="font-medium text-gray-900 flex-1">{topScorer.name}</span>
+                  <span className="font-black text-blue-600">{topScorer.goals} goals</span>
+                </div>
+              </div>
+            ) : null;
+          })()}
+
+          {/* Most matches */}
+          {(() => {
+            const mostPlayed = [...(leaderboard || [])].sort((a, b) => b.matchesPlayed - a.matchesPlayed)[0];
+            return mostPlayed ? (
+              <div className="px-5 py-3">
+                <div className="text-xs text-gray-600 uppercase tracking-wide mb-2">🎮 Most played</div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold">
+                    {mostPlayed.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <span className="font-medium text-gray-900 flex-1">{mostPlayed.name}</span>
+                  <span className="font-black text-amber-500">{mostPlayed.matchesPlayed} played</span>
+                </div>
+              </div>
+            ) : null;
+          })()}
         </div>
       </div>
     </div>
