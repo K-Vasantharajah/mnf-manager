@@ -13,6 +13,7 @@ export interface Player {
   active: boolean;
   strongFoot: string;
   notes: string;
+  position: string | null;
   rating: PlayerRating | null;
   createdAt: string;
   updatedAt: string;

@@ -20,8 +20,13 @@ public class PlayerController {
     private final PlayerService playerService;
     private final MatchService matchService;
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Player>> getAllPlayers() {
+        return ResponseEntity.ok(playerService.getAllPlayers());
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Player>> getActivePlayers() {
         return ResponseEntity.ok(playerService.getAllActivePlayers());
     }
 

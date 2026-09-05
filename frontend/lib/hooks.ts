@@ -119,3 +119,13 @@ export function useDashboardStats() {
   });
 }
 
+export function useAllPlayers() {
+  return useQuery<Player[]>({
+    queryKey: ['players', 'all'],
+    queryFn: async () => {
+      const { data } = await api.get('/api/v1/players/all');
+      return data;
+    },
+  });
+}
+

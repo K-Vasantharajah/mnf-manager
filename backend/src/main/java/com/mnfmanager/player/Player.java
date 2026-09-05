@@ -44,6 +44,8 @@ public class Player {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+    @Column(length = 10)
+    private String position;
 
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

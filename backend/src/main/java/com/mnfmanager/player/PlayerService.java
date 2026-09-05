@@ -3,6 +3,8 @@ package com.mnfmanager.player;
 import com.mnfmanager.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,11 @@ import java.util.List;
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
+
+    public List<Player> getAllPlayers() {
+        log.debug("Fetching all players including inactive");
+        return playerRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+    }
 
     public List<Player> getAllActivePlayers() {
         log.debug("Fetching all active players with ratings");
