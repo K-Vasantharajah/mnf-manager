@@ -47,6 +47,7 @@ export default function NewMatchPage() {
         notes: 'Added during match recording',
       });
       await queryClient.invalidateQueries({ queryKey: ['players'] });
+      await queryClient.invalidateQueries({ queryKey: ['players', 'all'] });
       setNewPlayerName('');
       setShowAddPlayer(false);
     } catch {
