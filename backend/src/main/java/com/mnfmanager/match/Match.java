@@ -39,6 +39,10 @@ public class Match {
     @Column(name = "game_week", length = 10)
     private String gameWeek;
 
+    @Column(name = "is_exhibition", nullable = false)
+    @Builder.Default
+    private Boolean isExhibition = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "captain_a_id", nullable = false)
     private Player captainA;

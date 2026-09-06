@@ -72,6 +72,7 @@ public class MatchService {
                 .matchDate(request.getMatchDate())
                 .seasonYear(request.getSeasonYear())
                 .gameWeek(request.getGameWeek())
+                .isExhibition(request.getIsExhibition() != null ? request.getIsExhibition() : false)
                 .captainA(captainA)
                 .captainB(captainB)
                 .scoreA(request.getScoreA())
@@ -323,6 +324,10 @@ public class MatchService {
     }
 
     private void updatePlayerSeasonStats(Match match) {
+        if (Boolean.TRUE.equals(match.getIsExhibition())) {
+            log.info("Skipping season stats update for exhibition match id: {}", match.getId());
+            return;
+        }
         log.info("Updating season stats for match id: {}", match.getId());
 
         match.getMatchPlayers().forEach(mp -> {

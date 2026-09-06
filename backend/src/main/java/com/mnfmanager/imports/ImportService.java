@@ -125,6 +125,7 @@ public class ImportService {
                     request.setMatchDate(LocalDate.of(seasonYear, 1, 1)); // placeholder date
                     request.setSeasonYear((short) seasonYear);
                     request.setGameWeek(gameWeek);
+                    request.setIsExhibition(gameWeek.startsWith("EX"));
                     request.setCaptainAId(captainAId);
                     request.setCaptainBId(captainBId);
                     request.setScoreA((short) scoreA);

@@ -48,6 +48,7 @@ public class PlayerService {
         existing.setStrongFoot(updatedPlayer.getStrongFoot());
         existing.setNotes(updatedPlayer.getNotes());
         existing.setActive(updatedPlayer.getActive());
+        existing.setPosition(updatedPlayer.getPosition());
         return playerRepository.save(existing);
     }
 
@@ -202,6 +203,7 @@ public class PlayerService {
                 .strongFoot(player.getStrongFoot())
                 .notes(player.getNotes())
                 .active(player.getActive())
+                .position(player.getPosition())
                 .ability(player.getRating() != null ? player.getRating().getAbility() : null)
                 .reliability(player.getRating() != null ? player.getRating().getReliability() : null)
                 .goalThreat(player.getRating() != null ? player.getRating().getGoalThreat() : null)

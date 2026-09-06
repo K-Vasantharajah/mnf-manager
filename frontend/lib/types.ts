@@ -103,6 +103,7 @@ export interface PlayerProfile {
   strongFoot: string;
   notes: string;
   active: boolean;
+  position: string | null;
   ability: number | null;
   reliability: number | null;
   goalThreat: number | null;

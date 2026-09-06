@@ -38,6 +38,12 @@ export default function PlayerProfilePage() {
 
   const { data: profile, isLoading, isError } = usePlayerProfile(playerId);
 
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editStrongFoot, setEditStrongFoot] = useState('');
+  const [editPosition, setEditPosition] = useState('');
+  const [editActive, setEditActive] = useState(true);
+  const [savingProfile, setSavingProfile] = useState(false);
   const [editingRatings, setEditingRatings] = useState(false);
   const [ability, setAbility] = useState<number>(0);
   const [reliability, setReliability] = useState<number>(0);
@@ -49,6 +55,34 @@ export default function PlayerProfilePage() {
     setReliability(profile?.reliability || 0);
     setGoalThreat(profile?.goalThreat || 0);
     setEditingRatings(true);
+  }
+
+  function startEditingProfile() {
+    setEditName(profile?.name || '');
+    setEditStrongFoot(profile?.strongFoot || 'Right');
+    setEditPosition(profile?.position || 'UNKNOWN');
+    setEditActive(profile?.active ?? true);
+    setEditingProfile(true);
+  }
+
+  async function saveProfile() {
+    setSavingProfile(true);
+    try {
+      await api.put(`/api/v1/players/${playerId}`, {
+        name: editName,
+        strongFoot: editStrongFoot,
+        active: editActive,
+        position: editPosition,
+        notes: profile?.notes || '',
+      });
+      await queryClient.invalidateQueries({ queryKey: ['players', playerId, 'profile'] });
+      await queryClient.invalidateQueries({ queryKey: ['players', 'all'] });
+      setEditingProfile(false);
+    } catch {
+      alert('Failed to save profile');
+    } finally {
+      setSavingProfile(false);
+    }
   }
 
   async function saveRatings() {
@@ -260,6 +294,114 @@ export default function PlayerProfilePage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Profile edit card */}
+      <div className="bg-white rounded-xl border border-gray-100 p-5 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold text-gray-900">Profile</h2>
+          {!editingProfile ? (
+            <button
+              onClick={startEditingProfile}
+              className="text-xs text-green-600 hover:text-green-700 font-medium border border-green-200 px-3 py-1 rounded-lg"
+            >
+              Edit profile
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setEditingProfile(false)}
+                className="text-xs text-gray-500 hover:text-gray-700 px-3 py-1 rounded-lg border border-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveProfile}
+                disabled={savingProfile}
+                className="text-xs text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-lg disabled:opacity-50"
+              >
+                {savingProfile ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {!editingProfile ? (
+          <div className="space-y-3">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-400">Position</span>
+              <span className="font-medium text-gray-900">
+                {profile.position && profile.position !== 'UNKNOWN' ? profile.position : '—'}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-400">Strong foot</span>
+              <span className="font-medium text-gray-900">{profile.strongFoot}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-400">Status</span>
+              <span className={`font-medium ${profile.active ? 'text-green-600' : 'text-gray-400'}`}>
+                {profile.active ? 'Active' : 'Inactive'}
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-gray-600 block mb-1">Name</label>
+              <input
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-gray-600 block mb-1">Position</label>
+              <select
+                value={editPosition}
+                onChange={(e) => setEditPosition(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="UNKNOWN">Unknown</option>
+                <option value="GK">GK — Goalkeeper</option>
+                <option value="CB">CB — Centre Back</option>
+                <option value="LB">LB — Left Back</option>
+                <option value="RB">RB — Right Back</option>
+                <option value="CDM">CDM — Defensive Mid</option>
+                <option value="CM">CM — Central Mid</option>
+                <option value="CAM">CAM — Attacking Mid</option>
+                <option value="LW">LW — Left Wing</option>
+                <option value="RW">RW — Right Wing</option>
+                <option value="ST">ST — Striker</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-gray-600 block mb-1">Strong foot</label>
+              <select
+                value={editStrongFoot}
+                onChange={(e) => setEditStrongFoot(e.target.value)}
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="Right">Right</option>
+                <option value="Left">Left</option>
+                <option value="Both">Both</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={editActive}
+                onChange={(e) => setEditActive(e.target.checked)}
+                className="accent-green-600"
+                id="active-toggle"
+              />
+              <label htmlFor="active-toggle" className="text-sm text-gray-600 cursor-pointer">
+                Active player
+              </label>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Season breakdown */}
