@@ -94,6 +94,7 @@ export interface SeasonStatsDetail {
   goals: number;
   assists: number;
   winRate: number;
+  pointsPercentage: number;
   goalsPerGame: number;
 }
 

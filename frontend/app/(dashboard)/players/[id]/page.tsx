@@ -422,7 +422,7 @@ export default function PlayerProfilePage() {
                   <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">D</th>
                   <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">L</th>
                   <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">Goals</th>
-                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">Win rate</th>
+                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">Pt %</th>
                 </tr>
               </thead>
               <tbody>
@@ -436,10 +436,10 @@ export default function PlayerProfilePage() {
                     <td className="py-3 px-3 text-center text-gray-600">{s.goals}</td>
                     <td className="py-3 px-3 text-center">
                       <span className={`font-bold ${
-                        s.winRate >= 60 ? 'text-green-600' :
-                        s.winRate >= 40 ? 'text-amber-500' : 'text-red-400'
+                        s.pointsPercentage >= 60 ? 'text-green-600' :
+                        s.pointsPercentage >= 40 ? 'text-amber-500' : 'text-red-400'
                       }`}>
-                        {s.winRate}%
+                        {s.pointsPercentage}%
                       </span>
                     </td>
                   </tr>

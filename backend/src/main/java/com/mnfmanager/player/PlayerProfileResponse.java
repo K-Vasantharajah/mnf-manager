@@ -33,6 +33,7 @@ public class PlayerProfileResponse {
         private Integer goals;
         private Integer assists;
         private Double winRate;
+        private Double pointsPercentage;
         private Double goalsPerGame;
     }
 

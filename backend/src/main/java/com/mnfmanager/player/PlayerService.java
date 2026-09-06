@@ -171,6 +171,9 @@ public class PlayerService {
                             Math.round((s.getWins() * 100.0 / s.getMatchesPlayed()) * 10.0) / 10.0;
                     double goalsPerGame = s.getMatchesPlayed() == 0 ? 0.0 :
                             Math.round((s.getGoals() * 1.0 / s.getMatchesPlayed()) * 10.0) / 10.0;
+                    double pointsPercentage = s.getMatchesPlayed() == 0 ? 0.0 :
+                    Math.round(((s.getWins() * 3.0 + s.getDraws()) / (s.getMatchesPlayed() * 3.0)) * 100.0 * 10.0) / 10.0;
+
                     return PlayerProfileResponse.SeasonStatsDetail.builder()
                     .seasonYear(s.getSeasonYear())
                     .matchesPlayed((int) s.getMatchesPlayed())
@@ -180,6 +183,7 @@ public class PlayerService {
                     .goals((int) s.getGoals())
                     .assists((int) s.getAssists())
                     .winRate(winRate)
+                    .pointsPercentage(pointsPercentage)
                     .goalsPerGame(goalsPerGame)
                     .build();
                 })
