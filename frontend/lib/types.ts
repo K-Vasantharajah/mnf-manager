@@ -117,6 +117,7 @@ export interface PlayerProfile {
     totalGoals: number;
     totalAssists: number;
     careerWinRate: number;
+    careerPointsPercentage: number;
     careerGoalsPerGame: number;
   };
 }

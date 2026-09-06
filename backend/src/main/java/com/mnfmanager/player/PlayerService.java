@@ -200,6 +200,8 @@ public class PlayerService {
                 Math.round((totalWins * 100.0 / totalMatches) * 10.0) / 10.0;
         double careerGoalsPerGame = totalMatches == 0 ? 0.0 :
                 Math.round((totalGoals * 1.0 / totalMatches) * 10.0) / 10.0;
+        double careerPointsPercentage = totalMatches == 0 ? 0.0 :
+                Math.round(((totalWins * 3.0 + totalDraws) / (totalMatches * 3.0)) * 100.0 * 10.0) / 10.0;
 
         return PlayerProfileResponse.builder()
                 .id(player.getId())
@@ -220,6 +222,7 @@ public class PlayerService {
                         .totalGoals(totalGoals)
                         .totalAssists(totalAssists)
                         .careerWinRate(careerWinRate)
+                        .careerPointsPercentage(careerPointsPercentage)
                         .careerGoalsPerGame(careerGoalsPerGame)
                         .build())
                 .build();

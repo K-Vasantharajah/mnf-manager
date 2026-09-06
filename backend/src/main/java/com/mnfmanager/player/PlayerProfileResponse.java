@@ -47,6 +47,7 @@ public class PlayerProfileResponse {
         private Integer totalGoals;
         private Integer totalAssists;
         private Double careerWinRate;
+        private Double careerPointsPercentage;
         private Double careerGoalsPerGame;
     }
 }

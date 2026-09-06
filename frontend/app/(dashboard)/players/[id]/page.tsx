@@ -119,9 +119,9 @@ export default function PlayerProfilePage() {
     );
   }
 
-  const winRateColor = profile.careerStats.careerWinRate >= 60
+  const pointPercentageColor = profile.careerStats.careerPointsPercentage >= 60
     ? 'text-green-600'
-    : profile.careerStats.careerWinRate >= 40
+    : profile.careerStats.careerPointsPercentage >= 40
     ? 'text-amber-500'
     : 'text-red-400';
 
@@ -142,7 +142,6 @@ export default function PlayerProfilePage() {
           </div>
           <div className="flex-1">
             <h1 className="text-2xl font-black">{profile.name}</h1>
-            <p className="text-green-300 text-sm mt-1">{profile.notes}</p>
             <div className="flex items-center gap-3 mt-2">
               <span className="bg-green-800 text-green-200 text-xs px-2 py-1 rounded-lg">
                 {profile.strongFoot} foot
@@ -157,10 +156,10 @@ export default function PlayerProfilePage() {
             </div>
           </div>
           <div className="text-right">
-            <div className={`text-4xl font-black ${winRateColor}`}>
-              {profile.careerStats.careerWinRate}%
+            <div className={`text-4xl font-black ${pointPercentageColor}`}>
+              {profile.careerStats.careerPointsPercentage}%
             </div>
-            <div className="text-green-300 text-xs">career win rate</div>
+            <div className="text-green-300 text-xs">career pt %</div>
           </div>
         </div>
       </div>
@@ -172,8 +171,8 @@ export default function PlayerProfilePage() {
           <div className="grid grid-cols-2 gap-3">
             <StatCard label="Matches" value={profile.careerStats.totalMatches} />
             <StatCard
-              label="Win rate"
-              value={`${profile.careerStats.careerWinRate}%`}
+              label="Pt %"
+              value={`${profile.careerStats.careerPointsPercentage}%`}
               sub={`${profile.careerStats.totalWins}W ${profile.careerStats.totalDraws}D ${profile.careerStats.totalLosses}L`}
             />
             <StatCard label="Goals" value={profile.careerStats.totalGoals} />
