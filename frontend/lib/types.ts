@@ -66,6 +66,11 @@ export interface GoalScorerDetail {
   team: 'A' | 'B';
 }
 
+export interface TeamPlayer {
+  playerId: number;
+  playerName: string;
+}
+
 export interface MatchDetail {
   id: number;
   matchDate: string;
@@ -80,8 +85,8 @@ export interface MatchDetail {
   winnerId: number | null;
   isDraw: boolean;
   durationMins: number;
-  teamAPlayerIds: number[];
-  teamBPlayerIds: number[];
+  teamAPlayers: TeamPlayer[];
+  teamBPlayers: TeamPlayer[];
   goalScorers: GoalScorerDetail[];
 }
 
@@ -123,6 +128,7 @@ export interface PlayerProfile {
 }
 
 export interface CaptainMatchResult {
+  matchId: number;
   gameWeek: string;
   seasonYear: number;
   opponentName: string;

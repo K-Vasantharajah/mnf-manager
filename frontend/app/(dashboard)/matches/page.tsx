@@ -1,12 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import MatchDetailModal from './MatchDetailModal';
+
 import { useMatches } from '@/lib/hooks';
 import Link from 'next/link';
 
 export default function MatchesPage() {
   const { data: matches, isLoading, isError } = useMatches();
   const [seasonFilter, setSeasonFilter] = useState<number | 'all'>('all');
+  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
 
   if (isLoading) {
     return (
@@ -32,6 +35,12 @@ export default function MatchesPage() {
 
   return (
     <div>
+      {selectedMatchId && (
+        <MatchDetailModal
+          matchId={selectedMatchId}
+          onClose={() => setSelectedMatchId(null)}
+        />
+      )}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Match history</h1>
@@ -97,7 +106,8 @@ export default function MatchesPage() {
           return (
             <div
               key={match.id}
-              className="bg-white rounded-xl border border-gray-100 p-5"
+              className="bg-white rounded-xl border border-gray-100 p-5 cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => setSelectedMatchId(match.id)}
             >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs text-gray-400">
@@ -187,6 +197,7 @@ export default function MatchesPage() {
                   <Link
                     href={`/matches/${match.id}/edit`}
                     className="text-xs text-green-600 hover:text-green-700 font-medium"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     Edit match
                   </Link>

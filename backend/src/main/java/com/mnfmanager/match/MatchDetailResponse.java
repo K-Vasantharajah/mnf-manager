@@ -23,9 +23,16 @@ public class MatchDetailResponse {
     private Long winnerId;
     private Boolean isDraw;
     private Short durationMins;
-    private List<Long> teamAPlayerIds;
-    private List<Long> teamBPlayerIds;
+    private List<TeamPlayer> teamAPlayers;
+    private List<TeamPlayer> teamBPlayers;
     private List<GoalScorerDetail> goalScorers;
+
+    @Data
+    @Builder
+    public static class TeamPlayer {
+        private Long playerId;
+        private String playerName;
+    }
 
     @Data
     @Builder

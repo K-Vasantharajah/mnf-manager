@@ -2,20 +2,24 @@
 
 import { useState } from 'react';
 import { useCaptainStats } from '@/lib/hooks';
-import { CaptainStats, CaptainMatchResult } from '@/lib/types';
+import { CaptainStats } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import MatchDetailModal from '../matches/MatchDetailModal';
+
 
 function MatchHistoryModal({
   captain,
   onClose,
+  onMatchClick,
 }: {
   captain: CaptainStats;
   onClose: () => void;
+  onMatchClick: (matchId: number) => void;
 }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl w-full max-w-md max-h-[80vh] flex flex-col">
-        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
           <div>
             <h2 className="font-semibold text-gray-900">{captain.name}&apos;s match history</h2>
             <p className="text-xs text-gray-400 mt-0.5">{captain.matchesCaptained} matches as captain</p>
@@ -31,7 +35,11 @@ function MatchHistoryModal({
           {captain.matchHistory.map((match, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0"
+              className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors"
+              onClick={() => {
+                onClose();
+                onMatchClick(match.matchId);
+              }}
             >
               <span className="text-xs text-gray-400 min-w-10">
                 {match.gameWeek || `S${match.seasonYear}`}
@@ -60,6 +68,7 @@ export default function CaptainsPage() {
   const { data: captains, isLoading, isError } = useCaptainStats(seasonYear);
   const [selectedCaptain, setSelectedCaptain] = useState<CaptainStats | null>(null);
   const router = useRouter();
+  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
 
   if (isLoading) {
     return (
@@ -79,10 +88,21 @@ export default function CaptainsPage() {
 
   return (
     <div>
+      {selectedMatchId && (
+        <MatchDetailModal
+          matchId={selectedMatchId}
+          onClose={() => setSelectedMatchId(null)}
+        />
+      )}
+    
       {selectedCaptain && (
         <MatchHistoryModal
           captain={selectedCaptain}
           onClose={() => setSelectedCaptain(null)}
+          onMatchClick={(matchId) => {
+            setSelectedCaptain(null);
+            setSelectedMatchId(matchId);
+          }}
         />
       )}
 

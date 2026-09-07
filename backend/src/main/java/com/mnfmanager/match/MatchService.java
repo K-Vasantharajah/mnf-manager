@@ -303,6 +303,22 @@ public class MatchService {
                         .build())
                 .toList();
 
+        List<MatchDetailResponse.TeamPlayer> teamAPlayers = match.getMatchPlayers().stream()
+                .filter(mp -> mp.getTeam() == 'A')
+                .map(mp -> MatchDetailResponse.TeamPlayer.builder()
+                        .playerId(mp.getPlayer().getId())
+                        .playerName(mp.getPlayer().getName())
+                        .build())
+                .toList();
+
+        List<MatchDetailResponse.TeamPlayer> teamBPlayers = match.getMatchPlayers().stream()
+                .filter(mp -> mp.getTeam() == 'B')
+                .map(mp -> MatchDetailResponse.TeamPlayer.builder()
+                        .playerId(mp.getPlayer().getId())
+                        .playerName(mp.getPlayer().getName())
+                        .build())
+                .toList();
+
         return MatchDetailResponse.builder()
                 .id(match.getId())
                 .matchDate(match.getMatchDate())
@@ -317,8 +333,8 @@ public class MatchService {
                 .winnerId(match.getWinner() != null ? match.getWinner().getId() : null)
                 .isDraw(match.getIsDraw())
                 .durationMins(match.getDurationMins())
-                .teamAPlayerIds(teamAPlayerIds)
-                .teamBPlayerIds(teamBPlayerIds)
+                .teamAPlayers(teamAPlayers)
+                .teamBPlayers(teamBPlayers)
                 .goalScorers(goalScorers)
                 .build();
     }
@@ -447,6 +463,7 @@ public class MatchService {
                                         m.getWinner() != null && m.getWinner().getId().equals(captainId) ? "WIN" : "LOSS";
 
                                 return CaptainStatsResponse.CaptainMatchResult.builder()
+                                        .matchId(m.getId())
                                         .gameWeek(m.getGameWeek())
                                         .seasonYear((int) m.getSeasonYear())
                                         .opponentName(opponent)
@@ -487,9 +504,7 @@ public class MatchService {
 
         int currentSeasonYear = LocalDate.now().getYear();
 
-        List<Match> currentSeasonMatches = allMatchesSorted.stream()
-                .filter(m -> m.getSeasonYear() == currentSeasonYear)
-                .toList();
+
 
         // Current winning captain (most recent non-draw match winner)
         Match mostRecentMatch = allMatches.stream().findFirst().orElse(null);

@@ -109,10 +109,14 @@ public class MatchDetailIntegrationTest extends BaseIntegrationTest {
     void shouldReturnCorrectTeamPlayers() {
         MatchDetailResponse detail = matchService.getMatchDetail(createdMatch.getId());
 
-        assertThat(detail.getTeamAPlayerIds()).hasSize(2);
-        assertThat(detail.getTeamAPlayerIds()).contains(captainA.getId(), player1.getId());
-        assertThat(detail.getTeamBPlayerIds()).hasSize(2);
-        assertThat(detail.getTeamBPlayerIds()).contains(captainB.getId(), player2.getId());
+        assertThat(detail.getTeamAPlayers()).hasSize(2);
+        assertThat(detail.getTeamAPlayers())
+                .extracting(MatchDetailResponse.TeamPlayer::getPlayerId)
+                .contains(captainA.getId(), player1.getId());
+        assertThat(detail.getTeamBPlayers()).hasSize(2);
+        assertThat(detail.getTeamBPlayers())
+                .extracting(MatchDetailResponse.TeamPlayer::getPlayerId)
+                .contains(captainB.getId(), player2.getId());
     }
 
     @Test

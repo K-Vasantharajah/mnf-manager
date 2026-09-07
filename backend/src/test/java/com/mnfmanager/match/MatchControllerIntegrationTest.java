@@ -150,8 +150,8 @@ public class MatchControllerIntegrationTest extends BaseIntegrationTest {
                 .andExpect(jsonPath("$.id").value(matchId))
                 .andExpect(jsonPath("$.captainAName").value("Match Controller Captain A"))
                 .andExpect(jsonPath("$.captainBName").value("Match Controller Captain B"))
-                .andExpect(jsonPath("$.teamAPlayerIds").isArray())
-                .andExpect(jsonPath("$.teamBPlayerIds").isArray())
+                .andExpect(jsonPath("$.teamAPlayers").isArray())
+                .andExpect(jsonPath("$.teamBPlayers").isArray())
                 .andExpect(jsonPath("$.goalScorers").isArray());
     }
 

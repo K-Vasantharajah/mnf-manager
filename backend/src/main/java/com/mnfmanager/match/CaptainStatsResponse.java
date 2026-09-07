@@ -23,6 +23,7 @@ public class CaptainStatsResponse {
     @Data
     @Builder
     public static class CaptainMatchResult {
+        private Long matchId;
         private String gameWeek;
         private Integer seasonYear;
         private String opponentName;
