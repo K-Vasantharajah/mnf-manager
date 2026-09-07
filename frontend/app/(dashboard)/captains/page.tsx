@@ -69,6 +69,7 @@ export default function CaptainsPage() {
   const [selectedCaptain, setSelectedCaptain] = useState<CaptainStats | null>(null);
   const router = useRouter();
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
+  const [previousCaptain, setPreviousCaptain] = useState<CaptainStats | null>(null);
 
   if (isLoading) {
     return (
@@ -91,20 +92,29 @@ export default function CaptainsPage() {
       {selectedMatchId && (
         <MatchDetailModal
           matchId={selectedMatchId}
-          onClose={() => setSelectedMatchId(null)}
+          onClose={() => {
+            setSelectedMatchId(null);
+            setPreviousCaptain(null);
+          }}
+          onBack={previousCaptain ? () => {
+            setSelectedMatchId(null);
+            setSelectedCaptain(previousCaptain);
+            setPreviousCaptain(null);
+          } : undefined}
         />
       )}
     
       {selectedCaptain && (
-        <MatchHistoryModal
-          captain={selectedCaptain}
-          onClose={() => setSelectedCaptain(null)}
-          onMatchClick={(matchId) => {
-            setSelectedCaptain(null);
-            setSelectedMatchId(matchId);
-          }}
-        />
-      )}
+      <MatchHistoryModal
+        captain={selectedCaptain}
+        onClose={() => setSelectedCaptain(null)}
+        onMatchClick={(matchId) => {
+          setPreviousCaptain(selectedCaptain);
+          setSelectedCaptain(null);
+          setSelectedMatchId(matchId);
+        }}
+      />
+    )}
 
       <div className="flex items-center justify-between mb-6">
         <div>

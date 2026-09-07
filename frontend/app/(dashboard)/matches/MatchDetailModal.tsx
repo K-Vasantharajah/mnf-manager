@@ -5,32 +5,44 @@ import { useMatchDetail } from '@/lib/hooks';
 export default function MatchDetailModal({
   matchId,
   onClose,
+  onBack,
 }: {
   matchId: number;
   onClose: () => void;
+  onBack?: () => void;
 }) {
   const { data: match, isLoading } = useMatchDetail(matchId);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl w-full max-w-lg max-h-[80vh] flex flex-col">
-        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
-          <div>
-            <h2 className="font-semibold text-gray-900">
-              {match ? `${match.gameWeek || ''} · Season ${match.seasonYear}` : 'Match details'}
-            </h2>
-            {match && (
-              <p className="text-xs text-gray-400 mt-0.5">
-                {match.captainAName} vs {match.captainBName}
-              </p>
-            )}
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-lg font-bold"
-          >
-            ✕
-          </button>
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+            <div className="flex items-center gap-3">
+                {onBack && (
+                <button
+                    onClick={onBack}
+                      className="text-gray-700 hover:text-gray-900 text-sm font-medium flex items-center gap-1"
+                >
+                    ← Back
+                </button>
+                )}
+                <div>
+                <h2 className="font-semibold text-gray-900">
+                    {match ? `${match.gameWeek || ''} · Season ${match.seasonYear}` : 'Match details'}
+                </h2>
+                {match && (
+                    <p className="text-xs text-gray-400 mt-0.5">
+                    {match.captainAName} vs {match.captainBName}
+                    </p>
+                )}
+                </div>
+            </div>
+            <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-600 text-lg font-bold"
+            >
+                ✕
+            </button>
         </div>
 
         {isLoading ? (
@@ -90,7 +102,7 @@ export default function MatchDetailModal({
                 {/* Team A */}
                 <div>
                 <h3 className="font-semibold text-gray-900 mb-3 text-sm">
-                    {match.captainAName}&apos;s team
+                    Team A
                 </h3>
                 <div className="space-y-1.5">
                     {match.teamAPlayers.map(player => {
@@ -117,7 +129,7 @@ export default function MatchDetailModal({
                 {/* Team B */}
                 <div>
                 <h3 className="font-semibold text-gray-900 mb-3 text-sm">
-                    {match.captainBName}&apos;s team
+                    Team B
                 </h3>
                 <div className="space-y-1.5">
                     {match.teamBPlayers.map(player => {
