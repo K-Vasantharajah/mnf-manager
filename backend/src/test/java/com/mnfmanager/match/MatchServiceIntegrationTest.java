@@ -234,4 +234,34 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
         assertThat(stats1.getGoals()).isEqualTo((short) 2);
         assertThat(stats3.getGoals()).isEqualTo((short) 3);
     }
+
+    @Test
+    void shouldReturnCaptainStatsWithMatchHistory() {
+        CreateMatchRequest request = new CreateMatchRequest();
+        request.setMatchDate(LocalDate.of(2026, 8, 25));
+        request.setSeasonYear((short) 2026);
+        request.setCaptainAId(captainA.getId());
+        request.setCaptainBId(captainB.getId());
+        request.setScoreA((short) 3);
+        request.setScoreB((short) 1);
+        request.setTeamAPlayerIds(List.of(captainA.getId(), player1.getId()));
+        request.setTeamBPlayerIds(List.of(captainB.getId(), player2.getId()));
+        request.setGoalScorers(List.of());
+        
+        matchService.createMatch(request);
+
+        List<com.mnfmanager.match.CaptainStatsResponse> stats = 
+                matchService.getCaptainStats(2026);
+
+        com.mnfmanager.match.CaptainStatsResponse captainAStats = stats.stream()
+                .filter(s -> s.getPlayerId().equals(captainA.getId()))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(captainAStats.getMatchHistory()).hasSize(1);
+        assertThat(captainAStats.getMatchHistory().get(0).getResult()).isEqualTo("WIN");
+        assertThat(captainAStats.getMatchHistory().get(0).getOpponentName()).isEqualTo("Captain B");
+        assertThat(captainAStats.getMatchHistory().get(0).getScoreFor()).isEqualTo(3);
+        assertThat(captainAStats.getMatchHistory().get(0).getScoreAgainst()).isEqualTo(1);
+        }
 }
