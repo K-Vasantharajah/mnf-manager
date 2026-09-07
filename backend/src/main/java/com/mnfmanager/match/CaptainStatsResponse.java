@@ -15,6 +15,19 @@ public class CaptainStatsResponse {
     private Integer draws;
     private Integer losses;
     private Double winRate;
+    private Double pointsPercentage;
     private List<String> mostPickedPlayers;
     private Integer seasonYear;
+    private List<CaptainMatchResult> matchHistory;
+
+    @Data
+    @Builder
+    public static class CaptainMatchResult {
+        private String gameWeek;
+        private Integer seasonYear;
+        private String opponentName;
+        private Integer scoreFor;
+        private Integer scoreAgainst;
+        private String result;
+    }
 }

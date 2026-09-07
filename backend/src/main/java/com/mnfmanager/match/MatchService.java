@@ -426,6 +426,7 @@ public class MatchService {
                         boolean isCaptainA = m.getCaptainA().getId().equals(captainId);
                         m.getMatchPlayers().stream()
                                 .filter(mp -> isCaptainA ? mp.getTeam() == 'A' : mp.getTeam() == 'B')
+                                .filter(mp -> !mp.getPlayer().getId().equals(captainId)) // exclude captain
                                 .forEach(mp -> playerCounts.merge(mp.getPlayer().getName(), 1L, Long::sum));
                     });
 
@@ -435,6 +436,30 @@ public class MatchService {
                             .map(Map.Entry::getKey)
                             .toList();
 
+                    List<CaptainStatsResponse.CaptainMatchResult> matchHistory = captainMatches.stream()
+                            .sorted((a, b) -> Long.compare(b.getId(), a.getId()))
+                            .map(m -> {
+                                boolean isCaptainA = m.getCaptainA().getId().equals(captainId);
+                                String opponent = isCaptainA ? m.getCaptainB().getName() : m.getCaptainA().getName();
+                                int scoreFor = isCaptainA ? m.getScoreA() : m.getScoreB();
+                                int scoreAgainst = isCaptainA ? m.getScoreB() : m.getScoreA();
+                                String result = m.getIsDraw() ? "DRAW" :
+                                        m.getWinner() != null && m.getWinner().getId().equals(captainId) ? "WIN" : "LOSS";
+
+                                return CaptainStatsResponse.CaptainMatchResult.builder()
+                                        .gameWeek(m.getGameWeek())
+                                        .seasonYear((int) m.getSeasonYear())
+                                        .opponentName(opponent)
+                                        .scoreFor(scoreFor)
+                                        .scoreAgainst(scoreAgainst)
+                                        .result(result)
+                                        .build();
+                            })
+                            .toList();
+
+                    double pointsPercentage = captainMatches.isEmpty() ? 0.0 :
+                            Math.round(((wins * 3.0 + draws) / (captainMatches.size() * 3.0)) * 100.0 * 10.0) / 10.0;
+
                     return CaptainStatsResponse.builder()
                             .playerId(captainId)
                             .name(captainName)
@@ -443,8 +468,10 @@ public class MatchService {
                             .draws(draws)
                             .losses(losses)
                             .winRate(winRate)
+                            .pointsPercentage(pointsPercentage)
                             .mostPickedPlayers(mostPicked)
                             .seasonYear(seasonYear)
+                            .matchHistory(matchHistory)
                             .build();
                 })
                 .sorted((a, b) -> Double.compare(b.getWinRate(), a.getWinRate()))

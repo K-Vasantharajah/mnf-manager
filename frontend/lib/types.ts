@@ -122,6 +122,15 @@ export interface PlayerProfile {
   };
 }
 
+export interface CaptainMatchResult {
+  gameWeek: string;
+  seasonYear: number;
+  opponentName: string;
+  scoreFor: number;
+  scoreAgainst: number;
+  result: 'WIN' | 'DRAW' | 'LOSS';
+}
+
 export interface CaptainStats {
   playerId: number;
   name: string;
@@ -130,6 +139,8 @@ export interface CaptainStats {
   draws: number;
   losses: number;
   winRate: number;
+  pointsPercentage: number;
   mostPickedPlayers: string[];
   seasonYear: number | null;
+  matchHistory: CaptainMatchResult[];
 }

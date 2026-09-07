@@ -2,10 +2,64 @@
 
 import { useState } from 'react';
 import { useCaptainStats } from '@/lib/hooks';
+import { CaptainStats, CaptainMatchResult } from '@/lib/types';
+import { useRouter } from 'next/navigation';
+
+function MatchHistoryModal({
+  captain,
+  onClose,
+}: {
+  captain: CaptainStats;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl w-full max-w-md max-h-[80vh] flex flex-col">
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+          <div>
+            <h2 className="font-semibold text-gray-900">{captain.name}&apos;s match history</h2>
+            <p className="text-xs text-gray-400 mt-0.5">{captain.matchesCaptained} matches as captain</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-lg font-bold"
+          >
+            ✕
+          </button>
+        </div>
+        <div className="overflow-y-auto flex-1">
+          {captain.matchHistory.map((match, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0"
+            >
+              <span className="text-xs text-gray-400 min-w-10">
+                {match.gameWeek || `S${match.seasonYear}`}
+              </span>
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full min-w-10 text-center ${
+                match.result === 'WIN' ? 'bg-green-100 text-green-700' :
+                match.result === 'DRAW' ? 'bg-amber-100 text-amber-700' :
+                'bg-red-100 text-red-500'
+              }`}>
+                {match.result}
+              </span>
+              <span className="text-sm flex-1 text-gray-600">vs {match.opponentName}</span>
+              <span className="text-sm font-bold text-gray-900">
+                {match.scoreFor} — {match.scoreAgainst}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function CaptainsPage() {
   const [seasonYear, setSeasonYear] = useState<number | undefined>(2026);
   const { data: captains, isLoading, isError } = useCaptainStats(seasonYear);
+  const [selectedCaptain, setSelectedCaptain] = useState<CaptainStats | null>(null);
+  const router = useRouter();
 
   if (isLoading) {
     return (
@@ -25,6 +79,13 @@ export default function CaptainsPage() {
 
   return (
     <div>
+      {selectedCaptain && (
+        <MatchHistoryModal
+          captain={selectedCaptain}
+          onClose={() => setSelectedCaptain(null)}
+        />
+      )}
+
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Captains</h1>
@@ -73,11 +134,17 @@ export default function CaptainsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {captains?.map((captain, index) => {
-            const winRateColor = captain.winRate >= 60
+            const ptColor = captain.pointsPercentage >= 60
               ? 'text-green-600'
-              : captain.winRate >= 40
+              : captain.pointsPercentage >= 40
               ? 'text-amber-500'
               : 'text-red-400';
+
+            const barColor = captain.pointsPercentage >= 60
+              ? 'bg-green-500'
+              : captain.pointsPercentage >= 40
+              ? 'bg-amber-400'
+              : 'bg-red-400';
 
             const medal = index === 0 ? '🥇'
               : index === 1 ? '🥈'
@@ -87,11 +154,18 @@ export default function CaptainsPage() {
             return (
               <div
                 key={captain.playerId}
-                className="bg-white rounded-xl border border-gray-100 overflow-hidden"
+                className="bg-white rounded-xl border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                onClick={() => setSelectedCaptain(captain)}
               >
                 {/* Header */}
                 <div className="bg-green-900 px-6 py-4 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white text-lg font-black flex-shrink-0">
+                  <div
+                    className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white text-lg font-black flex-shrink-0 cursor-pointer hover:bg-green-400 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/players/${captain.playerId}`);
+                    }}
+                  >
                     {captain.name.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1">
@@ -104,10 +178,10 @@ export default function CaptainsPage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <div className={`text-3xl font-black ${winRateColor}`}>
-                      {captain.winRate}%
+                    <div className={`text-3xl font-black ${ptColor}`}>
+                      {captain.pointsPercentage}
                     </div>
-                    <div className="text-green-300 text-xs">win rate</div>
+                    <div className="text-green-300 text-xs">Pt %</div>
                   </div>
                 </div>
 
@@ -129,27 +203,24 @@ export default function CaptainsPage() {
                   </div>
                 </div>
 
-                {/* Win rate bar */}
+                {/* Pt% bar */}
                 <div className="px-6 py-3 border-b border-gray-50">
                   <div className="flex items-center gap-3">
                     <div className="flex-1 bg-gray-100 rounded-full h-2">
                       <div
-                        className={`h-2 rounded-full ${
-                          captain.winRate >= 60 ? 'bg-green-500' :
-                          captain.winRate >= 40 ? 'bg-amber-400' : 'bg-red-400'
-                        }`}
-                        style={{ width: `${captain.winRate}%` }}
+                        className={`h-2 rounded-full ${barColor}`}
+                        style={{ width: `${captain.pointsPercentage}%` }}
                       />
                     </div>
                     <span className="text-sm font-bold text-gray-600">
-                      {captain.winRate}%
+                      {captain.pointsPercentage}%
                     </span>
                   </div>
                 </div>
 
-                {/* Most picked players */}
+                {/* Most picked */}
                 <div className="px-6 py-4">
-                  <div className="text-xs text-gray-400 uppercase tracking-wide mb-3">
+                  <div className="text-xs text-gray-500 uppercase tracking-wide mb-3">
                     Most picked players
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -168,6 +239,9 @@ export default function CaptainsPage() {
                       </span>
                     ))}
                   </div>
+                  <p className="text-xs text-gray-400 mt-3">
+                    Click card to view match history
+                  </p>
                 </div>
               </div>
             );
