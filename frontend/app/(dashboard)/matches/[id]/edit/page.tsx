@@ -41,8 +41,8 @@ export default function EditMatchPage() {
   setCaptainBId(match.captainBId);
   setScoreA(match.scoreA);
   setScoreB(match.scoreB);
-  setTeamAPlayerIds(match.teamAPlayerIds || []);
-  setTeamBPlayerIds(match.teamBPlayerIds || []);
+  setTeamAPlayerIds(match.teamAPlayers?.map(p => p.playerId) || []);
+  setTeamBPlayerIds(match.teamBPlayers?.map(p => p.playerId) || []);
   setGoalScorers(
     (match.goalScorers || []).map((gs) => ({
       playerId: gs.playerId,
