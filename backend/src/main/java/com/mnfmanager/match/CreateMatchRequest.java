@@ -41,5 +41,6 @@ public class CreateMatchRequest {
         private Long playerId;
         private Short goals;
         private Character team;
+        private Boolean isOwnGoal = false;
     }
 }

@@ -1,0 +1,1 @@
+ALTER TABLE goal_scorers ADD COLUMN is_own_goal BOOLEAN NOT NULL DEFAULT false;

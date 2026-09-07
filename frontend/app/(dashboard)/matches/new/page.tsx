@@ -10,6 +10,7 @@ interface GoalScorerEntry {
   playerId: number;
   goals: number;
   team: 'A' | 'B';
+  isOwnGoal: boolean;
 }
 
 export default function NewMatchPage() {
@@ -76,7 +77,13 @@ export default function NewMatchPage() {
   function addGoalScorer(playerId: number, team: 'A' | 'B') {
     const existing = goalScorers.find((g) => g.playerId === playerId);
     if (existing) return;
-    setGoalScorers((prev) => [...prev, { playerId, goals: 1, team }]);
+      setGoalScorers((prev) => [...prev, { playerId, goals: 1, team, isOwnGoal: false }]);
+  }
+
+  function toggleOwnGoal(playerId: number) {
+    setGoalScorers((prev) =>
+      prev.map((g) => (g.playerId === playerId ? { ...g, isOwnGoal: !g.isOwnGoal } : g))
+    );
   }
 
   function updateGoals(playerId: number, goals: number) {
@@ -116,7 +123,12 @@ export default function NewMatchPage() {
         scoreB,
         teamAPlayerIds,
         teamBPlayerIds,
-        goalScorers,
+        goalScorers: goalScorers.map(gs => ({
+          playerId: gs.playerId,
+          goals: gs.goals,
+          team: gs.team,
+          isOwnGoal: gs.isOwnGoal,
+        })),
       });
       await queryClient.invalidateQueries({ queryKey: ['matches'] });
       router.push('/matches');
@@ -331,7 +343,10 @@ export default function NewMatchPage() {
         {goalScorers.length > 0 && (
           <div className="mb-4 space-y-2">
             {goalScorers.map((gs) => (
-              <div key={gs.playerId} className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+              <div
+                key={gs.playerId}
+                className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2"
+              >
                 <span className="text-sm font-semibold text-gray-900 flex-1">
                   {getPlayerName(gs.playerId)}
                   <span className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full ${
@@ -339,7 +354,22 @@ export default function NewMatchPage() {
                   }`}>
                     Team {gs.team}
                   </span>
+                  {gs.isOwnGoal && (
+                    <span className="ml-2 text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                      OG
+                    </span>
+                  )}
                 </span>
+                <button
+                  onClick={() => toggleOwnGoal(gs.playerId)}
+                  className={`text-xs px-2 py-1 rounded-lg border font-medium transition-colors ${
+                    gs.isOwnGoal
+                      ? 'bg-red-100 text-red-700 border-red-200'
+                      : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
+                  }`}
+                >
+                  OG
+                </button>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => updateGoals(gs.playerId, Math.max(1, gs.goals - 1))}
@@ -347,7 +377,9 @@ export default function NewMatchPage() {
                   >
                     −
                   </button>
-                  <span className="text-sm font-bold text-gray-900 min-w-4 text-center">{gs.goals}</span>
+                  <span className="text-sm font-bold text-gray-900 min-w-4 text-center">
+                    {gs.goals}
+                  </span>
                   <button
                     onClick={() => updateGoals(gs.playerId, gs.goals + 1)}
                     className="w-7 h-7 rounded bg-gray-200 text-gray-800 text-sm font-bold hover:bg-gray-300 flex items-center justify-center"

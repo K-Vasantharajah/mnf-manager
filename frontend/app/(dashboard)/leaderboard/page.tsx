@@ -202,7 +202,7 @@ function LeaderboardModal({
           </button>
         </div>
         <div className="overflow-y-auto flex-1">
-          {sorted.map((entry, index) => {
+          {sorted.map((entry) => {
             const currentValue = data.getValue(entry);
             const rank = valuesWithCounts.filter(e => e.value > currentValue).length + 1;
             const isTied = valuesWithCounts.filter(e => e.value === currentValue).length > 1;

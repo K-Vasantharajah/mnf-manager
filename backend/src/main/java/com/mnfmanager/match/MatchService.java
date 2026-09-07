@@ -117,6 +117,7 @@ public class MatchService {
                 goalScorer.setPlayer(scorer);
                 goalScorer.setGoals(gs.getGoals());
                 goalScorer.setTeam(gs.getTeam());
+                goalScorer.setIsOwnGoal(gs.getIsOwnGoal() != null ? gs.getIsOwnGoal() : false);
                 match.getGoalScorers().add(goalScorer);
             }
         }
@@ -223,6 +224,7 @@ public class MatchService {
                 goalScorer.setPlayer(scorer);
                 goalScorer.setGoals(gs.getGoals());
                 goalScorer.setTeam(gs.getTeam());
+                goalScorer.setIsOwnGoal(gs.getIsOwnGoal() != null ? gs.getIsOwnGoal() : false);
                 match.getGoalScorers().add(goalScorer);
             }
         }
@@ -300,6 +302,7 @@ public class MatchService {
                         .playerName(gs.getPlayer().getName())
                         .goals(gs.getGoals())
                         .team(gs.getTeam())
+                        .isOwnGoal(gs.getIsOwnGoal())
                         .build())
                 .toList();
 
@@ -385,6 +388,7 @@ public class MatchService {
         });
 
         match.getGoalScorers().forEach(gs -> {
+            if (Boolean.TRUE.equals(gs.getIsOwnGoal())) return; // skip own goals
             Player scorer = gs.getPlayer();
             Short seasonYear = match.getSeasonYear();
 

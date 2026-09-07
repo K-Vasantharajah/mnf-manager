@@ -64,6 +64,7 @@ export interface GoalScorerDetail {
   playerName: string;
   goals: number;
   team: 'A' | 'B';
+  isOwnGoal: boolean;
 }
 
 export interface TeamPlayer {

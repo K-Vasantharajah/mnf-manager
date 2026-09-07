@@ -41,5 +41,6 @@ public class MatchDetailResponse {
         private String playerName;
         private Short goals;
         private Character team;
+        private Boolean isOwnGoal;
     }
 }

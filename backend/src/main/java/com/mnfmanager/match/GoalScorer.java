@@ -40,4 +40,8 @@ public class GoalScorer {
 
     @Column(name = "team", nullable = false)
     private Character team;
+
+    @Column(name = "is_own_goal", nullable = false)
+    @Builder.Default
+    private Boolean isOwnGoal = false;
 }
