@@ -61,16 +61,22 @@ export default function NewMatchPage() {
 
   function toggleTeamPlayer(playerId: number, team: 'A' | 'B') {
     if (team === 'A') {
-      setTeamAPlayerIds((prev) =>
-        prev.includes(playerId)
+      setTeamAPlayerIds((prev) => {
+        if (!prev.includes(playerId) && prev.length >= 9) return prev;
+        return prev.includes(playerId)
           ? prev.filter((id) => id !== playerId)
           : [...prev, playerId]
+      }
+        
+        
       );
     } else {
-      setTeamBPlayerIds((prev) =>
-        prev.includes(playerId)
+      setTeamBPlayerIds((prev) => {
+        if (!prev.includes(playerId) && prev.length >= 9) return prev;
+        return prev.includes(playerId)
           ? prev.filter((id) => id !== playerId)
           : [...prev, playerId]
+        }
       );
     }
   }
@@ -275,6 +281,7 @@ export default function NewMatchPage() {
           const captainId = team === 'A' ? captainAId : captainBId;
           const captainName = captainId ? getPlayerName(Number(captainId)) : `Team ${team}`;
           const teamPlayerIds = team === 'A' ? teamAPlayerIds : teamBPlayerIds;
+          const teamFull = teamPlayerIds.length >= 9;
 
           return (
             <div key={team} className="bg-white rounded-xl border border-gray-100 p-5">
@@ -282,7 +289,7 @@ export default function NewMatchPage() {
                 {captainName}&apos;s team
               </h2>
               <p className="text-xs text-gray-400 mb-3">
-                {teamPlayerIds.length} players selected
+                {teamPlayerIds.length}/9 players selected
               </p>
               <div className="space-y-1 max-h-64 overflow-y-auto">
                 {activePlayers.map((player) => {
@@ -300,7 +307,7 @@ export default function NewMatchPage() {
                         const isCaptain = player.id === Number(captainAId) || player.id === Number(captainBId);
                         if (!isCaptain && !onOtherTeam) toggleTeamPlayer(player.id, team);
                       }}
-                      disabled={onOtherTeam || (team === 'A' && player.id === Number(captainAId)) || (team === 'B' && player.id === Number(captainBId))}
+                      disabled={onOtherTeam || (team === 'A' && player.id === Number(captainAId)) || (team === 'B' && player.id === Number(captainBId)) || (teamFull && !selected)}
                       className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
                         selected
                           ? 'bg-green-50 text-green-700 font-medium'
@@ -308,6 +315,8 @@ export default function NewMatchPage() {
                           ? 'opacity-30 cursor-not-allowed text-gray-400'
                           : (team === 'A' && player.id === Number(captainAId)) || (team === 'B' && player.id === Number(captainBId))
                           ? 'bg-green-50 text-green-700 font-medium cursor-not-allowed'
+                          : teamFull && !selected
+                          ? 'opacity-30 cursor-not-allowed text-gray-400'
                           : 'hover:bg-gray-50 text-gray-700'
                       }`}
                     >
