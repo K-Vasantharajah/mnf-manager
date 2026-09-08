@@ -71,10 +71,10 @@ export default function EditMatchPage() {
     }
   }
 
-  function addGoalScorer(playerId: number, team: 'A' | 'B') {
-    const existing = goalScorers.find((g) => g.playerId === playerId);
+  function addGoalScorer(playerId: number, team: 'A' | 'B', isOwnGoal: boolean = false) {
+    const existing = goalScorers.find((g) => g.playerId === playerId && g.isOwnGoal === isOwnGoal);
     if (existing) return;
-    setGoalScorers((prev) => [...prev, { playerId, goals: 1, team }]);
+    setGoalScorers((prev) => [...prev, { playerId, goals: 1, team, isOwnGoal }]);
   }
 
   function updateGoals(playerId: number, goals: number) {

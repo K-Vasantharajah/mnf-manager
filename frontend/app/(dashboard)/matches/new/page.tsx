@@ -74,10 +74,10 @@ export default function NewMatchPage() {
     }
   }
 
-  function addGoalScorer(playerId: number, team: 'A' | 'B') {
-    const existing = goalScorers.find((g) => g.playerId === playerId);
+  function addGoalScorer(playerId: number, team: 'A' | 'B', isOwnGoal: boolean = false) {
+    const existing = goalScorers.find((g) => g.playerId === playerId && g.isOwnGoal === isOwnGoal);
     if (existing) return;
-      setGoalScorers((prev) => [...prev, { playerId, goals: 1, team, isOwnGoal: false }]);
+    setGoalScorers((prev) => [...prev, { playerId, goals: 1, team, isOwnGoal }]);
   }
 
   function toggleOwnGoal(playerId: number) {
@@ -86,14 +86,14 @@ export default function NewMatchPage() {
     );
   }
 
-  function updateGoals(playerId: number, goals: number) {
+  function updateGoals(index: number, goals: number) {
     setGoalScorers((prev) =>
-      prev.map((g) => (g.playerId === playerId ? { ...g, goals } : g))
+      prev.map((g, i) => (i === index ? { ...g, goals } : g))
     );
   }
 
-  function removeGoalScorer(playerId: number) {
-    setGoalScorers((prev) => prev.filter((g) => g.playerId !== playerId));
+  function removeGoalScorer(index: number) {
+    setGoalScorers((prev) => prev.filter((_, i) => i !== index));
   }
 
   function getPlayerName(id: number) {
@@ -339,12 +339,11 @@ export default function NewMatchPage() {
       {/* Goal scorers */}
       <div className="bg-white rounded-xl border border-gray-100 p-5 mb-4">
         <h2 className="font-semibold text-gray-900 mb-4">Goal scorers</h2>
-
         {goalScorers.length > 0 && (
           <div className="mb-4 space-y-2">
-            {goalScorers.map((gs) => (
+            {goalScorers.map((gs, index) => (
               <div
-                key={gs.playerId}
+                key={`${gs.playerId}-${gs.isOwnGoal}-${index}`}
                 className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2"
               >
                 <span className="text-sm font-semibold text-gray-900 flex-1">
@@ -360,19 +359,9 @@ export default function NewMatchPage() {
                     </span>
                   )}
                 </span>
-                <button
-                  onClick={() => toggleOwnGoal(gs.playerId)}
-                  className={`text-xs px-2 py-1 rounded-lg border font-medium transition-colors ${
-                    gs.isOwnGoal
-                      ? 'bg-red-100 text-red-700 border-red-200'
-                      : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
-                  }`}
-                >
-                  OG
-                </button>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => updateGoals(gs.playerId, Math.max(1, gs.goals - 1))}
+                    onClick={() => updateGoals(index, Math.max(1, gs.goals - 1))}
                     className="w-7 h-7 rounded bg-gray-200 text-gray-800 text-sm font-bold hover:bg-gray-300 flex items-center justify-center"
                   >
                     −
@@ -381,14 +370,14 @@ export default function NewMatchPage() {
                     {gs.goals}
                   </span>
                   <button
-                    onClick={() => updateGoals(gs.playerId, gs.goals + 1)}
+                    onClick={() => updateGoals(index, gs.goals + 1)}
                     className="w-7 h-7 rounded bg-gray-200 text-gray-800 text-sm font-bold hover:bg-gray-300 flex items-center justify-center"
                   >
                     +
                   </button>
                 </div>
                 <button
-                  onClick={() => removeGoalScorer(gs.playerId)}
+                  onClick={() => removeGoalScorer(index)}
                   className="text-red-500 hover:text-red-700 text-sm ml-2 font-bold"
                 >
                   ✕
@@ -404,7 +393,13 @@ export default function NewMatchPage() {
             const captainId = team === 'A' ? captainAId : captainBId;
             const captainName = captainId ? getPlayerName(Number(captainId)) : `Team ${team}`;
             const availablePlayers = activePlayers.filter(
-              (p) => teamPlayerIds.includes(p.id) && !goalScorers.find((g) => g.playerId === p.id)
+              (p) => {
+                if (!teamPlayerIds.includes(p.id)) return false;
+                const hasRegularGoal = goalScorers.some(g => g.playerId === p.id && !g.isOwnGoal);
+                const hasOwnGoal = goalScorers.some(g => g.playerId === p.id && g.isOwnGoal);
+                // Show player if they're missing either a regular goal or OG entry
+                return !hasRegularGoal || !hasOwnGoal;
+              }
             );
 
             return (
@@ -418,15 +413,35 @@ export default function NewMatchPage() {
                   </p>
                 ) : (
                   <div className="space-y-1">
-                    {availablePlayers.map((p) => (
-                      <button
-                        key={p.id}
-                        onClick={() => addGoalScorer(p.id, team)}
-                        className="w-full text-left text-sm px-3 py-1.5 rounded-lg hover:bg-green-50 hover:text-green-700 text-gray-700 transition-colors"
-                      >
-                        + {p.name}
-                      </button>
-                    ))}
+                    {availablePlayers.map((p) => {
+                      const hasRegularGoal = goalScorers.some(g => g.playerId === p.id && !g.isOwnGoal);
+                      const hasOwnGoal = goalScorers.some(g => g.playerId === p.id && g.isOwnGoal);
+
+                      return (
+                        <div key={p.id} className="flex items-center gap-1">
+                          {!hasRegularGoal && (
+                            <button
+                              onClick={() => addGoalScorer(p.id, team, false)}
+                              className="flex-1 text-left text-sm px-3 py-1.5 rounded-lg hover:bg-green-50 hover:text-green-700 text-gray-700 transition-colors"
+                            >
+                              + {p.name}
+                            </button>
+                          )}
+                          {hasRegularGoal && (
+                            <span className="flex-1 text-sm px-3 py-1.5 text-gray-400">{p.name}</span>
+                          )}
+                          {!hasOwnGoal && (
+                            <button
+                              onClick={() => addGoalScorer(p.id, team, true)}
+                              className="text-xs px-2 py-1.5 rounded-lg hover:bg-red-50 hover:text-red-600 text-gray-400 transition-colors border border-gray-200"
+                              title="Own goal"
+                            >
+                              OG
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>

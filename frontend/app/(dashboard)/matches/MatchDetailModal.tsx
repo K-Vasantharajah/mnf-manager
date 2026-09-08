@@ -111,26 +111,30 @@ export default function MatchDetailModal({
                 <h3 className="font-semibold text-gray-900 mb-3 text-sm">Team A</h3>
                 <div className="space-y-1.5">
                   {match.teamAPlayers.map(player => {
-                    const goalScorer = match.goalScorers.find(
-                      gs => gs.playerId === player.playerId && gs.team === 'A'
+                    const regularGoal = match.goalScorers.find(
+                      gs => gs.playerId === player.playerId && gs.team === 'A' && !gs.isOwnGoal
                     );
-                    const goals = goalScorer?.goals || 0;
-                    const isOwnGoal = goalScorer?.isOwnGoal || false;
+                    const ownGoal = match.goalScorers.find(
+                      gs => gs.playerId === player.playerId && gs.team === 'A' && gs.isOwnGoal
+                    );
 
                     return (
                       <div key={player.playerId} className="flex items-center justify-between text-sm">
-                        <span className={goals > 0 ? 'text-gray-900 font-medium' : 'text-gray-500'}>
+                        <span className={regularGoal || ownGoal ? 'text-gray-900 font-medium' : 'text-gray-500'}>
                           {player.playerId === match.captainAId ? `👑 ${player.playerName}` : player.playerName}
                         </span>
-                        {goals > 0 && (
-                          <span className="text-xs font-bold">
-                            {isOwnGoal ? (
-                              <span className="text-red-500">OG</span>
-                            ) : (
-                              <span className="text-green-600">⚽{goals > 1 ? ` x${goals}` : ''}</span>
-                            )}
-                          </span>
-                        )}
+                        <span className="flex items-center gap-1 text-xs font-bold">
+                          {regularGoal && (
+                            <span className="text-green-600">
+                              ⚽{regularGoal.goals > 1 ? ` x${regularGoal.goals}` : ''}
+                            </span>
+                          )}
+                          {ownGoal && (
+                            <span className="text-red-500">
+                              OG{ownGoal.goals > 1 ? ` x${ownGoal.goals}` : ''}
+                            </span>
+                          )}
+                        </span>
                       </div>
                     );
                   })}
