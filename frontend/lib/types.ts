@@ -151,3 +151,17 @@ export interface CaptainStats {
   seasonYear: number | null;
   matchHistory: CaptainMatchResult[];
 }
+
+export interface PlayerMatchEntry {
+  id: number;
+  gameWeek: string;
+  seasonYear: number;
+  captainAName: string;
+  captainBName: string;
+  scoreA: number;
+  scoreB: number;
+  isDraw: boolean;
+  winnerName: string | null;
+  playerTeam: string;
+  result: 'WIN' | 'DRAW' | 'LOSS';
+}

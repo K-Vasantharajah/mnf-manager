@@ -129,3 +129,28 @@ export function useAllPlayers() {
   });
 }
 
+export interface PlayerMatchEntry {
+  id: number;
+  gameWeek: string;
+  seasonYear: number;
+  captainAName: string;
+  captainBName: string;
+  scoreA: number;
+  scoreB: number;
+  isDraw: boolean;
+  winnerName: string | null;
+  playerTeam: string;
+  result: 'WIN' | 'DRAW' | 'LOSS';
+}
+
+export function usePlayerMatches(playerId: number, seasonYear: number) {
+  return useQuery<PlayerMatchEntry[]>({
+    queryKey: ['players', playerId, 'matches', seasonYear],
+    queryFn: async () => {
+      const { data } = await api.get(`/api/v1/players/${playerId}/matches?seasonYear=${seasonYear}`);
+      return data;
+    },
+    enabled: !!playerId && !!seasonYear,
+  });
+}
+

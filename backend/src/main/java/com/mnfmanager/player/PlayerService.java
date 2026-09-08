@@ -1,6 +1,9 @@
 package com.mnfmanager.player;
 
 import com.mnfmanager.common.exception.ResourceNotFoundException;
+import com.mnfmanager.match.Match;
+import com.mnfmanager.match.MatchRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +21,7 @@ import java.util.List;
 public class PlayerService {
 
     private final PlayerRepository playerRepository;
+    private final MatchRepository matchRepository;
 
     public List<Player> getAllPlayers() {
         log.debug("Fetching all players including inactive");
@@ -226,5 +231,40 @@ public class PlayerService {
                         .careerGoalsPerGame(careerGoalsPerGame)
                         .build())
                 .build();
+    }
+
+    public List<Map<String, Object>> getPlayerMatches(Long id, Integer seasonYear) {
+        List<Match> matches = matchRepository.findByPlayerIdAndSeasonYear(
+                id,
+                seasonYear != null ? seasonYear.shortValue() : null);
+
+        return matches.stream().map(m -> {
+            Map<String, Object> result = new java.util.LinkedHashMap<>();
+            result.put("id", m.getId());
+            result.put("gameWeek", m.getGameWeek());
+            result.put("seasonYear", m.getSeasonYear());
+            result.put("captainAName", m.getCaptainA().getName());
+            result.put("captainBName", m.getCaptainB().getName());
+            result.put("scoreA", m.getScoreA());
+            result.put("scoreB", m.getScoreB());
+            result.put("isDraw", m.getIsDraw());
+            result.put("winnerName", m.getWinner() != null ? m.getWinner().getName() : null);
+            result.put("winnerCaptainId", m.getWinner() != null ? m.getWinner().getId() : null);
+
+            // Determine player's team and result
+            m.getMatchPlayers().stream()
+                    .filter(mp -> mp.getPlayer().getId().equals(id))
+                    .findFirst()
+                    .ifPresent(mp -> {
+                        result.put("playerTeam", String.valueOf(mp.getTeam()));
+                        boolean won = m.getWinner() != null && (
+                                (mp.getTeam() == 'A' && m.getWinner().getId().equals(m.getCaptainA().getId())) ||
+                                (mp.getTeam() == 'B' && m.getWinner().getId().equals(m.getCaptainB().getId()))
+                        );
+                        result.put("result", m.getIsDraw() ? "DRAW" : won ? "WIN" : "LOSS");
+                    });
+
+            return result;
+        }).toList();
     }
 }

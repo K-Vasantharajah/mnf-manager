@@ -2,6 +2,7 @@ package com.mnfmanager.match;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -57,4 +58,18 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
         ORDER BY m.id DESC
     """)
     List<String> findLastGameWeekForSeason(Short seasonYear);
+
+    @Query("""
+        SELECT DISTINCT m FROM Match m
+        LEFT JOIN FETCH m.captainA
+        LEFT JOIN FETCH m.captainB
+        LEFT JOIN FETCH m.winner
+        JOIN m.matchPlayers mp
+        WHERE mp.player.id = :playerId
+        AND (:seasonYear IS NULL OR m.seasonYear = :seasonYear)
+        ORDER BY m.id DESC
+    """)
+    List<Match> findByPlayerIdAndSeasonYear(
+            @Param("playerId") Long playerId,
+            @Param("seasonYear") Short seasonYear);
 }

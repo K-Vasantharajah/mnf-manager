@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import com.mnfmanager.match.MatchService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/players")
@@ -88,6 +89,13 @@ public class PlayerController {
     @GetMapping("/{id}/profile")
     public ResponseEntity<PlayerProfileResponse> getPlayerProfile(@PathVariable Long id) {
         return ResponseEntity.ok(playerService.getPlayerProfile(id));
+    }
+
+    @GetMapping("/{id}/matches")
+    public ResponseEntity<List<Map<String, Object>>> getPlayerMatches(
+            @PathVariable Long id,
+            @RequestParam(required = false) Integer seasonYear) {
+        return ResponseEntity.ok(playerService.getPlayerMatches(id, seasonYear));
     }
 
     @GetMapping("/captains/stats")

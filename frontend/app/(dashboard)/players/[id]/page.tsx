@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { usePlayerProfile } from '@/lib/hooks';
+import { usePlayerMatches, usePlayerProfile } from '@/lib/hooks';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
+import MatchDetailModal from '../../matches/MatchDetailModal';
 
 function RatingBar({ value, color }: { value: number; color: string }) {
   return (
@@ -30,6 +31,69 @@ function StatCard({ label, value, sub }: { label: string; value: string | number
   );
 }
 
+function PlayerMatchHistoryModal({
+  playerId,
+  seasonYear,
+  onClose,
+  onMatchClick,
+}: {
+  playerId: number;
+  seasonYear: number;
+  onClose: () => void;
+  onMatchClick: (matchId: number) => void;
+}) {
+  const { data: matches, isLoading } = usePlayerMatches(playerId, seasonYear);
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl w-full max-w-md max-h-[80vh] flex flex-col">
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
+          <div>
+            <h2 className="font-semibold text-gray-900">Season {seasonYear} matches</h2>
+            <p className="text-xs text-gray-400 mt-0.5">{matches?.length || 0} matches</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg font-bold">✕</button>
+        </div>
+        <div className="overflow-y-auto flex-1">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-gray-400">Loading...</div>
+            </div>
+          ) : (
+            matches?.map((match) => (
+              <div
+                key={match.id}
+                className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors"
+                onClick={() => {
+                  onClose();
+                  onMatchClick(match.id);
+                }}
+              >
+                <span className="text-xs text-gray-400 min-w-10">
+                  {match.gameWeek || `S${match.seasonYear}`}
+                </span>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full min-w-10 text-center ${
+                  match.result === 'WIN' ? 'bg-green-100 text-green-700' :
+                  match.result === 'DRAW' ? 'bg-amber-100 text-amber-700' :
+                  'bg-red-100 text-red-500'
+                }`}>
+                  {match.result}
+                </span>
+                <span className="text-sm flex-1 text-gray-600">
+                  {match.captainAName} vs {match.captainBName}
+                </span>
+                <span className="text-sm font-bold text-gray-900">
+                  {match.scoreA} — {match.scoreB}
+                </span>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PlayerProfilePage() {
   const params = useParams();
   const router = useRouter();
@@ -49,6 +113,8 @@ export default function PlayerProfilePage() {
   const [reliability, setReliability] = useState<number>(0);
   const [goalThreat, setGoalThreat] = useState<number>(0);
   const [saving, setSaving] = useState(false);
+  const [selectedSeasonYear, setSelectedSeasonYear] = useState<number | null>(null);
+  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
 
   function startEditing() {
     setAbility(profile?.ability || 0);
@@ -127,6 +193,28 @@ export default function PlayerProfilePage() {
 
   return (
     <div className="max-w-4xl">
+      {selectedSeasonYear && !selectedMatchId && (
+        <PlayerMatchHistoryModal
+          playerId={playerId}
+          seasonYear={selectedSeasonYear}
+          onClose={() => setSelectedSeasonYear(null)}
+          onMatchClick={(matchId) => {
+            setSelectedSeasonYear(null);
+            setSelectedMatchId(matchId);
+          }}
+        />
+      )}
+
+      {selectedMatchId && (
+        <MatchDetailModal
+          matchId={selectedMatchId}
+          onClose={() => setSelectedMatchId(null)}
+          onBack={() => {
+            setSelectedMatchId(null);
+            setSelectedSeasonYear(selectedSeasonYear);
+          }}
+        />
+      )}
       <button
         onClick={() => router.push('/players')}
         className="text-sm text-gray-400 hover:text-gray-600 mb-6 flex items-center gap-1"
@@ -426,7 +514,11 @@ export default function PlayerProfilePage() {
               </thead>
               <tbody>
                 {profile.seasonStats.map((s) => (
-                  <tr key={s.seasonYear} className="border-b border-gray-50 hover:bg-gray-50">
+                  <tr 
+                  key={s.seasonYear} 
+                  className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer"
+                  onClick={() => setSelectedSeasonYear(s.seasonYear)}
+                  >
                     <td className="py-3 px-3 font-semibold text-gray-900">{s.seasonYear}</td>
                     <td className="py-3 px-3 text-center text-gray-600">{s.matchesPlayed}</td>
                     <td className="py-3 px-3 text-center text-green-600 font-medium">{s.wins}</td>
