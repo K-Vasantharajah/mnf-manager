@@ -115,6 +115,7 @@ export default function PlayerProfilePage() {
   const [saving, setSaving] = useState(false);
   const [selectedSeasonYear, setSelectedSeasonYear] = useState<number | null>(null);
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
+  const [previousSeasonYear, setPreviousSeasonYear] = useState<number | null>(null);
 
   function startEditing() {
     setAbility(profile?.ability || 0);
@@ -199,6 +200,7 @@ export default function PlayerProfilePage() {
           seasonYear={selectedSeasonYear}
           onClose={() => setSelectedSeasonYear(null)}
           onMatchClick={(matchId) => {
+            setPreviousSeasonYear(selectedSeasonYear);
             setSelectedSeasonYear(null);
             setSelectedMatchId(matchId);
           }}
@@ -208,11 +210,15 @@ export default function PlayerProfilePage() {
       {selectedMatchId && (
         <MatchDetailModal
           matchId={selectedMatchId}
-          onClose={() => setSelectedMatchId(null)}
-          onBack={() => {
+          onClose={() => {
             setSelectedMatchId(null);
-            setSelectedSeasonYear(selectedSeasonYear);
+            setPreviousSeasonYear(null);
           }}
+          onBack={previousSeasonYear ? () => {
+            setSelectedMatchId(null);
+            setSelectedSeasonYear(previousSeasonYear);
+            setPreviousSeasonYear(null);
+          } : undefined}
         />
       )}
       <button
