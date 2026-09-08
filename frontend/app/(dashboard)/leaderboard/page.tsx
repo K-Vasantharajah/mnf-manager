@@ -151,7 +151,7 @@ function RatingTable({
               <span className="text-sm font-bold text-gray-400 min-w-6 text-center">
                 {rankDisplay}
               </span>
-              <div className="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+              <div className="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
                 {entry.name.slice(0, 2).toUpperCase()}
               </div>
               <button
@@ -192,7 +192,7 @@ function LeaderboardModal({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl w-full max-w-md max-h-[80vh] flex flex-col">
-        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
           <h2 className="font-semibold text-gray-900">{data.title}</h2>
           <button
             onClick={onClose}
@@ -220,7 +220,7 @@ function LeaderboardModal({
                 <span className="text-sm font-bold text-gray-400 min-w-6 text-center">
                   {rankDisplay}
                 </span>
-                <div className="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                <div className="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
                   {entry.name.slice(0, 2).toUpperCase()}
                 </div>
                 <button

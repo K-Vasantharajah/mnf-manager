@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { usePlayers, useMatchDetail  } from '@/lib/hooks';
 import { useRouter, useParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
@@ -10,9 +10,13 @@ interface GoalScorerEntry {
   playerId: number;
   goals: number;
   team: 'A' | 'B';
+  isOwnGoal: boolean;
 }
 
 export default function EditMatchPage() {
+  const [showAddPlayer, setShowAddPlayer] = useState(false);
+  const [newPlayerName, setNewPlayerName] = useState('');
+  const [addingPlayer, setAddingPlayer] = useState(false);
   const router = useRouter();
   const params = useParams();
   const matchId = Number(params.id);
@@ -33,27 +37,50 @@ export default function EditMatchPage() {
   const [initialised, setInitialised] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
 
   if (match && !initialised) {
-  setMatchDate(match.matchDate ? match.matchDate.toString().split('T')[0] : '');
-  setGameWeek(match.gameWeek || '');
-  setCaptainAId(match.captainAId);
-  setCaptainBId(match.captainBId);
-  setScoreA(match.scoreA);
-  setScoreB(match.scoreB);
-  setTeamAPlayerIds(match.teamAPlayers?.map(p => p.playerId) || []);
-  setTeamBPlayerIds(match.teamBPlayers?.map(p => p.playerId) || []);
-  setGoalScorers(
-    (match.goalScorers || []).map((gs) => ({
-      playerId: gs.playerId,
-      goals: gs.goals,
-      team: gs.team,
-    }))
-  );
-  setInitialised(true);
-}
+    setMatchDate(match.matchDate ? match.matchDate.toString().split('T')[0] : '');
+    setGameWeek(match.gameWeek || '');
+    setCaptainAId(match.captainAId);
+    setCaptainBId(match.captainBId);
+    setScoreA(match.scoreA);
+    setScoreB(match.scoreB);
+    setTeamAPlayerIds(match.teamAPlayers?.map(p => p.playerId) || []);
+    setTeamBPlayerIds(match.teamBPlayers?.map(p => p.playerId) || []);
+    setGoalScorers(
+      (match.goalScorers || []).map((gs) => ({
+        playerId: gs.playerId,
+        goals: gs.goals,
+        team: gs.team,
+        isOwnGoal: gs.isOwnGoal || false,
+      }))
+    );
+    setInitialised(true);
+  }
 
   const activePlayers = players || [];
+
+  async function handleAddPlayer() {
+    if (!newPlayerName.trim()) return;
+    setAddingPlayer(true);
+    try {
+      await api.post('/api/v1/players', {
+        name: newPlayerName.trim(),
+        strongFoot: 'Right',
+        active: true,
+        notes: 'Added during match recording',
+      });
+      await queryClient.invalidateQueries({ queryKey: ['players'] });
+      await queryClient.invalidateQueries({ queryKey: ['players', 'all'] });
+      setNewPlayerName('');
+      setShowAddPlayer(false);
+    } catch {
+      alert('Failed to add player');
+    } finally {
+      setAddingPlayer(false);
+    }
+  }
 
   function toggleTeamPlayer(playerId: number, team: 'A' | 'B') {
     if (team === 'A') {
@@ -77,35 +104,47 @@ export default function EditMatchPage() {
     setGoalScorers((prev) => [...prev, { playerId, goals: 1, team, isOwnGoal }]);
   }
 
-  function updateGoals(playerId: number, goals: number) {
+  function updateGoals(index: number, goals: number) {
     setGoalScorers((prev) =>
-      prev.map((g) => (g.playerId === playerId ? { ...g, goals } : g))
+      prev.map((g, i) => (i === index ? { ...g, goals } : g))
     );
   }
 
-  function removeGoalScorer(playerId: number) {
-    setGoalScorers((prev) => prev.filter((g) => g.playerId !== playerId));
+  function removeGoalScorer(index: number) {
+    setGoalScorers((prev) => prev.filter((_, i) => i !== index));
   }
 
   function getPlayerName(id: number) {
     return activePlayers.find((p) => p.id === id)?.name || 'Unknown';
   }
 
+  function showError(message: string) {
+    setError(message);
+    setTimeout(() => {
+      errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
+  }
+
   async function handleSubmit() {
     if (!captainAId || !captainBId) {
-        setError('Please select both captains');
-        return;
+      showError('Please select both captains');
+      return;
     }
     if (captainAId === captainBId) {
-        setError('Captains must be different players');
-        return;
+      showError('Captains must be different players');
+      return;
+    }
+    
+    if (goalScorers.length > 0 && !goalsMatch) {
+      showError(`Goals attributed (${teamAGoals}-${teamBGoals}) don't match the score (${scoreA}-${scoreB})`);
+      return;
     }
 
     setSubmitting(true);
     setError(null);
 
     try {
-        await api.put(`/api/v1/matches/${matchId}`, {
+      await api.put(`/api/v1/matches/${matchId}`, {
         matchDate,
         seasonYear,
         gameWeek,
@@ -115,15 +154,20 @@ export default function EditMatchPage() {
         scoreB,
         teamAPlayerIds,
         teamBPlayerIds,
-        goalScorers,
-        });
-        await queryClient.invalidateQueries({ queryKey: ['matches'] });
-        router.push('/matches');
+        goalScorers: goalScorers.map(gs => ({
+          playerId: gs.playerId,
+          goals: gs.goals,
+          team: gs.team,
+          isOwnGoal: gs.isOwnGoal,
+        })),
+      });
+      await queryClient.invalidateQueries({ queryKey: ['matches'] });
+      router.push('/matches');
     } catch {
-        setError('Failed to update match. Please try again.');
-        setSubmitting(false);
+      showError('Failed to update match. Please try again.');
+      setSubmitting(false);
     }
-    }
+  }
 
   if (isLoading) {
     return (
@@ -132,6 +176,22 @@ export default function EditMatchPage() {
       </div>
     );
   }
+
+  const teamAGoals = goalScorers
+    .filter(gs => gs.team === 'A' && !gs.isOwnGoal)
+    .reduce((sum, gs) => sum + gs.goals, 0) +
+    goalScorers
+    .filter(gs => gs.team === 'B' && gs.isOwnGoal)
+    .reduce((sum, gs) => sum + gs.goals, 0);
+
+  const teamBGoals = goalScorers
+    .filter(gs => gs.team === 'B' && !gs.isOwnGoal)
+    .reduce((sum, gs) => sum + gs.goals, 0) +
+    goalScorers
+    .filter(gs => gs.team === 'A' && gs.isOwnGoal)
+    .reduce((sum, gs) => sum + gs.goals, 0);
+
+  const goalsMatch = teamAGoals === scoreA && teamBGoals === scoreB;
 
   return (
     <div className="max-w-4xl">
@@ -143,7 +203,10 @@ export default function EditMatchPage() {
       </div>
 
       {error && (
-        <div className="mb-4 bg-red-50 border border-red-100 text-red-600 text-sm px-4 py-3 rounded-lg">
+        <div
+          ref={errorRef}
+          className="mb-4 bg-red-50 border border-red-100 text-red-600 text-sm px-4 py-3 rounded-lg"
+        >
           {error}
         </div>
       )}
@@ -275,6 +338,7 @@ export default function EditMatchPage() {
 
                   return (
                     <button
+                      type="button"
                       key={player.id}
                       onClick={() => {
                         const isCaptain = player.id === Number(captainAId) || player.id === Number(captainBId);
@@ -291,7 +355,7 @@ export default function EditMatchPage() {
                           : 'hover:bg-gray-50 text-gray-700'
                       }`}
                     >
-                      <div className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center text-xs ${
+                      <div className={`w-4 h-4 rounded border shrink-0 flex items-center justify-center text-xs ${
                         selected
                           ? 'bg-green-500 border-green-500 text-white'
                           : 'border-gray-300'
@@ -311,34 +375,64 @@ export default function EditMatchPage() {
         })}
       </div>
 
+      {/* Add new players */}
+      <div className="bg-white rounded-xl border border-gray-100 p-5 mb-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-gray-900">New player?</h2>
+          <button
+            onClick={() => setShowAddPlayer(!showAddPlayer)}
+            className="text-xs text-green-600 hover:text-green-700 font-medium border border-green-200 px-3 py-1 rounded-lg"
+          >
+            {showAddPlayer ? 'Cancel' : '+ Add player'}
+          </button>
+        </div>
+        {showAddPlayer && (
+          <div className="flex items-center gap-3 mt-4">
+            <input
+              type="text"
+              placeholder="Player name"
+              value={newPlayerName}
+              onChange={(e) => setNewPlayerName(e.target.value)}
+              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <button
+              onClick={handleAddPlayer}
+              disabled={addingPlayer || !newPlayerName.trim()}
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+            >
+              {addingPlayer ? 'Adding...' : 'Add'}
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* Goal scorers */}
       <div className="bg-white rounded-xl border border-gray-100 p-5 mb-4">
         <h2 className="font-semibold text-gray-900 mb-4">Goal scorers</h2>
-
         {goalScorers.length > 0 && (
           <div className="mb-4 space-y-2">
-            {goalScorers.map((gs) => (
+            {goalScorers.map((gs, index) => (
               <div
-                key={gs.playerId}
+                key={`${gs.playerId}-${gs.isOwnGoal}-${index}`}
                 className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2"
               >
                 <span className="text-sm font-semibold text-gray-900 flex-1">
                   {getPlayerName(gs.playerId)}
-                  <span
-                    className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full ${
-                      gs.team === 'A'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-blue-100 text-blue-800'
-                    }`}
-                  >
+                  <span className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full ${
+                    gs.team === 'A' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                  }`}>
                     Team {gs.team}
                   </span>
+                  {gs.isOwnGoal && (
+                    <span className="ml-2 text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                      OG
+                    </span>
+                  )}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() =>
-                      updateGoals(gs.playerId, Math.max(1, gs.goals - 1))
-                    }
+                    type="button"
+                    onClick={() => updateGoals(index, Math.max(1, gs.goals - 1))}
                     className="w-7 h-7 rounded bg-gray-200 text-gray-800 text-sm font-bold hover:bg-gray-300 flex items-center justify-center"
                   >
                     −
@@ -347,14 +441,16 @@ export default function EditMatchPage() {
                     {gs.goals}
                   </span>
                   <button
-                    onClick={() => updateGoals(gs.playerId, gs.goals + 1)}
+                    type="button"
+                    onClick={() => updateGoals(index, gs.goals + 1)}
                     className="w-7 h-7 rounded bg-gray-200 text-gray-800 text-sm font-bold hover:bg-gray-300 flex items-center justify-center"
                   >
                     +
                   </button>
                 </div>
                 <button
-                  onClick={() => removeGoalScorer(gs.playerId)}
+                  type="button"
+                  onClick={() => removeGoalScorer(index)}
                   className="text-red-500 hover:text-red-700 text-sm ml-2 font-bold"
                 >
                   ✕
@@ -366,24 +462,21 @@ export default function EditMatchPage() {
 
         <div className="grid grid-cols-2 gap-3">
           {(['A', 'B'] as const).map((team) => {
-            const teamPlayerIds =
-              team === 'A' ? teamAPlayerIds : teamBPlayerIds;
-            const captainId =
-              team === 'A' ? captainAId : captainBId;
-            const captainName = captainId
-              ? getPlayerName(Number(captainId))
-              : `Team ${team}`;
+            const teamPlayerIds = team === 'A' ? teamAPlayerIds : teamBPlayerIds;
+            const captainId = team === 'A' ? captainAId : captainBId;
+            const captainName = captainId ? getPlayerName(Number(captainId)) : `Team ${team}`;
             const availablePlayers = activePlayers.filter(
-              (p) =>
-                teamPlayerIds.includes(p.id) &&
-                !goalScorers.find((g) => g.playerId === p.id)
+              (p) => {
+                if (!teamPlayerIds.includes(p.id)) return false;
+                const hasRegularGoal = goalScorers.some(g => g.playerId === p.id && !g.isOwnGoal);
+                const hasOwnGoal = goalScorers.some(g => g.playerId === p.id && g.isOwnGoal);
+                return !hasRegularGoal || !hasOwnGoal;
+              }
             );
 
             return (
               <div key={team}>
-                <p className="text-xs text-gray-500 mb-2">
-                  {captainName}&apos;s team scorers
-                </p>
+                <p className="text-xs text-gray-500 mb-2">{captainName}&apos;s team scorers</p>
                 {availablePlayers.length === 0 ? (
                   <p className="text-xs text-gray-400 italic">
                     {teamPlayerIds.length === 0
@@ -392,15 +485,37 @@ export default function EditMatchPage() {
                   </p>
                 ) : (
                   <div className="space-y-1">
-                    {availablePlayers.map((p) => (
-                      <button
-                        key={p.id}
-                        onClick={() => addGoalScorer(p.id, team)}
-                        className="w-full text-left text-sm px-3 py-1.5 rounded-lg hover:bg-green-50 hover:text-green-700 text-gray-700 transition-colors"
-                      >
-                        + {p.name}
-                      </button>
-                    ))}
+                    {availablePlayers.map((p) => {
+                      const hasRegularGoal = goalScorers.some(g => g.playerId === p.id && !g.isOwnGoal);
+                      const hasOwnGoal = goalScorers.some(g => g.playerId === p.id && g.isOwnGoal);
+
+                      return (
+                        <div key={p.id} className="flex items-center gap-1">
+                          {!hasRegularGoal && (
+                            <button
+                              type="button"
+                              onClick={() => addGoalScorer(p.id, team, false)}
+                              className="flex-1 text-left text-sm px-3 py-1.5 rounded-lg hover:bg-green-50 hover:text-green-700 text-gray-700 transition-colors"
+                            >
+                              + {p.name}
+                            </button>
+                          )}
+                          {hasRegularGoal && (
+                            <span className="flex-1 text-sm px-3 py-1.5 text-gray-400">{p.name}</span>
+                          )}
+                          {!hasOwnGoal && (
+                            <button
+                              type="button"
+                              onClick={() => addGoalScorer(p.id, team, true)}
+                              className="text-xs px-2 py-1.5 rounded-lg hover:bg-red-50 hover:text-red-600 text-gray-400 transition-colors border border-gray-200"
+                              title="Own goal"
+                            >
+                              OG
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -409,15 +524,23 @@ export default function EditMatchPage() {
         </div>
       </div>
 
+      {!goalsMatch && goalScorers.length > 0 && (
+        <div className="mb-4 bg-amber-50 border border-amber-200 text-amber-700 text-sm px-4 py-3 rounded-lg">
+          ⚠️ Goals attributed ({teamAGoals}-{teamBGoals}) don&apos;t match the score ({scoreA}-{scoreB})
+        </div>
+      )}
+      
       {/* Submit */}
       <div className="flex items-center justify-between">
         <button
+          type="button"
           onClick={() => router.push('/matches')}
           className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700"
         >
           Cancel
         </button>
         <button
+          type="button"
           onClick={handleSubmit}
           disabled={submitting}
           className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-colors disabled:opacity-50"

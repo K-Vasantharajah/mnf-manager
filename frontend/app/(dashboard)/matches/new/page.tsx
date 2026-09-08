@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { usePlayers } from '@/lib/hooks';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
@@ -34,6 +34,7 @@ export default function NewMatchPage() {
   const [goalScorers, setGoalScorers] = useState<GoalScorerEntry[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
 
   const activePlayers = players || [];
 
@@ -80,12 +81,6 @@ export default function NewMatchPage() {
     setGoalScorers((prev) => [...prev, { playerId, goals: 1, team, isOwnGoal }]);
   }
 
-  function toggleOwnGoal(playerId: number) {
-    setGoalScorers((prev) =>
-      prev.map((g) => (g.playerId === playerId ? { ...g, isOwnGoal: !g.isOwnGoal } : g))
-    );
-  }
-
   function updateGoals(index: number, goals: number) {
     setGoalScorers((prev) =>
       prev.map((g, i) => (i === index ? { ...g, goals } : g))
@@ -100,13 +95,25 @@ export default function NewMatchPage() {
     return activePlayers.find((p) => p.id === id)?.name || 'Unknown';
   }
 
+  function showError(message: string) {
+    setError(message);
+    setTimeout(() => {
+      errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
+  }
+
   async function handleSubmit() {
     if (!captainAId || !captainBId) {
-      setError('Please select both captains');
+      showError('Please select both captains');
       return;
     }
     if (captainAId === captainBId) {
-      setError('Captains must be different players');
+      showError('Captains must be different players');
+      return;
+    }
+    
+    if (goalScorers.length > 0 && !goalsMatch) {
+      showError(`Goals attributed (${teamAGoals}-${teamBGoals}) don't match the score (${scoreA}-${scoreB})`);
       return;
     }
 
@@ -133,10 +140,26 @@ export default function NewMatchPage() {
       await queryClient.invalidateQueries({ queryKey: ['matches'] });
       router.push('/matches');
     } catch {
-      setError('Failed to save match. Please try again.');
+      showError('Failed to save match. Please try again.');
       setSubmitting(false);
     }
   }
+
+  const teamAGoals = goalScorers
+    .filter(gs => gs.team === 'A' && !gs.isOwnGoal)
+    .reduce((sum, gs) => sum + gs.goals, 0) +
+    goalScorers
+    .filter(gs => gs.team === 'B' && gs.isOwnGoal)
+    .reduce((sum, gs) => sum + gs.goals, 0);
+
+  const teamBGoals = goalScorers
+    .filter(gs => gs.team === 'B' && !gs.isOwnGoal)
+    .reduce((sum, gs) => sum + gs.goals, 0) +
+    goalScorers
+    .filter(gs => gs.team === 'A' && gs.isOwnGoal)
+    .reduce((sum, gs) => sum + gs.goals, 0);
+
+  const goalsMatch = teamAGoals === scoreA && teamBGoals === scoreB;
 
   return (
     <div className="max-w-4xl">
@@ -148,7 +171,10 @@ export default function NewMatchPage() {
       </div>
 
       {error && (
-        <div className="mb-4 bg-red-50 border border-red-100 text-red-600 text-sm px-4 py-3 rounded-lg">
+        <div
+          ref={errorRef}
+          className="mb-4 bg-red-50 border border-red-100 text-red-600 text-sm px-4 py-3 rounded-lg"
+        >
           {error}
         </div>
       )}
@@ -268,6 +294,7 @@ export default function NewMatchPage() {
 
                   return (
                     <button
+                      type="button"
                       key={player.id}
                       onClick={() => {
                         const isCaptain = player.id === Number(captainAId) || player.id === Number(captainBId);
@@ -284,7 +311,7 @@ export default function NewMatchPage() {
                           : 'hover:bg-gray-50 text-gray-700'
                       }`}
                     >
-                      <div className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center text-xs ${
+                      <div className={`w-4 h-4 rounded border shrink-0 flex items-center justify-center text-xs ${
                         selected
                           ? 'bg-green-500 border-green-500 text-white'
                           : 'border-gray-300'
@@ -335,7 +362,6 @@ export default function NewMatchPage() {
         )}
       </div>
 
-
       {/* Goal scorers */}
       <div className="bg-white rounded-xl border border-gray-100 p-5 mb-4">
         <h2 className="font-semibold text-gray-900 mb-4">Goal scorers</h2>
@@ -361,6 +387,7 @@ export default function NewMatchPage() {
                 </span>
                 <div className="flex items-center gap-2">
                   <button
+                    type="button"
                     onClick={() => updateGoals(index, Math.max(1, gs.goals - 1))}
                     className="w-7 h-7 rounded bg-gray-200 text-gray-800 text-sm font-bold hover:bg-gray-300 flex items-center justify-center"
                   >
@@ -370,6 +397,7 @@ export default function NewMatchPage() {
                     {gs.goals}
                   </span>
                   <button
+                    type="button"
                     onClick={() => updateGoals(index, gs.goals + 1)}
                     className="w-7 h-7 rounded bg-gray-200 text-gray-800 text-sm font-bold hover:bg-gray-300 flex items-center justify-center"
                   >
@@ -377,6 +405,7 @@ export default function NewMatchPage() {
                   </button>
                 </div>
                 <button
+                  type="button"
                   onClick={() => removeGoalScorer(index)}
                   className="text-red-500 hover:text-red-700 text-sm ml-2 font-bold"
                 >
@@ -421,6 +450,7 @@ export default function NewMatchPage() {
                         <div key={p.id} className="flex items-center gap-1">
                           {!hasRegularGoal && (
                             <button
+                              type="button"
                               onClick={() => addGoalScorer(p.id, team, false)}
                               className="flex-1 text-left text-sm px-3 py-1.5 rounded-lg hover:bg-green-50 hover:text-green-700 text-gray-700 transition-colors"
                             >
@@ -432,6 +462,7 @@ export default function NewMatchPage() {
                           )}
                           {!hasOwnGoal && (
                             <button
+                              type="button"
                               onClick={() => addGoalScorer(p.id, team, true)}
                               className="text-xs px-2 py-1.5 rounded-lg hover:bg-red-50 hover:text-red-600 text-gray-400 transition-colors border border-gray-200"
                               title="Own goal"
@@ -450,20 +481,28 @@ export default function NewMatchPage() {
         </div>
       </div>
 
+      {!goalsMatch && goalScorers.length > 0 && (
+        <div className="mb-4 bg-amber-50 border border-amber-200 text-amber-700 text-sm px-4 py-3 rounded-lg">
+          ⚠️ Goals attributed ({teamAGoals}-{teamBGoals}) don&apos;t match the score ({scoreA}-{scoreB})
+        </div>
+      )}
+
       {/* Submit */}
       <div className="flex items-center justify-between">
         <button
+          type="button"
           onClick={() => router.push('/matches')}
           className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700"
         >
           Cancel
         </button>
         <button
+          type="button"
           onClick={handleSubmit}
           disabled={submitting}
           className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition-colors disabled:opacity-50"
         >
-          {submitting ? 'Saving...' : 'Save match'}
+          {submitting ? 'Saving...' : 'Save changes'}
         </button>
       </div>
     </div>

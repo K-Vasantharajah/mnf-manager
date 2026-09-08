@@ -18,7 +18,7 @@ export default function MatchDetailModal({
       <div className="bg-white rounded-xl w-full max-w-lg max-h-[80vh] flex flex-col">
 
         {/* Header */}
-        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             {onBack && (
               <button
