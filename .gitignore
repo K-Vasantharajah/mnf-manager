@@ -36,4 +36,4 @@ Thumbs.db
 # Data files
 data/
 *.xlsx
-*.csv
+*.csvml-service/venv/
