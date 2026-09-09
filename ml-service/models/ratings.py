@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 from data.loader import load_player_stats, load_match_data, load_all_players
 
+MIN_MATCHES_FOR_RATINGS = 14
+
 def calculate_derived_ratings():
     """
     Calculate objective player ratings from match data.
@@ -10,16 +12,15 @@ def calculate_derived_ratings():
     Returns a DataFrame with derived ratings for each player:
     - goal_threat: based on goals per game relative to squad average
     - reliability: based on attendance rate
-    - ability: composite of points percentage and goal contribution
+    - ability: composite of points percentage and goal contribution,
+               weighted by sample size confidence
     """
     player_stats = load_player_stats()
     match_data = load_match_data()
     all_players = load_all_players()
 
-    # Calculate total matches in the dataset
     total_matches = match_data['match_id'].nunique()
 
-    # Aggregate stats across all seasons per player
     career_stats = player_stats.groupby('player_id').agg(
         total_matches=('matches_played', 'sum'),
         total_wins=('wins', 'sum'),
@@ -38,28 +39,31 @@ def calculate_derived_ratings():
     ).fillna(0)
 
     # --- Goal Threat Rating ---
-    # Normalise goals per game relative to squad average
-    squad_avg_gpg = career_stats['goals_per_game'].mean()
-    squad_std_gpg = career_stats['goals_per_game'].std()
-
-    if squad_std_gpg > 0:
-        career_stats['goal_threat_raw'] = (
-            (career_stats['goals_per_game'] - squad_avg_gpg) / squad_std_gpg
-        )
-    else:
-        career_stats['goal_threat_raw'] = 0
+    # Total goals scored with minimum matches threshold
+    # Players below threshold get 0 (scales to 1 after MinMaxScaler)
+    career_stats['goal_threat_raw'] = career_stats.apply(
+        lambda row: row['total_goals'] 
+        if row['total_matches'] >= MIN_MATCHES_FOR_RATINGS 
+        else 0.0,
+        axis=1
+    )
 
     # --- Reliability Rating ---
-    # Matches attended / total matches available
     career_stats['reliability_raw'] = (
         career_stats['total_matches'] / total_matches
     ).clip(0, 1)
 
     # --- Ability Rating ---
-    # Composite of points percentage and goal contribution
-    career_stats['ability_raw'] = (
-        career_stats['points_percentage'] / 100 * 0.7 +
-        career_stats['goals_per_game'].clip(0, 1) * 0.3
+    # Weighted by sample size confidence - players with fewer than MIN_MATCHES
+    # get proportionally lower scores to avoid small sample size bias
+    career_stats['ability_raw'] = career_stats.apply(
+        lambda row: (
+            (row['points_percentage'] / 100 * 0.7 +
+            min(row['goals_per_game'], 1.0) * 0.3)
+            if row['total_matches'] >= MIN_MATCHES_FOR_RATINGS
+            else 0.0  # hard floor for insufficient data
+        ),
+        axis=1
     )
 
     # Scale all ratings to 1-10
@@ -73,7 +77,6 @@ def calculate_derived_ratings():
         values = career_stats[[raw_col]].values
         career_stats[col] = scaler.fit_transform(values).round(1)
 
-    # Merge with player names
     result = career_stats.merge(
         all_players[['id', 'name', 'position', 'active']],
         left_on='player_id',
