@@ -29,49 +29,42 @@ def update_ratings():
 
     engine = create_engine(DB_URL)
 
-    updated = 0
-    skipped = 0
-
     with engine.begin() as conn:
+        # Clear all existing ratings
+        conn.execute(text("DELETE FROM player_ratings"))
+        log.info("Cleared existing ratings")
+
         for _, row in df.iterrows():
-            # Check if rating record exists
-            existing = conn.execute(
-                text("SELECT player_id FROM player_ratings WHERE player_id = :pid"),
-                {"pid": int(row['player_id'])}
-            ).fetchone()
+            conn.execute(text("""
+                INSERT INTO player_ratings (
+                    player_id, 
+                    attack_rating, 
+                    defence_rating, 
+                    overall_rating,
+                    reliability,
+                    rated_by, 
+                    rated_at
+                )
+                VALUES (
+                    :pid, 
+                    :attack_rating, 
+                    :defence_rating, 
+                    :overall_rating,
+                    :reliability,
+                    'ML Model', 
+                    NOW()
+                )
+            """), {
+                "pid": int(row['player_id']),
+                "attack_rating": int(row['attack_rating']),
+                "defence_rating": int(row['defence_rating']),
+                "overall_rating": int(row['overall_rating']),
+                "reliability": int(row['reliability_rating']),
+            })
 
-            if existing:
-                conn.execute(text("""
-                    UPDATE player_ratings
-                    SET ability = :ability,
-                        reliability = :reliability,
-                        goal_threat = :goal_threat,
-                        rated_by = 'ML Model',
-                        rated_at = NOW()
-                    WHERE player_id = :pid
-                """), {
-                    "ability": round(row['ability']),
-                    "reliability": round(row['reliability']),
-                    "goal_threat": round(row['goal_threat']),
-                    "pid": int(row['player_id'])
-                })
-                updated += 1
-            else:
-                conn.execute(text("""
-                    INSERT INTO player_ratings (player_id, ability, reliability, goal_threat, rated_by, rated_at)
-                    VALUES (:pid, :ability, :reliability, :goal_threat, 'ML Model', NOW())
-                """), {
-                    "pid": int(row['player_id']),
-                    "ability": round(row['ability']),
-                    "reliability": round(row['reliability']),
-                    "goal_threat": round(row['goal_threat'])
-                })
-                updated += 1
-
-        log.info(f"Updated {updated} player ratings, skipped {skipped}")
-
+    log.info(f"Inserted ML ratings for {len(df)} players")
     log.info("Ratings update complete")
-    return updated
+    return len(df)
 
 if __name__ == '__main__':
     update_ratings()
