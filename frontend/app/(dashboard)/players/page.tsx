@@ -14,15 +14,26 @@ const POSITION_GROUPS = {
 };
 
 function RatingBar({ value, color }: { value: number; color: string }) {
+  const colorMap: Record<string, string> = {
+    'bg-red-400': '#f87171',
+    'bg-blue-500': '#3b82f6',
+    'bg-green-500': '#22c55e',
+  };
+
+  const bgColor = colorMap[color] || '#22c55e';
+
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex-1 bg-gray-100 rounded-full h-1.5">
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
+      <div style={{ flexGrow: 1, backgroundColor: '#e5e7eb', borderRadius: '9999px', height: '6px', overflow: 'hidden' }}>
         <div
-          className={`h-1.5 rounded-full ${color}`}
-          style={{ width: `${value * 10}%` }}
+          style={{ 
+            width: `${value * 10}%`,
+            backgroundColor: bgColor,
+            height: '6px',
+          }}
         />
       </div>
-      <span className="text-xs font-semibold min-w-6 text-right">{value}</span>
+      <span style={{ fontSize: '12px', fontWeight: 700, minWidth: '16px', textAlign: 'right', color: '#111827' }}>{value}</span>
     </div>
   );
 }
@@ -39,48 +50,35 @@ function PlayerCard({ player }: { player: Player }) {
           </div>
           <div className="flex-1 min-w-0">
             <div className="font-semibold text-gray-900 truncate">{player.name}</div>
-          </div>
-          <div className="flex flex-col items-end gap-1">
-            {player.position && player.position !== 'UNKNOWN' && (
-              <span className="text-xs bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded">
-                {player.position}
-              </span>
-            )}
             {!player.active && (
-              <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded">
-                Inactive
-              </span>
+              <div className="text-xs text-gray-400">Inactive</div>
             )}
           </div>
+          {player.position && player.position !== 'UNKNOWN' && (
+            <span className="text-xs bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded">
+              {player.position}
+            </span>
+          )}
         </div>
 
-        {player.rating ? (
+        {player.rating?.overallRating ? (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-400 w-20">Ability</span>
-              <RatingBar value={player.rating.ability} color="bg-green-500" />
+              <span className="text-xs text-gray-600 font-medium w-20">⚔️ Attack</span>
+              <RatingBar value={player.rating.attackRating || 0} color="bg-red-400" />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-400 w-20">Reliability</span>
-              <RatingBar
-                value={player.rating.reliability}
-                color={
-                  player.rating.reliability >= 8
-                    ? 'bg-green-500'
-                    : player.rating.reliability >= 6
-                    ? 'bg-amber-400'
-                    : 'bg-red-400'
-                }
-              />
+              <span className="text-xs text-gray-600 font-medium w-20">🛡️ Defence</span>
+              <RatingBar value={player.rating.defenceRating || 0} color="bg-blue-500" />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-400 w-20">Goal threat</span>
-              <RatingBar value={player.rating.goalThreat} color="bg-blue-500" />
+              <span className="text-xs text-gray-600 font-medium w-20">📅 Reliability</span>
+              <RatingBar value={player.rating.reliability || 0} color="bg-green-500" />
             </div>
           </div>
         ) : (
           <div className="text-xs text-gray-400 text-center py-2">
-            No ratings yet
+            {player.active ? 'Needs 10+ matches for ML rating' : 'No ratings yet'}
           </div>
         )}
       </div>

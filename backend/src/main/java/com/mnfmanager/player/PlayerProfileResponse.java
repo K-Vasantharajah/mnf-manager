@@ -18,6 +18,9 @@ public class PlayerProfileResponse {
     private Short ability;
     private Short reliability;
     private Short goalThreat;
+    private Short attackRating;
+    private Short defenceRating;
+    private Short overallRating;
 
     private List<SeasonStatsDetail> seasonStats;
     private CareerStats careerStats;

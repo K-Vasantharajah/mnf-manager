@@ -45,6 +45,15 @@ public class PlayerRating {
     @Column(name = "goal_threat", nullable = false)
     private Short goalThreat;
 
+    @Column(name = "attack_rating")
+    private Short attackRating;
+
+    @Column(name = "defence_rating")
+    private Short defenceRating;
+
+    @Column(name = "overall_rating")
+    private Short overallRating;
+
     @Column(name = "rated_at", nullable = false)
     private LocalDateTime ratedAt;
 

@@ -3,6 +3,9 @@ export interface PlayerRating {
   ability: number;
   reliability: number;
   goalThreat: number;
+  attackRating: number | null;
+  defenceRating: number | null;
+  overallRating: number | null;
   ratedAt: string;
   ratedBy: string;
 }
@@ -114,6 +117,9 @@ export interface PlayerProfile {
   ability: number | null;
   reliability: number | null;
   goalThreat: number | null;
+  attackRating: number | null;
+  defenceRating: number | null;
+  overallRating: number | null;
   seasonStats: SeasonStatsDetail[];
   careerStats: {
     totalMatches: number;

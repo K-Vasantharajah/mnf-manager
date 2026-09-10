@@ -108,21 +108,10 @@ export default function PlayerProfilePage() {
   const [editPosition, setEditPosition] = useState('');
   const [editActive, setEditActive] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
-  const [editingRatings, setEditingRatings] = useState(false);
-  const [ability, setAbility] = useState<number>(0);
-  const [reliability, setReliability] = useState<number>(0);
-  const [goalThreat, setGoalThreat] = useState<number>(0);
-  const [saving, setSaving] = useState(false);
   const [selectedSeasonYear, setSelectedSeasonYear] = useState<number | null>(null);
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
   const [previousSeasonYear, setPreviousSeasonYear] = useState<number | null>(null);
 
-  function startEditing() {
-    setAbility(profile?.ability || 0);
-    setReliability(profile?.reliability || 0);
-    setGoalThreat(profile?.goalThreat || 0);
-    setEditingRatings(true);
-  }
 
   function startEditingProfile() {
     setEditName(profile?.name || '');
@@ -149,24 +138,6 @@ export default function PlayerProfilePage() {
       alert('Failed to save profile');
     } finally {
       setSavingProfile(false);
-    }
-  }
-
-  async function saveRatings() {
-    setSaving(true);
-    try {
-      await api.post(`/api/v1/players/${playerId}/ratings`, {
-        ability,
-        reliability,
-        goalThreat,
-        ratedBy: 'Kobi',
-      });
-      await queryClient.invalidateQueries({ queryKey: ['players', playerId, 'profile'] });
-      setEditingRatings(false);
-    } catch {
-      alert('Failed to save ratings');
-    } finally {
-      setSaving(false);
     }
   }
 
@@ -280,114 +251,53 @@ export default function PlayerProfilePage() {
         {/* Ratings */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900">Ratings</h2>
-            {!editingRatings ? (
-              <button
-                onClick={startEditing}
-                className="text-xs text-green-600 hover:text-green-700 font-medium border border-green-200 px-3 py-1 rounded-lg"
-              >
-                Edit ratings
-              </button>
-            ) : (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setEditingRatings(false)}
-                  className="text-xs text-gray-500 hover:text-gray-700 px-3 py-1 rounded-lg border border-gray-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={saveRatings}
-                  disabled={saving}
-                  className="text-xs text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-lg disabled:opacity-50"
-                >
-                  {saving ? 'Saving...' : 'Save'}
-                </button>
-              </div>
-            )}
+            <div>
+              <h2 className="font-semibold text-gray-900">Ratings</h2>
+              <p className="text-xs text-gray-400 mt-0.5">ML derived · updates weekly</p>
+            </div>
           </div>
 
-          {!editingRatings ? (
+          {profile.overallRating ? (
             <div className="space-y-4">
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm text-gray-600">Ability</span>
-                </div>
-                <RatingBar value={profile.ability || 0} color="bg-blue-500" />
+              {/* Overall */}
+              <div className="bg-green-50 rounded-xl p-4 flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-green-900">Overall</span>
+                <span className="text-2xl font-black text-green-700">{profile.overallRating}/10</span>
               </div>
+
               <div>
                 <div className="flex justify-between mb-1">
-                  <span className="text-sm text-gray-600">Reliability</span>
+                  <span className="text-sm text-gray-600">⚔️ Attack</span>
+                  <span className="text-sm font-bold text-gray-900">{profile.attackRating}/10</span>
                 </div>
-                <RatingBar
-                  value={profile.reliability || 0}
-                  color={
-                    (profile.reliability || 0) >= 8
-                      ? 'bg-green-500'
-                      : (profile.reliability || 0) >= 6
-                      ? 'bg-amber-400'
-                      : 'bg-red-400'
-                  }
-                />
+                <RatingBar value={profile.attackRating || 0} color="bg-red-400" />
               </div>
+
               <div>
                 <div className="flex justify-between mb-1">
-                  <span className="text-sm text-gray-600">Goal threat</span>
+                  <span className="text-sm text-gray-600">🛡️ Defence</span>
+                  <span className="text-sm font-bold text-gray-900">{profile.defenceRating}/10</span>
                 </div>
-                <RatingBar value={profile.goalThreat || 0} color="bg-purple-500" />
+                <RatingBar value={profile.defenceRating || 0} color="bg-blue-500" />
+              </div>
+
+              <div>
+                <div className="flex justify-between mb-1">
+                  <span className="text-sm text-gray-600">📅 Reliability</span>
+                  <span className="text-sm font-bold text-gray-900">{profile.reliability}/10</span>
+                </div>
+                <RatingBar value={profile.reliability || 0} color="bg-green-500" />
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between mb-1">
-                    <span className="text-sm text-gray-600">Ability</span>
-                    <span className="text-sm font-bold text-gray-900">{ability}/10</span>
-                </div>
-                <input
-                    type="range"
-                    min={1}
-                    max={10}
-                    step={1}
-                    value={ability}
-                    onChange={(e) => setAbility(Number(e.target.value))}
-                    className="w-full accent-green-600"
-                />
-                </div>
-                <div>
-                <div className="flex justify-between mb-1">
-                    <span className="text-sm text-gray-600">Reliability</span>
-                    <span className="text-sm font-bold text-gray-900">{reliability}/10</span>
-                </div>
-                <input
-                    type="range"
-                    min={1}
-                    max={10}
-                    step={1}
-                    value={reliability}
-                    onChange={(e) => setReliability(Number(e.target.value))}
-                    className="w-full accent-green-600"
-                />
-                </div>
-                <div>
-                <div className="flex justify-between mb-1">
-                    <span className="text-sm text-gray-600">Goal threat</span>
-                    <span className="text-sm font-bold text-gray-900">{goalThreat}/10</span>
-                </div>
-                <input
-                    type="range"
-                    min={1}
-                    max={10}
-                    step={1}
-                    value={goalThreat}
-                    onChange={(e) => setGoalThreat(Number(e.target.value))}
-                    className="w-full accent-green-600"
-                />
-                </div>
+            <div className="text-center py-8 text-gray-400 text-sm">
+              <p className="font-medium">Not enough data</p>
+              <p className="mt-1">Needs 10+ matches for ML rating</p>
             </div>
           )}
         </div>
       </div>
+        
 
       {/* Profile edit card */}
       <div className="bg-white rounded-xl border border-gray-100 p-5 mb-6">
