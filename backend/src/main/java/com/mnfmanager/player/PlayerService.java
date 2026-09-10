@@ -159,6 +159,8 @@ public class PlayerService {
             .ability(player.getRating() != null ? player.getRating().getAbility() : null)
             .reliability(player.getRating() != null ? player.getRating().getReliability() : null)
             .goalThreat(player.getRating() != null ? player.getRating().getGoalThreat() : null)
+            .attackRating(player.getRating() != null ? player.getRating().getAttackRating() : null)
+            .defenceRating(player.getRating() != null ? player.getRating().getDefenceRating() : null)
             .seasonYear(seasonYear)
             .build();
     }

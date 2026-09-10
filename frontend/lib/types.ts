@@ -58,6 +58,9 @@ export interface PlayerLeaderboardEntry {
   goalsPerGame: number;
   ability: number;
   reliability: number;
+  attackRating: number | null;
+  defenceRating: number | null;
+  overallRating: number | null;
   goalThreat: number;
   seasonYear: number | null;
 }

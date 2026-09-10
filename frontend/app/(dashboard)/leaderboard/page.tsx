@@ -391,40 +391,40 @@ const router = useRouter();
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <RatingTable
-          title="💪 Ability rating"
+          title="⚔️ Attack rating"
           entries={allEntries}
-          getValue={(e) => e.ability || 0}
+          getValue={(e) => e.attackRating || 0}
           onViewAll={() => setModalData({
-          title: '💪 Ability rating',
+          title: '⚔️ Attack rating',
           entries: allEntries,
-          getValue: (e) => e.ability || 0,
-          formatValue: (e) => `${e.ability || 0}/10`,
+          getValue: (e) => e.attackRating || 0,
+          formatValue: (e) => `${e.attackRating || 0}/10`,
           colorFn: getRatingColor,
         })}
         onPlayerClick={handlePlayerClick}
         />
         <RatingTable
-          title="✅ Reliability rating"
+          title="🛡️ Defence Rating"
+          entries={allEntries}
+          getValue={(e) => e.defenceRating || 0}
+          onViewAll={() => setModalData({
+          title: '🛡️ Defence Rating',
+          entries: allEntries,
+          getValue: (e) => e.defenceRating || 0,
+          formatValue: (e) => `${e.defenceRating || 0}/10`,
+          colorFn: getRatingColor,
+        })}
+        onPlayerClick={handlePlayerClick}
+        />
+        <RatingTable
+          title="📅 Reliability rating"
           entries={allEntries}
           getValue={(e) => e.reliability || 0}
           onViewAll={() => setModalData({
-          title: '✅ Reliability rating',
+          title: '📅 Reliability rating',
           entries: allEntries,
           getValue: (e) => e.reliability || 0,
           formatValue: (e) => `${e.reliability || 0}/10`,
-          colorFn: getRatingColor,
-        })}
-        onPlayerClick={handlePlayerClick}
-        />
-        <RatingTable
-          title="🎯 Goal threat rating"
-          entries={allEntries}
-          getValue={(e) => e.goalThreat || 0}
-          onViewAll={() => setModalData({
-          title: '🎯 Goal threat rating',
-          entries: allEntries,
-          getValue: (e) => e.goalThreat || 0,
-          formatValue: (e) => `${e.goalThreat || 0}/10`,
           colorFn: getRatingColor,
         })}
         onPlayerClick={handlePlayerClick}

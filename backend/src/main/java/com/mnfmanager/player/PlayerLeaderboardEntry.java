@@ -24,5 +24,7 @@ public class PlayerLeaderboardEntry {
     private Short ability;
     private Short reliability;
     private Short goalThreat;
+    private Short attackRating;
+    private Short defenceRating;
     private Integer seasonYear;
 }
