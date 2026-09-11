@@ -153,21 +153,3 @@ export function usePlayerMatches(playerId: number, seasonYear: number) {
     enabled: !!playerId && !!seasonYear,
   });
 }
-
-export function useCaptainRecommendations() {
-  return useMutation({
-    mutationFn: async (availablePlayerIds: number[]) => {
-      const { data } = await api.post('/api/v1/draft/captain-recommendations', {
-        availablePlayerIds,
-      });
-      return data.recommendations as {
-        player_id: number;
-        name: string;
-        position: string;
-        times_captained_this_season: number;
-        last_match_id_captained: number;
-      }[];
-    },
-  });
-}
-
