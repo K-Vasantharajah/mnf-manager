@@ -16,6 +16,7 @@ export default function DashboardLayout({
     { href: '/matches', label: 'Matches' },
     { href: '/leaderboard', label: 'Leaderboard' },
     { href: '/captains', label: 'Captains' },
+    { href: '/draft', label: 'Draft' },
   ];
 
   return (
