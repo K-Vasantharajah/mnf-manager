@@ -13,19 +13,18 @@ raw team stats (pt%, goals conceded) cannot.
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import Ridge
-from data.loader import load_team_compositions, load_all_players
+from data.loader import load_match_compositions_with_scores, load_all_players
 
 RIDGE_ALPHA = 50.0
 
 
 def build_design_matrix():
-    comps = load_team_compositions()
+    comps = load_match_compositions_with_scores()
     
     comps['team_instance'] = (
         comps['match_id'].astype(str) + '_' + comps['team']
     )
 
-    # Player presence matrix
     X = pd.crosstab(comps['team_instance'], comps['player_id'])
     X = (X > 0).astype(int)
 
