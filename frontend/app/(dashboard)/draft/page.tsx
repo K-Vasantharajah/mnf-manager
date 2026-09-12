@@ -51,6 +51,8 @@ export default function DraftPage() {
   const [loadingPrefs, setLoadingPrefs] = useState(false);
   const [captainRecommendations, setCaptainRecommendations] = useState<CaptainRecommendation[]>([]);
   const activePlayers = (allPlayers || []).filter(p => p.active);
+  const [teamAChemistry, setTeamAChemistry] = useState<number | null>(null);
+  const [teamBChemistry, setTeamBChemistry] = useState<number | null>(null);
 
   const squadPlayers = activePlayers.filter(p => squadIds.includes(p.id));
   const captainA = activePlayers.find(p => p.id === captainAId);
@@ -122,6 +124,7 @@ export default function DraftPage() {
     const teamBIds = [captainBId!, ...newPicks.filter(p => p.team === 'B').map(p => p.playerId)];
 
     await updatePrediction(teamAIds, teamBIds);
+    await updateTeamChemistry(teamAIds, teamBIds);
 
     if (remainingIds.length === 0 || newPicks.length >= 16) {
       setPhase('complete');
@@ -191,6 +194,10 @@ export default function DraftPage() {
         [captainAId!, ...newPicks.filter(p => p.team === 'A').map(p => p.playerId)],
         [captainBId!, ...newPicks.filter(p => p.team === 'B').map(p => p.playerId)]
       );
+      await updateTeamChemistry(
+        [captainAId!, ...newPicks.filter(p => p.team === 'A').map(p => p.playerId)],
+        [captainBId!, ...newPicks.filter(p => p.team === 'B').map(p => p.playerId)]
+      );
     } else {
       setPrediction(null);
     }
@@ -211,6 +218,25 @@ export default function DraftPage() {
     }
   }
 
+  async function updateTeamChemistry(teamAIds: number[], teamBIds: number[]) {
+    try {
+      if (teamAIds.length >= 2) {
+        const { data: dataA } = await api.post('/api/v1/draft/chemistry/team', {
+          playerIds: teamAIds,
+        });
+        setTeamAChemistry(dataA.teamChemistryScore);
+      }
+      if (teamBIds.length >= 2) {
+        const { data: dataB } = await api.post('/api/v1/draft/chemistry/team', {
+          playerIds: teamBIds,
+        });
+        setTeamBChemistry(dataB.teamChemistryScore);
+      }
+    } catch {
+      // chemistry optional
+    }
+  }
+
   function reset() {
     setPhase('squad');
     setSquadIds([]);
@@ -220,6 +246,8 @@ export default function DraftPage() {
     setCurrentTurn('B');
     setPreferences([]);
     setPrediction(null);
+    setTeamAChemistry(null);
+    setTeamBChemistry(null);
   }
 
   const currentCaptainName = currentTurn === 'A' ? captainA?.name : captainB?.name;
@@ -414,6 +442,15 @@ export default function DraftPage() {
           <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <div className="bg-green-700 px-5 py-3">
               <h2 className="font-bold text-white">👑 {captainA?.name}</h2>
+              {teamAChemistry !== null && (
+                <div className={`text-xs px-2 py-1 rounded-lg text-center font-medium mt-2 ${
+                  teamAChemistry > 10 ? 'bg-green-100 text-green-700' :
+                  teamAChemistry > 0 ? 'bg-amber-100 text-amber-700' :
+                  'bg-red-100 text-red-600'
+                }`}>
+                  ⚗️ Chemistry: {teamAChemistry > 0 ? '+' : ''}{teamAChemistry}
+                </div>
+              )}
               <p className="text-green-300 text-xs">Team A · picks second</p>
             </div>
             <div className="p-4 space-y-1">
@@ -553,6 +590,15 @@ export default function DraftPage() {
           <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <div className="bg-blue-600 px-5 py-3">
               <h2 className="font-bold text-white">👑 {captainB?.name}</h2>
+              {teamBChemistry !== null && (
+                <div className={`text-xs px-2 py-1 rounded-lg text-center font-medium mt-2 ${
+                  teamBChemistry > 10 ? 'bg-green-100 text-green-700' :
+                  teamBChemistry > 0 ? 'bg-amber-100 text-amber-700' :
+                  'bg-red-100 text-red-600'
+                }`}>
+                  ⚗️ Chemistry: {teamBChemistry > 0 ? '+' : ''}{teamBChemistry}
+                </div>
+              )}
               <p className="text-blue-200 text-xs">Team B · picks first</p>
             </div>
             <div className="p-4 space-y-1">
