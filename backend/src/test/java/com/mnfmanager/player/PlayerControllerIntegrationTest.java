@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Map;
 
@@ -71,6 +72,7 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void shouldCreatePlayerWithStatus201() throws Exception {
         Map<String, Object> newPlayer = Map.of(
                 "name", "New Test Player",
@@ -89,6 +91,7 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void shouldUpdatePlayerWithStatus200() throws Exception {
         Map<String, Object> update = Map.of(
                 "name", "Updated Player Name",
@@ -106,6 +109,7 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void shouldDeactivatePlayerWithStatus204() throws Exception {
         mockMvc.perform(delete("/api/v1/players/{id}", testPlayer.getId())
                 .contentType(MediaType.APPLICATION_JSON))
@@ -141,6 +145,7 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void shouldRatePlayerWithStatus200() throws Exception {
         Map<String, Object> rating = Map.of(
                 "ability", 8,
