@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    include: secrets
+
   application:
     name: mnf-manager
   jackson:
@@ -43,8 +46,14 @@ server:
   port: 8080
 
 jwt:
-  secret: your-secret-key-change-this-in-production-minimum-256-bits
+  secret: ${JWT_SECRET:your-secret-key-change-this-in-production-minimum-256-bits}
   expiration: 86400000
+
+google:
+  client-id: ${GOOGLE_CLIENT_ID:placeholder}
+
+admin-emails:
+  - ${ADMIN_EMAIL:placeholder@gmail.com}
 
 logging:
   level:

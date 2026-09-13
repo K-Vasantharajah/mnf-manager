@@ -37,3 +37,4 @@ Thumbs.db
 data/
 *.xlsx
 *.csvml-service/venv/
+backend/src/main/resources/application-secrets.yml
