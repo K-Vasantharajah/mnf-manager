@@ -31,15 +31,17 @@ public class SecurityConfig {
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Public auth endpoint
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                // Public GET endpoints — anyone can view
-                .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
-                // Write operations require ADMIN role
-                .requestMatchers(HttpMethod.POST, "/api/v1/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-            )
+            // Public auth endpoint
+            .requestMatchers("/api/v1/auth/**").permitAll()
+            // Public draft endpoints - calculations only, no data modification
+            .requestMatchers("/api/v1/draft/**").permitAll()
+            // Public GET endpoints — anyone can view
+            .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
+            // Write operations require ADMIN role
+            .requestMatchers(HttpMethod.POST, "/api/v1/**").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/v1/**").hasRole("ADMIN")
+            .anyRequest().authenticated()
+        )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
