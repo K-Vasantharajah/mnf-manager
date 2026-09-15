@@ -6,10 +6,14 @@ import MatchDetailModal from './MatchDetailModal';
 import { useMatches } from '@/lib/hooks';
 import Link from 'next/link';
 
+import { useAuth } from '@/lib/auth';
+
+
 export default function MatchesPage() {
   const { data: matches, isLoading, isError } = useMatches();
   const [seasonFilter, setSeasonFilter] = useState<number | 'all'>('all');
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
+  const { isAdmin } = useAuth();
 
   if (isLoading) {
     return (
@@ -81,12 +85,14 @@ export default function MatchesPage() {
               All
             </button>
           </div>
-          <Link
-            href="/matches/new"
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            + Record match
-          </Link>
+          {isAdmin && (
+            <Link
+              href="/matches/new"
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors"
+            >
+              + Record match
+            </Link>
+          )}
         </div>
       </div>
 
@@ -193,7 +199,7 @@ export default function MatchesPage() {
                 >
                   {isDraw ? 'Draw' : `${winnerName} wins`}
                 </span>
-                {match.seasonYear === 2026 && (
+                {match.seasonYear === new Date().getFullYear() && isAdmin && (
                   <Link
                     href={`/matches/${match.id}/edit`}
                     className="text-xs text-green-600 hover:text-green-700 font-medium"
