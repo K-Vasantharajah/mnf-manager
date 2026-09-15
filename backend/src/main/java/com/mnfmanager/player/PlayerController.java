@@ -64,21 +64,7 @@ public class PlayerController {
                 .winRate(playerService.calculateWinRate(player))
                 .contributionScore(playerService.calculateContributionScore(player))
                 .build());
-    }
-
-    @PostMapping("/{id}/ratings")
-    public ResponseEntity<Player> ratePlayer(
-        @PathVariable Long id,
-        @Valid @RequestBody PlayerRatingRequest request) {
-            return ResponseEntity.ok(playerService.ratePlayer(id, request));
-        }
-        
-    @PutMapping("/{id}/ratings")
-    public ResponseEntity<Player> updateRatings(
-            @PathVariable Long id,
-            @Valid @RequestBody PlayerRatingRequest request) {
-        return ResponseEntity.ok(playerService.ratePlayer(id, request));
-    }    
+    }  
 
     @GetMapping("/leaderboard")
     public ResponseEntity<List<PlayerLeaderboardEntry>> getLeaderboard(

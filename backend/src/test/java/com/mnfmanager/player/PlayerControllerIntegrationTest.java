@@ -143,23 +143,4 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", isA(java.util.List.class)));
     }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void shouldRatePlayerWithStatus200() throws Exception {
-        Map<String, Object> rating = Map.of(
-                "ability", 8,
-                "reliability", 9,
-                "goalThreat", 7,
-                "ratedBy", "Kobi"
-        );
-
-        mockMvc.perform(post("/api/v1/players/{id}/ratings", testPlayer.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(rating)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.rating.ability").value(8))
-                .andExpect(jsonPath("$.rating.reliability").value(9))
-                .andExpect(jsonPath("$.rating.goalThreat").value(7));
-    }
 }

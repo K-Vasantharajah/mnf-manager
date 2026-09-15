@@ -66,28 +66,6 @@ public class PlayerService {
         playerRepository.save(player);
     }
 
-    @Transactional
-    public Player ratePlayer(Long id, PlayerRatingRequest request) {
-
-        log.info("Rating player with id: {}", id);
-        Player player = getPlayerById(id);
-
-        PlayerRating rating = player.getRating();
-        if (rating == null) {
-            rating = PlayerRating.builder()
-                    .player(player)
-                    .build();
-        }
-
-        rating.setAbility(request.getAbility());
-        rating.setReliability(request.getReliability());
-        rating.setGoalThreat(request.getGoalThreat());
-        rating.setRatedBy(request.getRatedBy());
-
-        player.setRating(rating);
-        return playerRepository.save(player);
-    }
-
     public double calculateWinRate(Player player) {
         int totalPlayed = player.getSeasonStats().stream()
                 .mapToInt(s -> s.getMatchesPlayed())
