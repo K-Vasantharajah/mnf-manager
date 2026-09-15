@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface User {
   email: string;
@@ -25,14 +25,11 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window === 'undefined') return null;
     const stored = localStorage.getItem('mnf_user');
-    if (stored) {
-      setUser(JSON.parse(stored));
-    }
-  }, []);
+    return stored ? JSON.parse(stored) : null;
+  });
 
   function login(user: User) {
     setUser(user);

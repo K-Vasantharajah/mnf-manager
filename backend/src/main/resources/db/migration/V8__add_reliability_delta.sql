@@ -1,0 +1,1 @@
+ALTER TABLE player_ratings ADD COLUMN reliability_delta SMALLINT DEFAULT 0;

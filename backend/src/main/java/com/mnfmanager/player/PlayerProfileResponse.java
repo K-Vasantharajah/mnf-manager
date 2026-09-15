@@ -21,6 +21,10 @@ public class PlayerProfileResponse {
     private Short attackRating;
     private Short defenceRating;
     private Short overallRating;
+    private Short attackDelta;
+    private Short defenceDelta;
+    private Short reliabilityDelta;
+    private Short overallDelta;
 
     private List<SeasonStatsDetail> seasonStats;
     private CareerStats careerStats;

@@ -54,6 +54,18 @@ public class PlayerRating {
     @Column(name = "overall_rating")
     private Short overallRating;
 
+    @Column(name = "attack_delta")
+    private Short attackDelta;
+
+    @Column(name = "defence_delta")
+    private Short defenceDelta;
+
+    @Column(name = "reliability_delta")
+    private Short reliabilityDelta;
+
+    @Column(name = "overall_delta")
+    private Short overallDelta;
+
     @Column(name = "rated_at", nullable = false)
     private LocalDateTime ratedAt;
 

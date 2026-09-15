@@ -38,6 +38,17 @@ function RatingBar({ value, color }: { value: number; color: string }) {
   );
 }
 
+function DeltaBadge({ delta }: { delta: number | null }) {
+  if (!delta || delta === 0) return null;
+  return (
+    <span className={`text-xs font-bold ml-1 ${
+      delta > 0 ? 'text-green-500' : 'text-red-400'
+    }`}>
+      {delta > 0 ? `+${delta}` : delta}
+    </span>
+  );
+}
+
 function PlayerCard({ player }: { player: Player }) {
   const initials = player.name.slice(0, 2).toUpperCase();
 
@@ -54,11 +65,17 @@ function PlayerCard({ player }: { player: Player }) {
               <div className="text-xs text-gray-400">Inactive</div>
             )}
           </div>
-          {player.position && player.position !== 'UNKNOWN' && (
-            <span className="text-xs bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded">
-              {player.position}
-            </span>
-          )}
+            {player.rating?.overallRating && (
+              <div className="flex flex-col items-center justify-center w-8 h-8 rounded-full border-2 border-green-600 text-green-700 flex-shrink-0">
+                <span className="text-xs font-black leading-none">{player.rating.overallRating}</span>
+                <DeltaBadge delta={player.rating.overallDelta} />
+              </div>
+            )}
+            {player.position && player.position !== 'UNKNOWN' && (
+              <span className="text-xs bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded">
+                {player.position}
+              </span>
+            )}
         </div>
 
         {player.rating?.overallRating ? (
@@ -66,14 +83,17 @@ function PlayerCard({ player }: { player: Player }) {
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-600 font-medium w-20">⚔️ Attack</span>
               <RatingBar value={player.rating.attackRating || 0} color="bg-red-400" />
+              <DeltaBadge delta={player.rating.attackDelta} />
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-600 font-medium w-20">🛡️ Defence</span>
               <RatingBar value={player.rating.defenceRating || 0} color="bg-blue-500" />
+              <DeltaBadge delta={player.rating.defenceDelta} />
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-600 font-medium w-20">📅 Reliability</span>
               <RatingBar value={player.rating.reliability || 0} color="bg-green-500" />
+              <DeltaBadge delta={player.rating.reliabilityDelta} />
             </div>
           </div>
         ) : (

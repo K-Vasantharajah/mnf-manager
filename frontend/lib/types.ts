@@ -6,6 +6,10 @@ export interface PlayerRating {
   attackRating: number | null;
   defenceRating: number | null;
   overallRating: number | null;
+  attackDelta: number | null;
+  defenceDelta: number | null;
+  reliabilityDelta: number | null;
+  overallDelta: number | null;
   ratedAt: string;
   ratedBy: string;
 }
@@ -123,6 +127,10 @@ export interface PlayerProfile {
   attackRating: number | null;
   defenceRating: number | null;
   overallRating: number | null;
+  attackDelta: number | null;
+  defenceDelta: number | null;
+  reliabilityDelta: number | null;
+  overallDelta: number | null;
   seasonStats: SeasonStatsDetail[];
   careerStats: {
     totalMatches: number;

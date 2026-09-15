@@ -30,36 +30,49 @@ def update_ratings():
     engine = create_engine(DB_URL)
 
     with engine.begin() as conn:
-        # Clear all existing ratings
+        # Store previous ratings before clearing
+        previous = pd.read_sql(
+            text("SELECT player_id, attack_rating, defence_rating, overall_rating, reliability FROM player_ratings"),
+            conn
+        )
+        prev_dict = previous.set_index('player_id').to_dict(orient='index')
+
+        # Clear and reinsert
         conn.execute(text("DELETE FROM player_ratings"))
-        log.info("Cleared existing ratings")
 
         for _, row in df.iterrows():
+            pid = int(row['player_id'])
+            new_attack = int(row['attack_rating'])
+            new_defence = int(row['defence_rating'])
+            new_overall = int(row['overall_rating'])
+            new_reliability = int(row['reliability_rating'])
+
+            prev = prev_dict.get(pid, {})
+            attack_delta = new_attack - (prev.get('attack_rating') or new_attack)
+            defence_delta = new_defence - (prev.get('defence_rating') or new_defence)
+            overall_delta = new_overall - (prev.get('overall_rating') or new_overall)
+
             conn.execute(text("""
                 INSERT INTO player_ratings (
-                    player_id, 
-                    attack_rating, 
-                    defence_rating, 
-                    overall_rating,
-                    reliability,
-                    rated_by, 
-                    rated_at
+                    player_id, attack_rating, defence_rating, overall_rating,
+                    reliability, rated_by, rated_at,
+                    attack_delta, defence_delta, overall_delta, reliability_delta
                 )
                 VALUES (
-                    :pid, 
-                    :attack_rating, 
-                    :defence_rating, 
-                    :overall_rating,
-                    :reliability,
-                    'ML Model', 
-                    NOW()
+                    :pid, :attack, :defence, :overall,
+                    :reliability, 'ML Model', NOW(),
+                    :attack_delta, :defence_delta, :overall_delta, :reliability_delta
                 )
             """), {
-                "pid": int(row['player_id']),
-                "attack_rating": int(row['attack_rating']),
-                "defence_rating": int(row['defence_rating']),
-                "overall_rating": int(row['overall_rating']),
-                "reliability": int(row['reliability_rating']),
+                "pid": pid,
+                "attack": new_attack,
+                "defence": new_defence,
+                "overall": new_overall,
+                "reliability": new_reliability,
+                "attack_delta": attack_delta,
+                "defence_delta": defence_delta,
+                "overall_delta": overall_delta,
+                "reliability_delta": new_reliability,
             })
 
     log.info(f"Inserted ML ratings for {len(df)} players")

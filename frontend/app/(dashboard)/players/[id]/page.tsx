@@ -94,6 +94,17 @@ function PlayerMatchHistoryModal({
   );
 }
 
+function DeltaBadge({ delta }: { delta: number | null }) {
+  if (!delta || delta === 0) return null;
+  return (
+    <span className={`text-xs font-bold ml-1 ${
+      delta > 0 ? 'text-green-500' : 'text-red-400'
+    }`}>
+      {delta > 0 ? `+${delta}` : delta}
+    </span>
+  );
+}
+
 export default function PlayerProfilePage() {
   const params = useParams();
   const router = useRouter();
@@ -262,13 +273,17 @@ export default function PlayerProfilePage() {
               {/* Overall */}
               <div className="bg-green-50 rounded-xl p-4 flex items-center justify-between mb-2">
                 <span className="text-sm font-semibold text-green-900">Overall</span>
-                <span className="text-2xl font-black text-green-700">{profile.overallRating}/10</span>
+                <span className="text-2xl font-black text-green-700">{profile.overallRating}/10
+                  <DeltaBadge delta={profile.overallDelta} />
+                </span>
               </div>
 
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm text-gray-600">⚔️ Attack</span>
-                  <span className="text-sm font-bold text-gray-900">{profile.attackRating}/10</span>
+                  <span className="text-sm font-bold text-gray-900">{profile.attackRating}/10
+                    <DeltaBadge delta={profile.attackDelta} />
+                  </span>
                 </div>
                 <RatingBar value={profile.attackRating || 0} color="bg-red-400" />
               </div>
@@ -276,7 +291,9 @@ export default function PlayerProfilePage() {
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm text-gray-600">🛡️ Defence</span>
-                  <span className="text-sm font-bold text-gray-900">{profile.defenceRating}/10</span>
+                  <span className="text-sm font-bold text-gray-900">{profile.defenceRating}/10
+                    <DeltaBadge delta={profile.defenceDelta} />
+                  </span>
                 </div>
                 <RatingBar value={profile.defenceRating || 0} color="bg-blue-500" />
               </div>
@@ -284,7 +301,9 @@ export default function PlayerProfilePage() {
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm text-gray-600">📅 Reliability</span>
-                  <span className="text-sm font-bold text-gray-900">{profile.reliability}/10</span>
+                  <span className="text-sm font-bold text-gray-900">{profile.reliability}/10
+                    <DeltaBadge delta={profile.reliabilityDelta} />
+                  </span>
                 </div>
                 <RatingBar value={profile.reliability || 0} color="bg-green-500" />
               </div>
