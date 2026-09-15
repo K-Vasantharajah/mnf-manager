@@ -66,9 +66,17 @@ function PlayerCard({ player }: { player: Player }) {
             )}
           </div>
             {player.rating?.overallRating && (
-              <div className="flex flex-col items-center justify-center w-8 h-8 rounded-full border-2 border-green-600 text-green-700 flex-shrink-0">
-                <span className="text-xs font-black leading-none">{player.rating.overallRating}</span>
-                <DeltaBadge delta={player.rating.overallDelta} />
+              <div className="relative flex-shrink-0">
+                <div className="flex flex-col items-center justify-center w-9 h-9 rounded-full border-2 border-green-600 text-green-700">
+                  <span className="text-sm font-black leading-none">{player.rating.overallRating}</span>
+                </div>
+                {player.rating.overallDelta !== null && player.rating.overallDelta !== 0 && (
+                  <span className={`absolute -top-1 -right-2 text-xs font-bold ${
+                    player.rating.overallDelta > 0 ? 'text-green-500' : 'text-red-400'
+                  }`}>
+                    {player.rating.overallDelta > 0 ? `+${player.rating.overallDelta}` : player.rating.overallDelta}
+                  </span>
+                )}
               </div>
             )}
             {player.position && player.position !== 'UNKNOWN' && (
