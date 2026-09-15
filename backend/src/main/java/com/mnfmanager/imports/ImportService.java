@@ -61,7 +61,6 @@ public class ImportService {
                     int scoreA = (int) row.getCell(8).getNumericCellValue();
                     int scoreB = (int) row.getCell(9).getNumericCellValue();
                     String captainBName = getCellString(row.getCell(10));
-                    String winnerCaptain = getCellString(row.getCell(14));
 
                     // Filter by season if specified
                     if (seasonYearFilter != null) {
