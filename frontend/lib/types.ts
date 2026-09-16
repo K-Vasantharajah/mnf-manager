@@ -19,7 +19,6 @@ export interface Player {
   name: string;
   active: boolean;
   strongFoot: string;
-  notes: string;
   position: string | null;
   rating: PlayerRating | null;
   createdAt: string;
@@ -118,7 +117,6 @@ export interface PlayerProfile {
   id: number;
   name: string;
   strongFoot: string;
-  notes: string;
   active: boolean;
   position: string | null;
   ability: number | null;

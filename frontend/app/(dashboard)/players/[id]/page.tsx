@@ -140,7 +140,6 @@ export default function PlayerProfilePage() {
         strongFoot: editStrongFoot,
         active: editActive,
         position: editPosition,
-        notes: profile?.notes || '',
       });
       await queryClient.invalidateQueries({ queryKey: ['players', playerId, 'profile'] });
       await queryClient.invalidateQueries({ queryKey: ['players', 'all'] });

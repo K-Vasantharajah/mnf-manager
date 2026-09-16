@@ -25,7 +25,6 @@ public class PlayerProfileIntegrationTest extends BaseIntegrationTest {
                 .name("Test Player")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test notes")
                 .build());
 
         PlayerRating rating = PlayerRating.builder()
@@ -129,7 +128,6 @@ public class PlayerProfileIntegrationTest extends BaseIntegrationTest {
                 .name("New Player")
                 .strongFoot("Left")
                 .active(true)
-                .notes("No matches yet")
                 .build());
 
         PlayerProfileResponse profile = playerService.getPlayerProfile(newPlayer.getId());

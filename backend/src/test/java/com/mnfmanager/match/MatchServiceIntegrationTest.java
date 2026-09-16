@@ -34,35 +34,30 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
                 .name("Captain A")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test captain A")
                 .build());
 
         captainB = playerRepository.save(Player.builder()
                 .name("Captain B")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test captain B")
                 .build());
 
         player1 = playerRepository.save(Player.builder()
                 .name("Player 1")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test player 1")
                 .build());
 
         player2 = playerRepository.save(Player.builder()
                 .name("Player 2")
                 .strongFoot("Left")
                 .active(true)
-                .notes("Test player 2")
                 .build());
 
         player3 = playerRepository.save(Player.builder()
                 .name("Player 3")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test player 3")
                 .build());
     }
 

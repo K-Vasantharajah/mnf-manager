@@ -40,7 +40,6 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
                 .name("Controller Test Player")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test notes")
                 .build());
     }
 
@@ -77,8 +76,7 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
         Map<String, Object> newPlayer = Map.of(
                 "name", "New Test Player",
                 "strongFoot", "Left",
-                "active", true,
-                "notes", "Created via controller test"
+                "active", true
         );
 
         mockMvc.perform(post("/api/v1/players")
@@ -96,8 +94,7 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
         Map<String, Object> update = Map.of(
                 "name", "Updated Player Name",
                 "strongFoot", "Left",
-                "active", true,
-                "notes", "Updated notes"
+                "active", true
         );
 
         mockMvc.perform(put("/api/v1/players/{id}", testPlayer.getId())

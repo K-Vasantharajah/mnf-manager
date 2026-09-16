@@ -12,7 +12,6 @@ public class PlayerProfileResponse {
     private Long id;
     private String name;
     private String strongFoot;
-    private String notes;
     private Boolean active;
     private String position;
     private Short ability;

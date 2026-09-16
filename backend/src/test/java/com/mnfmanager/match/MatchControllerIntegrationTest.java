@@ -44,14 +44,12 @@ public class MatchControllerIntegrationTest extends BaseIntegrationTest {
                 .name("Match Controller Captain A")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test")
                 .build());
 
         captainB = playerRepository.save(Player.builder()
                 .name("Match Controller Captain B")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test")
                 .build());
     }
 

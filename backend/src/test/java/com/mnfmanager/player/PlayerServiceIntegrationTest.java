@@ -25,7 +25,6 @@ public class PlayerServiceIntegrationTest extends BaseIntegrationTest {
                 .name("Test Player")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test notes")
                 .build();
 
         Player saved = playerService.createPlayer(player);
@@ -41,14 +40,12 @@ public class PlayerServiceIntegrationTest extends BaseIntegrationTest {
                 .name("Active Player")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Active")
                 .build();
 
         Player player2 = Player.builder()
                 .name("Inactive Player")
                 .strongFoot("Left")
                 .active(false)
-                .notes("Inactive")
                 .build();
 
         playerRepository.save(player1);
@@ -66,7 +63,6 @@ public class PlayerServiceIntegrationTest extends BaseIntegrationTest {
                 .name("To Deactivate")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test")
                 .build();
         Player saved = playerRepository.save(player);
 
@@ -82,7 +78,6 @@ public class PlayerServiceIntegrationTest extends BaseIntegrationTest {
                 .name("Win Rate Player")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test")
                 .build();
         Player saved = playerRepository.save(player);
 
@@ -118,14 +113,12 @@ public class PlayerServiceIntegrationTest extends BaseIntegrationTest {
                 .name("Active Player")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Active")
                 .build());
 
         playerRepository.save(Player.builder()
                 .name("Inactive Player")
                 .strongFoot("Right")
                 .active(false)
-                .notes("Inactive")
                 .build());
 
         List<Player> activePlayers = playerService.getAllActivePlayers();
@@ -142,7 +135,6 @@ public class PlayerServiceIntegrationTest extends BaseIntegrationTest {
                 .name("To Deactivate")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test")
                 .build());
 
         playerService.deactivatePlayer(player.getId());

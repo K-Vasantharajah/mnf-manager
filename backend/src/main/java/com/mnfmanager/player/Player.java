@@ -43,9 +43,6 @@ public class Player {
     @Builder.Default
     private String strongFoot = "Right";
 
-    @Column(columnDefinition = "TEXT")
-    private String notes;
-
     @Column(length = 10)
     private String position;
 

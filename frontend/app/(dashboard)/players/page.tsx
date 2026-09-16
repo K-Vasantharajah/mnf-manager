@@ -56,7 +56,7 @@ function PlayerCard({ player }: { player: Player }) {
     <Link href={`/players/${player.id}`}>
       <div className={`bg-white rounded-xl border border-gray-100 p-5 hover:shadow-md transition-shadow cursor-pointer ${!player.active ? 'opacity-60' : ''}`}>
         <div className="flex items-center gap-3 mb-4">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 ${player.active ? 'bg-green-700' : 'bg-gray-400'}`}>
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0 ${player.active ? 'bg-green-700' : 'bg-gray-400'}`}>
             {initials}
           </div>
           <div className="flex-1 min-w-0">
@@ -66,7 +66,7 @@ function PlayerCard({ player }: { player: Player }) {
             )}
           </div>
             {player.rating?.overallRating && (
-              <div className="relative flex-shrink-0">
+              <div className="relative shrink-0">
                 <div className="flex flex-col items-center justify-center w-9 h-9 rounded-full border-2 border-green-600 text-green-700">
                   <span className="text-sm font-black leading-none">{player.rating.overallRating}</span>
                 </div>

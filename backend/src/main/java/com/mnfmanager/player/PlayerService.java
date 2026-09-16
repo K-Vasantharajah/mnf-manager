@@ -51,7 +51,6 @@ public class PlayerService {
         Player existing = getPlayerById(id);
         existing.setName(updatedPlayer.getName());
         existing.setStrongFoot(updatedPlayer.getStrongFoot());
-        existing.setNotes(updatedPlayer.getNotes());
         existing.setActive(updatedPlayer.getActive());
         existing.setPosition(updatedPlayer.getPosition());
         return playerRepository.save(existing);
@@ -192,7 +191,6 @@ public class PlayerService {
                 .id(player.getId())
                 .name(player.getName())
                 .strongFoot(player.getStrongFoot())
-                .notes(player.getNotes())
                 .active(player.getActive())
                 .position(player.getPosition())
                 .ability(player.getRating() != null ? player.getRating().getAbility() : null)

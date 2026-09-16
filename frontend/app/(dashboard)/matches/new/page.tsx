@@ -46,7 +46,6 @@ export default function NewMatchPage() {
         name: newPlayerName.trim(),
         strongFoot: 'Right',
         active: true,
-        notes: 'Added during match recording',
       });
       await queryClient.invalidateQueries({ queryKey: ['players'] });
       await queryClient.invalidateQueries({ queryKey: ['players', 'all'] });

@@ -34,28 +34,24 @@ public class MatchDetailIntegrationTest extends BaseIntegrationTest {
                 .name("Captain A")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test")
                 .build());
 
         captainB = playerRepository.save(Player.builder()
                 .name("Captain B")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test")
                 .build());
 
         player1 = playerRepository.save(Player.builder()
                 .name("Player 1")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test")
                 .build());
 
         player2 = playerRepository.save(Player.builder()
                 .name("Player 2")
                 .strongFoot("Left")
                 .active(true)
-                .notes("Test")
                 .build());
 
         CreateMatchRequest request = new CreateMatchRequest();

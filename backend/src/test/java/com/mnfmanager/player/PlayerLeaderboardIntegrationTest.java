@@ -29,21 +29,18 @@ public class PlayerLeaderboardIntegrationTest extends BaseIntegrationTest {
                 .name("High Win Rate")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test")
                 .build());
 
         player2 = playerRepository.save(Player.builder()
                 .name("Mid Win Rate")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test")
                 .build());
 
         player3 = playerRepository.save(Player.builder()
                 .name("Low Win Rate")
                 .strongFoot("Right")
                 .active(true)
-                .notes("Test")
                 .build());
 
         addSeasonStats(player1, (short) 2026, (short) 10, (short) 9, (short) 0, (short) 1, (short) 5);
