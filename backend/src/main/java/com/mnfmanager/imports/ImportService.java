@@ -65,7 +65,8 @@ public class ImportService {
                     // Filter by season if specified
                     if (seasonYearFilter != null) {
                         int seasonYear = seasonNum == 1 ? 2025 : 2026;
-                        if (seasonYear != seasonYearFilter) continue;
+                        if (seasonYear != seasonYearFilter)
+                            continue;
                     }
 
                     int seasonYear = seasonNum == 1 ? 2025 : 2026;
@@ -187,7 +188,8 @@ public class ImportService {
     }
 
     private String getCellString(Cell cell) {
-        if (cell == null) return "";
+        if (cell == null)
+            return "";
         return switch (cell.getCellType()) {
             case STRING -> cell.getStringCellValue().trim();
             case NUMERIC -> String.valueOf((int) cell.getNumericCellValue());
@@ -195,5 +197,6 @@ public class ImportService {
         };
     }
 
-    record PlayerPerformance(String playerName, String team, int goals) {}
+    record PlayerPerformance(String playerName, String team, int goals) {
+    }
 }

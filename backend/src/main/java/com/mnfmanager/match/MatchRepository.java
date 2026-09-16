@@ -12,61 +12,61 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     List<Match> findBySeasonYearOrderByMatchDateDesc(Short seasonYear);
 
     @Query("""
-        SELECT m FROM Match m
-        LEFT JOIN FETCH m.captainA
-        LEFT JOIN FETCH m.captainB
-        LEFT JOIN FETCH m.winner
-        ORDER BY m.seasonYear DESC, m.id DESC
-    """)
+                SELECT m FROM Match m
+                LEFT JOIN FETCH m.captainA
+                LEFT JOIN FETCH m.captainB
+                LEFT JOIN FETCH m.winner
+                ORDER BY m.seasonYear DESC, m.id DESC
+            """)
     List<Match> findAllByOrderByMatchDateDesc();
 
     @Query("""
-        SELECT m FROM Match m
-        LEFT JOIN FETCH m.captainA
-        LEFT JOIN FETCH m.captainB
-        LEFT JOIN FETCH m.winner
-        LEFT JOIN FETCH m.matchPlayers mp
-        LEFT JOIN FETCH mp.player
-        WHERE m.id = :id
-    """)
+                SELECT m FROM Match m
+                LEFT JOIN FETCH m.captainA
+                LEFT JOIN FETCH m.captainB
+                LEFT JOIN FETCH m.winner
+                LEFT JOIN FETCH m.matchPlayers mp
+                LEFT JOIN FETCH mp.player
+                WHERE m.id = :id
+            """)
     Optional<Match> findByIdWithFullDetails(Long id);
 
     @Query("""
-        SELECT m FROM Match m
-        LEFT JOIN FETCH m.goalScorers gs
-        LEFT JOIN FETCH gs.player
-        WHERE m.id = :id
-    """)
+                SELECT m FROM Match m
+                LEFT JOIN FETCH m.goalScorers gs
+                LEFT JOIN FETCH gs.player
+                WHERE m.id = :id
+            """)
     Optional<Match> findByIdWithGoalScorers(Long id);
 
     @Query("""
-        SELECT m FROM Match m
-        LEFT JOIN FETCH m.captainA
-        LEFT JOIN FETCH m.captainB
-        LEFT JOIN FETCH m.winner
-        WHERE m.seasonYear = :seasonYear
-        ORDER BY m.matchDate DESC
-    """)
+                SELECT m FROM Match m
+                LEFT JOIN FETCH m.captainA
+                LEFT JOIN FETCH m.captainB
+                LEFT JOIN FETCH m.winner
+                WHERE m.seasonYear = :seasonYear
+                ORDER BY m.matchDate DESC
+            """)
     List<Match> findBySeasonWithDetails(Short seasonYear);
 
     @Query("""
-        SELECT m.gameWeek FROM Match m
-        WHERE m.seasonYear = :seasonYear
-        AND m.gameWeek LIKE 'GW%'
-        ORDER BY m.id DESC
-    """)
+                SELECT m.gameWeek FROM Match m
+                WHERE m.seasonYear = :seasonYear
+                AND m.gameWeek LIKE 'GW%'
+                ORDER BY m.id DESC
+            """)
     List<String> findLastGameWeekForSeason(Short seasonYear);
 
     @Query("""
-        SELECT DISTINCT m FROM Match m
-        LEFT JOIN FETCH m.captainA
-        LEFT JOIN FETCH m.captainB
-        LEFT JOIN FETCH m.winner
-        JOIN m.matchPlayers mp
-        WHERE mp.player.id = :playerId
-        AND (:seasonYear IS NULL OR m.seasonYear = :seasonYear)
-        ORDER BY m.id DESC
-    """)
+                SELECT DISTINCT m FROM Match m
+                LEFT JOIN FETCH m.captainA
+                LEFT JOIN FETCH m.captainB
+                LEFT JOIN FETCH m.winner
+                JOIN m.matchPlayers mp
+                WHERE mp.player.id = :playerId
+                AND (:seasonYear IS NULL OR m.seasonYear = :seasonYear)
+                ORDER BY m.id DESC
+            """)
     List<Match> findByPlayerIdAndSeasonYear(
             @Param("playerId") Long playerId,
             @Param("seasonYear") Short seasonYear);

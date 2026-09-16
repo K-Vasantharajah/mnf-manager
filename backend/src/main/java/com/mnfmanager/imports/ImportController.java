@@ -27,7 +27,6 @@ public class ImportController {
                 "matchesImported", result.getMatchesImported(),
                 "playersNotFound", result.getPlayersNotFound(),
                 "errors", result.getErrors(),
-                "message", "Import completed"
-        ));
+                "message", "Import completed"));
     }
 }

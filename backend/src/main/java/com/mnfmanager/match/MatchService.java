@@ -112,8 +112,7 @@ public class MatchService {
         Player captainB = findPlayerById(request.getCaptainBId());
 
         boolean isDraw = request.getScoreA().equals(request.getScoreB());
-        Player winner = isDraw ? null :
-                request.getScoreA() > request.getScoreB() ? captainA : captainB;
+        Player winner = isDraw ? null : request.getScoreA() > request.getScoreB() ? captainA : captainB;
 
         request.setGameWeek(calculateNextGameWeek(request.getSeasonYear()));
 
@@ -160,8 +159,7 @@ public class MatchService {
         entityManager.clear();
 
         boolean isDraw = request.getScoreA().equals(request.getScoreB());
-        Player winner = isDraw ? null :
-                request.getScoreA() > request.getScoreB() ? captainA : captainB;
+        Player winner = isDraw ? null : request.getScoreA() > request.getScoreB() ? captainA : captainB;
 
         // Preserve existing game week if none provided
         if (request.getGameWeek() == null || request.getGameWeek().isBlank()) {
@@ -296,7 +294,8 @@ public class MatchService {
     }
 
     private void addMatchPlayers(Match match, List<Long> playerIds, char team) {
-        if (playerIds == null) return;
+        if (playerIds == null)
+            return;
         playerIds.forEach(playerId -> {
             Player player = findPlayerById(playerId);
             MatchPlayer mp = new MatchPlayer();
@@ -309,7 +308,8 @@ public class MatchService {
     }
 
     private void addGoalScorers(Match match, List<CreateMatchRequest.GoalScorerRequest> goalScorerRequests) {
-        if (goalScorerRequests == null) return;
+        if (goalScorerRequests == null)
+            return;
         for (CreateMatchRequest.GoalScorerRequest gs : goalScorerRequests) {
             Player scorer = findPlayerById(gs.getPlayerId());
             GoalScorer goalScorer = new GoalScorer();
@@ -324,7 +324,8 @@ public class MatchService {
 
     private String resolveCurrentWinningCaptain(List<Match> allMatches) {
         Match mostRecentMatch = allMatches.stream().findFirst().orElse(null);
-        if (mostRecentMatch == null) return "None";
+        if (mostRecentMatch == null)
+            return "None";
         if (mostRecentMatch.getIsDraw()) {
             return mostRecentMatch.getCaptainA().getName()
                     + " vs " + mostRecentMatch.getCaptainB().getName() + " (Draw - replay)";
@@ -354,11 +355,11 @@ public class MatchService {
                 .count();
         int losses = captainMatches.size() - wins - draws;
 
-        double winRate = captainMatches.isEmpty() ? 0.0 :
-                Math.round((wins * 100.0 / captainMatches.size()) * 10.0) / 10.0;
+        double winRate = captainMatches.isEmpty() ? 0.0
+                : Math.round((wins * 100.0 / captainMatches.size()) * 10.0) / 10.0;
 
-        double pointsPercentage = captainMatches.isEmpty() ? 0.0 :
-                Math.round(((wins * 3.0 + draws) / (captainMatches.size() * 3.0)) * 100.0 * 10.0) / 10.0;
+        double pointsPercentage = captainMatches.isEmpty() ? 0.0
+                : Math.round(((wins * 3.0 + draws) / (captainMatches.size() * 3.0)) * 100.0 * 10.0) / 10.0;
 
         Map<String, Long> playerCounts = new HashMap<>();
         captainMatches.forEach(m -> {
@@ -382,8 +383,8 @@ public class MatchService {
                     String opponent = isCaptainA ? m.getCaptainB().getName() : m.getCaptainA().getName();
                     int scoreFor = isCaptainA ? m.getScoreA() : m.getScoreB();
                     int scoreAgainst = isCaptainA ? m.getScoreB() : m.getScoreA();
-                    String result = m.getIsDraw() ? "DRAW" :
-                            m.getWinner() != null && m.getWinner().getId().equals(captainId) ? "WIN" : "LOSS";
+                    String result = m.getIsDraw() ? "DRAW"
+                            : m.getWinner() != null && m.getWinner().getId().equals(captainId) ? "WIN" : "LOSS";
                     return CaptainStatsResponse.CaptainMatchResult.builder()
                             .matchId(m.getId())
                             .gameWeek(m.getGameWeek())
@@ -417,7 +418,8 @@ public class MatchService {
         match.getMatchPlayers().forEach(mp -> {
             Player player = playerRepository.findByIdWithFullDetails(mp.getPlayer().getId())
                     .orElse(null);
-            if (player == null) return;
+            if (player == null)
+                return;
 
             Short seasonYear = match.getSeasonYear();
             player.getSeasonStats().stream()
@@ -428,9 +430,10 @@ public class MatchService {
                         if (match.getIsDraw()) {
                             stats.setDraws((short) Math.max(0, stats.getDraws() - 1));
                         } else if (match.getWinner() != null) {
-                            boolean wasOnWinningTeam =
-                                    (match.getWinner().getId().equals(match.getCaptainA().getId()) && mp.getTeam() == 'A') ||
-                                    (match.getWinner().getId().equals(match.getCaptainB().getId()) && mp.getTeam() == 'B');
+                            boolean wasOnWinningTeam = (match.getWinner().getId().equals(match.getCaptainA().getId())
+                                    && mp.getTeam() == 'A') ||
+                                    (match.getWinner().getId().equals(match.getCaptainB().getId())
+                                            && mp.getTeam() == 'B');
                             if (wasOnWinningTeam) {
                                 stats.setWins((short) Math.max(0, stats.getWins() - 1));
                             } else {
@@ -444,14 +447,13 @@ public class MatchService {
         match.getGoalScorers().forEach(gs -> {
             Player scorer = playerRepository.findByIdWithFullDetails(gs.getPlayer().getId())
                     .orElse(null);
-            if (scorer == null) return;
+            if (scorer == null)
+                return;
 
             scorer.getSeasonStats().stream()
                     .filter(s -> s.getSeasonYear().equals(match.getSeasonYear()))
                     .findFirst()
-                    .ifPresent(stats ->
-                            stats.setGoals((short) Math.max(0, stats.getGoals() - gs.getGoals()))
-                    );
+                    .ifPresent(stats -> stats.setGoals((short) Math.max(0, stats.getGoals() - gs.getGoals())));
             playerRepository.saveAndFlush(scorer);
         });
     }
@@ -490,8 +492,7 @@ public class MatchService {
             if (match.getIsDraw()) {
                 stats.setDraws((short) (stats.getDraws() + 1));
             } else if (match.getWinner() != null) {
-                boolean playerOnWinningTeam =
-                        (match.getWinner().equals(match.getCaptainA()) && mp.getTeam() == 'A') ||
+                boolean playerOnWinningTeam = (match.getWinner().equals(match.getCaptainA()) && mp.getTeam() == 'A') ||
                         (match.getWinner().equals(match.getCaptainB()) && mp.getTeam() == 'B');
                 if (playerOnWinningTeam) {
                     stats.setWins((short) (stats.getWins() + 1));
@@ -502,24 +503,22 @@ public class MatchService {
         });
 
         match.getGoalScorers().forEach(gs -> {
-            if (Boolean.TRUE.equals(gs.getIsOwnGoal())) return;
+            if (Boolean.TRUE.equals(gs.getIsOwnGoal()))
+                return;
             Player scorer = gs.getPlayer();
             Short seasonYear = match.getSeasonYear();
 
             scorer.getSeasonStats().stream()
                     .filter(s -> s.getSeasonYear().equals(seasonYear))
                     .findFirst()
-                    .ifPresent(stats ->
-                            stats.setGoals((short) (stats.getGoals() + gs.getGoals()))
-                    );
+                    .ifPresent(stats -> stats.setGoals((short) (stats.getGoals() + gs.getGoals())));
         });
 
         playerRepository.saveAll(
                 match.getMatchPlayers().stream()
                         .map(MatchPlayer::getPlayer)
                         .distinct()
-                        .toList()
-        );
+                        .toList());
     }
 
     private int calculateLongestStreak(List<Match> matches, Long captainId) {

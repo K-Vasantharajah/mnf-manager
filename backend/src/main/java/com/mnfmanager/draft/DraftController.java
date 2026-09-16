@@ -29,8 +29,7 @@ public class DraftController {
         ResponseEntity<Map> response = restTemplate.postForEntity(
                 ML_SERVICE_URL + "/api/draft/preferences/" + captainId,
                 request,
-                Map.class
-        );
+                Map.class);
         return ResponseEntity.ok(response.getBody());
     }
 
@@ -44,8 +43,7 @@ public class DraftController {
         ResponseEntity<Map> response = restTemplate.postForEntity(
                 ML_SERVICE_URL + "/api/draft/predict",
                 request,
-                Map.class
-        );
+                Map.class);
         return ResponseEntity.ok(response.getBody());
     }
 
@@ -59,8 +57,7 @@ public class DraftController {
         ResponseEntity<Map> response = restTemplate.postForEntity(
                 ML_SERVICE_URL + "/api/draft/captain-recommendations",
                 request,
-                Map.class
-        );
+                Map.class);
         return ResponseEntity.ok(response.getBody());
     }
 
@@ -69,8 +66,7 @@ public class DraftController {
         log.info("Getting chemistry for player: {}", playerId);
         ResponseEntity<Map> response = restTemplate.getForEntity(
                 ML_SERVICE_URL + "/api/chemistry/player/" + playerId,
-                Map.class
-        );
+                Map.class);
         return ResponseEntity.ok(response.getBody());
     }
 
@@ -83,8 +79,7 @@ public class DraftController {
         ResponseEntity<Map> response = restTemplate.postForEntity(
                 ML_SERVICE_URL + "/api/chemistry/team",
                 request,
-                Map.class
-        );
+                Map.class);
         return ResponseEntity.ok(response.getBody());
     }
 }

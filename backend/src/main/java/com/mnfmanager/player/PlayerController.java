@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import com.mnfmanager.match.MatchService;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/players")

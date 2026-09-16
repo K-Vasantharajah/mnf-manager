@@ -20,8 +20,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
                 "error", "Not found",
                 "message", ex.getMessage(),
-                "timestamp", LocalDateTime.now().toString()
-        ));
+                "timestamp", LocalDateTime.now().toString()));
     }
 
     @ExceptionHandler(Exception.class)
@@ -30,8 +29,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "error", "Internal server error",
                 "message", "Something went wrong",
-                "timestamp", LocalDateTime.now().toString()
-        ));
+                "timestamp", LocalDateTime.now().toString()));
     }
 
     @ExceptionHandler(IllegalStateException.class)
@@ -40,7 +38,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
                 "error", "Bad request",
                 "message", ex.getMessage(),
-                "timestamp", LocalDateTime.now().toString()
-        ));
+                "timestamp", LocalDateTime.now().toString()));
     }
 }

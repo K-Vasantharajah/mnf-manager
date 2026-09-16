@@ -33,8 +33,7 @@ public class AuthController {
         try {
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
                     new NetHttpTransport(),
-                    new GsonFactory()
-            )
+                    new GsonFactory())
                     .setAudience(Collections.singletonList(googleClientId))
                     .build();
 
@@ -58,8 +57,7 @@ public class AuthController {
                     "email", email,
                     "name", name != null ? name : "",
                     "picture", picture != null ? picture : "",
-                    "role", role
-            ));
+                    "role", role));
 
         } catch (Exception e) {
             log.error("Google auth error", e);
