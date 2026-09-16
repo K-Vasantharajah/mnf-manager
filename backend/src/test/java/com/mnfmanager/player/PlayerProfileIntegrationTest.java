@@ -29,10 +29,11 @@ public class PlayerProfileIntegrationTest extends BaseIntegrationTest {
 
         PlayerRating rating = PlayerRating.builder()
                 .player(player)
-                .ability((short) 8)
+                .attackRating((short) 8)
+                .defenceRating((short) 7)
+                .overallRating((short) 8)
                 .reliability((short) 9)
-                .goalThreat((short) 7)
-                .ratedBy("Kobi")
+                .ratedBy("ML Model")
                 .build();
         player.setRating(rating);
         playerRepository.saveAndFlush(player);
@@ -80,9 +81,10 @@ public class PlayerProfileIntegrationTest extends BaseIntegrationTest {
     void shouldReturnCorrectRatings() {
         PlayerProfileResponse profile = playerService.getPlayerProfile(player.getId());
 
-        assertThat(profile.getAbility()).isEqualTo((short) 8);
+        assertThat(profile.getAttackRating()).isEqualTo((short) 8);
+        assertThat(profile.getDefenceRating()).isEqualTo((short) 7);
+        assertThat(profile.getOverallRating()).isEqualTo((short) 8);
         assertThat(profile.getReliability()).isEqualTo((short) 9);
-        assertThat(profile.getGoalThreat()).isEqualTo((short) 7);
     }
 
     @Test
@@ -136,5 +138,20 @@ public class PlayerProfileIntegrationTest extends BaseIntegrationTest {
         assertThat(profile.getCareerStats().getTotalMatches()).isEqualTo(0);
         assertThat(profile.getCareerStats().getCareerWinRate()).isEqualTo(0.0);
     }
-    
+
+    @Test
+    void shouldCalculatePointsPercentageCorrectly() {
+        PlayerProfileResponse profile = playerService.getPlayerProfile(player.getId());
+
+        var stats2026 = profile.getSeasonStats().stream()
+                .filter(s -> s.getSeasonYear() == 2026)
+                .findFirst()
+                .orElseThrow();
+
+        // (7*3 + 1) / (10*3) * 100 = 22/30 * 100 = 73.3
+        assertThat(stats2026.getPointsPercentage()).isEqualTo(73.3);
+
+        // Career: (19*3 + 4) / (30*3) * 100 = 61/90 * 100 = 67.8
+        assertThat(profile.getCareerStats().getCareerPointsPercentage()).isEqualTo(67.8);
+    }
 }

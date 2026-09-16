@@ -64,13 +64,13 @@ public class PlayerController {
                 .winRate(playerService.calculateWinRate(player))
                 .contributionScore(playerService.calculateContributionScore(player))
                 .build());
-    }  
+    }
 
     @GetMapping("/leaderboard")
     public ResponseEntity<List<PlayerLeaderboardEntry>> getLeaderboard(
-        @RequestParam(required = false) Integer seasonYear) {
-            return ResponseEntity.ok(playerService.getLeaderboard(seasonYear));
-        }
+            @RequestParam(required = false) Integer seasonYear) {
+        return ResponseEntity.ok(playerService.getLeaderboard(seasonYear));
+    }
 
     @GetMapping("/{id}/profile")
     public ResponseEntity<PlayerProfileResponse> getPlayerProfile(@PathVariable Long id) {
@@ -78,7 +78,7 @@ public class PlayerController {
     }
 
     @GetMapping("/{id}/matches")
-    public ResponseEntity<List<Map<String, Object>>> getPlayerMatches(
+    public ResponseEntity<List<PlayerMatchResponse>> getPlayerMatches(
             @PathVariable Long id,
             @RequestParam(required = false) Integer seasonYear) {
         return ResponseEntity.ok(playerService.getPlayerMatches(id, seasonYear));

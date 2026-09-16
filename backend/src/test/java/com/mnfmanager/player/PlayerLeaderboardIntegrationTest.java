@@ -50,7 +50,7 @@ public class PlayerLeaderboardIntegrationTest extends BaseIntegrationTest {
     }
 
     private void addSeasonStats(Player player, short year, short played,
-                                 short wins, short draws, short losses, short goals) {
+            short wins, short draws, short losses, short goals) {
         PlayerSeasonStats stats = PlayerSeasonStats.builder()
                 .player(player)
                 .seasonYear(year)
@@ -135,5 +135,26 @@ public class PlayerLeaderboardIntegrationTest extends BaseIntegrationTest {
 
         assertThat(player1Entry.getGoals()).isEqualTo(5);
         assertThat(player1Entry.getGoalsPerGame()).isEqualTo(0.5);
+    }
+
+    @Test
+    void shouldCalculatePointsPercentageCorrectly() {
+        List<PlayerLeaderboardEntry> leaderboard = playerService.getLeaderboard(2026);
+
+        var highWinRate = leaderboard.stream()
+                .filter(e -> e.getName().equals("High Win Rate"))
+                .findFirst().orElseThrow();
+
+        // 9 wins, 0 draws, 1 loss, 10 matches
+        // (9*3 + 0) / (10*3) * 100 = 27/30 * 100 = 90.0
+        assertThat(highWinRate.getPointsPercentage()).isEqualTo(90.0);
+
+        var midWinRate = leaderboard.stream()
+                .filter(e -> e.getName().equals("Mid Win Rate"))
+                .findFirst().orElseThrow();
+
+        // 5 wins, 0 draws, 5 losses, 10 matches
+        // (5*3 + 0) / (10*3) * 100 = 15/30 * 100 = 50.0
+        assertThat(midWinRate.getPointsPercentage()).isEqualTo(50.0);
     }
 }

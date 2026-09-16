@@ -2,6 +2,7 @@ package com.mnfmanager.player;
 
 import com.mnfmanager.common.exception.ResourceNotFoundException;
 import com.mnfmanager.match.Match;
+import com.mnfmanager.match.MatchPlayer;
 import com.mnfmanager.match.MatchRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -69,7 +69,8 @@ public class PlayerService {
         int totalPlayed = player.getSeasonStats().stream()
                 .mapToInt(s -> s.getMatchesPlayed())
                 .sum();
-        if (totalPlayed == 0) return 0.0;
+        if (totalPlayed == 0)
+            return 0.0;
         int totalWins = player.getSeasonStats().stream()
                 .mapToInt(s -> s.getWins())
                 .sum();
@@ -77,7 +78,8 @@ public class PlayerService {
     }
 
     public double calculateContributionScore(Player player) {
-        if (player.getRating() == null) return 0.0;
+        if (player.getRating() == null)
+            return 0.0;
         int totalGoals = player.getSeasonStats().stream()
                 .mapToInt(s -> s.getGoals()).sum();
         int totalAssists = player.getSeasonStats().stream()
@@ -89,23 +91,23 @@ public class PlayerService {
         double goalThreat = player.getRating().getGoalThreat();
         return Math.round(
                 (totalGoals * 1.5 + totalAssists + totalWins * 0.5
-                        + reliability * 2.5 + ability + goalThreat) / 4.0 * 10.0
-        ) / 10.0;
+                        + reliability * 2.5 + ability + goalThreat) / 4.0 * 10.0)
+                / 10.0;
     }
 
     public List<PlayerLeaderboardEntry> getLeaderboard(Integer seasonYear) {
         List<Player> players = playerRepository.findAllActiveWithRatingsAndStats();
         return players.stream()
-            .map(p -> buildLeaderboardEntry(p, seasonYear))
-            .filter(e -> seasonYear == null || e.getMatchesPlayed() > 0)
-            .sorted((a, b) -> Double.compare(b.getPointsPercentage(), a.getPointsPercentage()))
-            .toList();
-        }
+                .map(p -> buildLeaderboardEntry(p, seasonYear))
+                .filter(e -> seasonYear == null || e.getMatchesPlayed() > 0)
+                .sorted((a, b) -> Double.compare(b.getPointsPercentage(), a.getPointsPercentage()))
+                .toList();
+    }
 
     private PlayerLeaderboardEntry buildLeaderboardEntry(Player player, Integer seasonYear) {
         var stats = player.getSeasonStats().stream()
-            .filter(s -> seasonYear == null || s.getSeasonYear() == seasonYear.shortValue())
-            .toList();
+                .filter(s -> seasonYear == null || s.getSeasonYear() == seasonYear.shortValue())
+                .toList();
 
         int matchesPlayed = stats.stream().mapToInt(s -> s.getMatchesPlayed()).sum();
         int wins = stats.stream().mapToInt(s -> s.getWins()).sum();
@@ -114,34 +116,31 @@ public class PlayerService {
         int goals = stats.stream().mapToInt(s -> s.getGoals()).sum();
         int assists = stats.stream().mapToInt(s -> s.getAssists()).sum();
 
-        double winRate = matchesPlayed == 0 ? 0.0 :
-            Math.round((wins * 100.0 / matchesPlayed) * 10.0) / 10.0;
-        double pointsPercentage = matchesPlayed == 0 ? 0.0 :
-            Math.round(((wins * 3.0 + draws * 1.0) / (matchesPlayed * 3.0)) * 100.0 * 10.0) / 10.0;
-        double goalsPerGame = matchesPlayed == 0 ? 0.0 :
-            Math.round((goals * 1.0 / matchesPlayed) * 10.0) / 10.0;
+        double winRate = matchesPlayed == 0 ? 0.0 : Math.round((wins * 100.0 / matchesPlayed) * 10.0) / 10.0;
+        double pointsPercentage = matchesPlayed == 0 ? 0.0
+                : Math.round(((wins * 3.0 + draws * 1.0) / (matchesPlayed * 3.0)) * 100.0 * 10.0) / 10.0;
+        double goalsPerGame = matchesPlayed == 0 ? 0.0 : Math.round((goals * 1.0 / matchesPlayed) * 10.0) / 10.0;
 
         return PlayerLeaderboardEntry.builder()
-            .playerId(player.getId())
-            .name(player.getName())
-            .matchesPlayed(matchesPlayed)
-            .wins(wins)
-            .draws(draws)
-            .losses(losses)
-            .goals(goals)
-            .assists(assists)
-            .winRate(winRate)
-            .pointsPercentage(pointsPercentage)
-            .goalsPerGame(goalsPerGame)
-            .ability(player.getRating() != null ? player.getRating().getAbility() : null)
-            .reliability(player.getRating() != null ? player.getRating().getReliability() : null)
-            .goalThreat(player.getRating() != null ? player.getRating().getGoalThreat() : null)
-            .attackRating(player.getRating() != null ? player.getRating().getAttackRating() : null)
-            .defenceRating(player.getRating() != null ? player.getRating().getDefenceRating() : null)
-            .seasonYear(seasonYear)
-            .build();
+                .playerId(player.getId())
+                .name(player.getName())
+                .matchesPlayed(matchesPlayed)
+                .wins(wins)
+                .draws(draws)
+                .losses(losses)
+                .goals(goals)
+                .assists(assists)
+                .winRate(winRate)
+                .pointsPercentage(pointsPercentage)
+                .goalsPerGame(goalsPerGame)
+                .ability(player.getRating() != null ? player.getRating().getAbility() : null)
+                .reliability(player.getRating() != null ? player.getRating().getReliability() : null)
+                .goalThreat(player.getRating() != null ? player.getRating().getGoalThreat() : null)
+                .attackRating(player.getRating() != null ? player.getRating().getAttackRating() : null)
+                .defenceRating(player.getRating() != null ? player.getRating().getDefenceRating() : null)
+                .seasonYear(seasonYear)
+                .build();
     }
-
 
     public PlayerProfileResponse getPlayerProfile(Long id) {
         Player player = playerRepository.findByIdWithFullDetails(id)
@@ -151,41 +150,43 @@ public class PlayerService {
                 .stream()
                 .sorted((a, b) -> Short.compare(b.getSeasonYear(), a.getSeasonYear()))
                 .map(s -> {
-                    double winRate = s.getMatchesPlayed() == 0 ? 0.0 :
-                            Math.round((s.getWins() * 100.0 / s.getMatchesPlayed()) * 10.0) / 10.0;
-                    double goalsPerGame = s.getMatchesPlayed() == 0 ? 0.0 :
-                            Math.round((s.getGoals() * 1.0 / s.getMatchesPlayed()) * 10.0) / 10.0;
-                    double pointsPercentage = s.getMatchesPlayed() == 0 ? 0.0 :
-                    Math.round(((s.getWins() * 3.0 + s.getDraws()) / (s.getMatchesPlayed() * 3.0)) * 100.0 * 10.0) / 10.0;
+                    double winRate = s.getMatchesPlayed() == 0 ? 0.0
+                            : Math.round((s.getWins() * 100.0 / s.getMatchesPlayed()) * 10.0) / 10.0;
+                    double goalsPerGame = s.getMatchesPlayed() == 0 ? 0.0
+                            : Math.round((s.getGoals() * 1.0 / s.getMatchesPlayed()) * 10.0) / 10.0;
+                    double pointsPercentage = s.getMatchesPlayed() == 0 ? 0.0
+                            : Math.round(
+                                    ((s.getWins() * 3.0 + s.getDraws()) / (s.getMatchesPlayed() * 3.0)) * 100.0 * 10.0)
+                                    / 10.0;
 
                     return PlayerProfileResponse.SeasonStatsDetail.builder()
-                    .seasonYear(s.getSeasonYear())
-                    .matchesPlayed((int) s.getMatchesPlayed())
-                    .wins((int) s.getWins())
-                    .draws((int) s.getDraws())
-                    .losses((int) s.getLosses())
-                    .goals((int) s.getGoals())
-                    .assists((int) s.getAssists())
-                    .winRate(winRate)
-                    .pointsPercentage(pointsPercentage)
-                    .goalsPerGame(goalsPerGame)
-                    .build();
+                            .seasonYear(s.getSeasonYear())
+                            .matchesPlayed((int) s.getMatchesPlayed())
+                            .wins((int) s.getWins())
+                            .draws((int) s.getDraws())
+                            .losses((int) s.getLosses())
+                            .goals((int) s.getGoals())
+                            .assists((int) s.getAssists())
+                            .winRate(winRate)
+                            .pointsPercentage(pointsPercentage)
+                            .goalsPerGame(goalsPerGame)
+                            .build();
                 })
                 .toList();
 
-        int totalMatches = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getMatchesPlayed).sum();
+        int totalMatches = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getMatchesPlayed)
+                .sum();
         int totalWins = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getWins).sum();
         int totalDraws = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getDraws).sum();
         int totalLosses = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getLosses).sum();
         int totalGoals = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getGoals).sum();
         int totalAssists = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getAssists).sum();
 
-        double careerWinRate = totalMatches == 0 ? 0.0 :
-                Math.round((totalWins * 100.0 / totalMatches) * 10.0) / 10.0;
-        double careerGoalsPerGame = totalMatches == 0 ? 0.0 :
-                Math.round((totalGoals * 1.0 / totalMatches) * 10.0) / 10.0;
-        double careerPointsPercentage = totalMatches == 0 ? 0.0 :
-                Math.round(((totalWins * 3.0 + totalDraws) / (totalMatches * 3.0)) * 100.0 * 10.0) / 10.0;
+        double careerWinRate = totalMatches == 0 ? 0.0 : Math.round((totalWins * 100.0 / totalMatches) * 10.0) / 10.0;
+        double careerGoalsPerGame = totalMatches == 0 ? 0.0
+                : Math.round((totalGoals * 1.0 / totalMatches) * 10.0) / 10.0;
+        double careerPointsPercentage = totalMatches == 0 ? 0.0
+                : Math.round(((totalWins * 3.0 + totalDraws) / (totalMatches * 3.0)) * 100.0 * 10.0) / 10.0;
 
         return PlayerProfileResponse.builder()
                 .id(player.getId())
@@ -218,38 +219,45 @@ public class PlayerService {
                 .build();
     }
 
-    public List<Map<String, Object>> getPlayerMatches(Long id, Integer seasonYear) {
-        List<Match> matches = matchRepository.findByPlayerIdAndSeasonYear(
-                id,
-                seasonYear != null ? seasonYear.shortValue() : null);
+    public List<PlayerMatchResponse> getPlayerMatches(Long id, Integer seasonYear) {
+        Player player = playerRepository.findByIdWithFullDetails(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Player", id));
 
-        return matches.stream().map(m -> {
-            Map<String, Object> result = new java.util.LinkedHashMap<>();
-            result.put("id", m.getId());
-            result.put("gameWeek", m.getGameWeek());
-            result.put("seasonYear", m.getSeasonYear());
-            result.put("captainAName", m.getCaptainA().getName());
-            result.put("captainBName", m.getCaptainB().getName());
-            result.put("scoreA", m.getScoreA());
-            result.put("scoreB", m.getScoreB());
-            result.put("isDraw", m.getIsDraw());
-            result.put("winnerName", m.getWinner() != null ? m.getWinner().getName() : null);
-            result.put("winnerCaptainId", m.getWinner() != null ? m.getWinner().getId() : null);
+        List<Match> matches = seasonYear != null
+                ? matchRepository.findBySeasonWithDetails((short) seasonYear.shortValue())
+                : matchRepository.findAllByOrderByMatchDateDesc();
 
-            // Determine player's team and result
-            m.getMatchPlayers().stream()
-                    .filter(mp -> mp.getPlayer().getId().equals(id))
-                    .findFirst()
-                    .ifPresent(mp -> {
-                        result.put("playerTeam", String.valueOf(mp.getTeam()));
-                        boolean won = m.getWinner() != null && (
-                                (mp.getTeam() == 'A' && m.getWinner().getId().equals(m.getCaptainA().getId())) ||
-                                (mp.getTeam() == 'B' && m.getWinner().getId().equals(m.getCaptainB().getId()))
-                        );
-                        result.put("result", m.getIsDraw() ? "DRAW" : won ? "WIN" : "LOSS");
-                    });
+        return matches.stream()
+                .filter(m -> m.getMatchPlayers().stream()
+                        .anyMatch(mp -> mp.getPlayer().getId().equals(id)))
+                .map(m -> {
+                    MatchPlayer mp = m.getMatchPlayers().stream()
+                            .filter(p -> p.getPlayer().getId().equals(id))
+                            .findFirst().orElseThrow();
 
-            return result;
-        }).toList();
+                    String result;
+                    if (m.getIsDraw()) {
+                        result = "DRAW";
+                    } else if (m.getWinner() != null) {
+                        boolean onWinningTeam = (m.getWinner().getId().equals(m.getCaptainA().getId())
+                                && mp.getTeam() == 'A') ||
+                                (m.getWinner().getId().equals(m.getCaptainB().getId()) && mp.getTeam() == 'B');
+                        result = onWinningTeam ? "WIN" : "LOSS";
+                    } else {
+                        result = "UNKNOWN";
+                    }
+
+                    return PlayerMatchResponse.builder()
+                            .id(m.getId())
+                            .gameWeek(m.getGameWeek())
+                            .seasonYear((int) m.getSeasonYear())
+                            .captainAName(m.getCaptainA().getName())
+                            .captainBName(m.getCaptainB().getName())
+                            .scoreA((int) m.getScoreA())
+                            .scoreB((int) m.getScoreB())
+                            .result(result)
+                            .build();
+                })
+                .toList();
     }
 }

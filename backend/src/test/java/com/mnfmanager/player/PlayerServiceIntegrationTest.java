@@ -35,44 +35,6 @@ public class PlayerServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void shouldGetAllActivePlayers() {
-        Player player1 = Player.builder()
-                .name("Active Player")
-                .strongFoot("Right")
-                .active(true)
-                .build();
-
-        Player player2 = Player.builder()
-                .name("Inactive Player")
-                .strongFoot("Left")
-                .active(false)
-                .build();
-
-        playerRepository.save(player1);
-        playerRepository.save(player2);
-
-        var activePlayers = playerService.getAllActivePlayers();
-
-        assertThat(activePlayers).isNotEmpty();
-        assertThat(activePlayers).allMatch(p -> p.getActive());
-    }
-
-    @Test
-    void shouldDeactivatePlayer() {
-        Player player = Player.builder()
-                .name("To Deactivate")
-                .strongFoot("Right")
-                .active(true)
-                .build();
-        Player saved = playerRepository.save(player);
-
-        playerService.deactivatePlayer(saved.getId());
-
-        Player deactivated = playerRepository.findById(saved.getId()).orElseThrow();
-        assertThat(deactivated.getActive()).isFalse();
-    }
-
-    @Test
     void shouldCalculateWinRate() {
         Player player = Player.builder()
                 .name("Win Rate Player")
@@ -101,14 +63,14 @@ public class PlayerServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-        void shouldThrowExceptionForNonExistentPlayer() {
+    void shouldThrowExceptionForNonExistentPlayer() {
         assertThatThrownBy(() -> playerService.getPlayerById(99999L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("99999");
-        }
+    }
 
-        @Test
-        void shouldExcludeInactivePlayersFromActiveList() {
+    @Test
+    void shouldExcludeInactivePlayersFromActiveList() {
         playerRepository.save(Player.builder()
                 .name("Active Player")
                 .strongFoot("Right")
@@ -127,10 +89,10 @@ public class PlayerServiceIntegrationTest extends BaseIntegrationTest {
                 .extracting(Player::getName)
                 .contains("Active Player")
                 .doesNotContain("Inactive Player");
-        }
+    }
 
-        @Test
-        void shouldDeactivatePlayerCorrectly() {
+    @Test
+    void shouldDeactivatePlayerCorrectly() {
         Player player = playerRepository.save(Player.builder()
                 .name("To Deactivate")
                 .strongFoot("Right")
@@ -146,5 +108,27 @@ public class PlayerServiceIntegrationTest extends BaseIntegrationTest {
         assertThat(activePlayers)
                 .extracting(Player::getName)
                 .doesNotContain("To Deactivate");
-        }
+    }
+
+    @Test
+    void shouldUpdatePlayer() {
+        Player player = playerRepository.save(Player.builder()
+                .name("Original Name")
+                .strongFoot("Right")
+                .active(true)
+                .build());
+
+        Player update = Player.builder()
+                .name("Updated Name")
+                .strongFoot("Left")
+                .active(true)
+                .position("ST")
+                .build();
+
+        Player updated = playerService.updatePlayer(player.getId(), update);
+
+        assertThat(updated.getName()).isEqualTo("Updated Name");
+        assertThat(updated.getStrongFoot()).isEqualTo("Left");
+        assertThat(updated.getPosition()).isEqualTo("ST");
+    }
 }

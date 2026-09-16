@@ -76,8 +76,7 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
         Map<String, Object> newPlayer = Map.of(
                 "name", "New Test Player",
                 "strongFoot", "Left",
-                "active", true
-        );
+                "active", true);
 
         mockMvc.perform(post("/api/v1/players")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -94,8 +93,7 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
         Map<String, Object> update = Map.of(
                 "name", "Updated Player Name",
                 "strongFoot", "Left",
-                "active", true
-        );
+                "active", true);
 
         mockMvc.perform(put("/api/v1/players/{id}", testPlayer.getId())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -139,5 +137,31 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", isA(java.util.List.class)));
+    }
+
+    @Test
+    void shouldReturn403WhenCreatingPlayerWithoutAuth() throws Exception {
+        Map<String, Object> newPlayer = Map.of(
+                "name", "Unauthorized Player",
+                "strongFoot", "Right",
+                "active", true);
+
+        mockMvc.perform(post("/api/v1/players")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newPlayer)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldReturn403WhenUpdatingPlayerWithoutAuth() throws Exception {
+        Map<String, Object> update = Map.of(
+                "name", "Unauthorized Update",
+                "strongFoot", "Left",
+                "active", true);
+
+        mockMvc.perform(put("/api/v1/players/{id}", testPlayer.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(update)))
+                .andExpect(status().isForbidden());
     }
 }
