@@ -9,9 +9,10 @@ Usage:
 On Azure this will be run as a scheduled Function App nightly.
 """
 
-import logging
+import pandas as pd
 from sqlalchemy import create_engine, text
 from models.ratings import calculate_derived_ratings
+import logging
 
 logging.basicConfig(
     level=logging.INFO,
