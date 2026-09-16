@@ -242,11 +242,10 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
         request.setTeamAPlayerIds(List.of(captainA.getId(), player1.getId()));
         request.setTeamBPlayerIds(List.of(captainB.getId(), player2.getId()));
         request.setGoalScorers(List.of());
-        
+
         matchService.createMatch(request);
 
-        List<com.mnfmanager.match.CaptainStatsResponse> stats = 
-                matchService.getCaptainStats(2026);
+        List<com.mnfmanager.match.CaptainStatsResponse> stats = matchService.getCaptainStats(2026);
 
         com.mnfmanager.match.CaptainStatsResponse captainAStats = stats.stream()
                 .filter(s -> s.getPlayerId().equals(captainA.getId()))
@@ -258,5 +257,100 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
         assertThat(captainAStats.getMatchHistory().get(0).getOpponentName()).isEqualTo("Captain B");
         assertThat(captainAStats.getMatchHistory().get(0).getScoreFor()).isEqualTo(3);
         assertThat(captainAStats.getMatchHistory().get(0).getScoreAgainst()).isEqualTo(1);
-        }
+    }
+
+    @Test
+    void shouldNotCountOwnGoalInPlayerStats() {
+        CreateMatchRequest request = new CreateMatchRequest();
+        request.setMatchDate(LocalDate.of(2026, 8, 25));
+        request.setSeasonYear((short) 2026);
+        request.setCaptainAId(captainA.getId());
+        request.setCaptainBId(captainB.getId());
+        request.setScoreA((short) 1);
+        request.setScoreB((short) 0);
+        request.setDurationMins((short) 60);
+        request.setTeamAPlayerIds(List.of(captainA.getId()));
+        request.setTeamBPlayerIds(List.of(captainB.getId(), player1.getId()));
+
+        CreateMatchRequest.GoalScorerRequest og = new CreateMatchRequest.GoalScorerRequest();
+        og.setPlayerId(player1.getId());
+        og.setGoals((short) 1);
+        og.setTeam('B');
+        og.setIsOwnGoal(true);
+        request.setGoalScorers(List.of(og));
+
+        matchService.createMatch(request);
+
+        Player updated = playerRepository.findByIdWithFullDetails(player1.getId()).orElseThrow();
+        var stats = updated.getSeasonStats().stream()
+                .filter(s -> s.getSeasonYear() == 2026)
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(stats.getGoals()).isEqualTo((short) 0);
+    }
+
+    @Test
+    void shouldNotUpdateStatsForExhibitionMatch() {
+        CreateMatchRequest request = new CreateMatchRequest();
+        request.setMatchDate(LocalDate.of(2026, 8, 25));
+        request.setSeasonYear((short) 2026);
+        request.setCaptainAId(captainA.getId());
+        request.setCaptainBId(captainB.getId());
+        request.setScoreA((short) 5);
+        request.setScoreB((short) 0);
+        request.setDurationMins((short) 60);
+        request.setIsExhibition(true);
+        request.setTeamAPlayerIds(List.of(captainA.getId(), player1.getId()));
+        request.setTeamBPlayerIds(List.of(captainB.getId()));
+        request.setGoalScorers(List.of());
+
+        matchService.createMatch(request);
+
+        Player updated = playerRepository.findByIdWithFullDetails(player1.getId()).orElseThrow();
+        assertThat(updated.getSeasonStats()).isEmpty();
+    }
+
+    @Test
+    void shouldUpdateMatchAndRecalculateStats() {
+        CreateMatchRequest request = new CreateMatchRequest();
+        request.setMatchDate(LocalDate.of(2026, 8, 25));
+        request.setSeasonYear((short) 2026);
+        request.setCaptainAId(captainA.getId());
+        request.setCaptainBId(captainB.getId());
+        request.setScoreA((short) 3);
+        request.setScoreB((short) 1);
+        request.setDurationMins((short) 60);
+        request.setTeamAPlayerIds(List.of(captainA.getId(), player1.getId()));
+        request.setTeamBPlayerIds(List.of(captainB.getId(), player2.getId()));
+        request.setGoalScorers(List.of());
+
+        Match saved = matchService.createMatch(request);
+
+        // Update to a draw
+        CreateMatchRequest updateRequest = new CreateMatchRequest();
+        updateRequest.setMatchDate(LocalDate.of(2026, 8, 25));
+        updateRequest.setSeasonYear((short) 2026);
+        updateRequest.setCaptainAId(captainA.getId());
+        updateRequest.setCaptainBId(captainB.getId());
+        updateRequest.setScoreA((short) 2);
+        updateRequest.setScoreB((short) 2);
+        updateRequest.setDurationMins((short) 60);
+        updateRequest.setTeamAPlayerIds(List.of(captainA.getId(), player1.getId()));
+        updateRequest.setTeamBPlayerIds(List.of(captainB.getId(), player2.getId()));
+        updateRequest.setGoalScorers(List.of());
+
+        matchService.updateMatch(saved.getId(), updateRequest);
+
+        Player updatedPlayer1 = playerRepository.findByIdWithFullDetails(player1.getId()).orElseThrow();
+        var stats = updatedPlayer1.getSeasonStats().stream()
+                .filter(s -> s.getSeasonYear() == 2026)
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(stats.getWins()).isEqualTo((short) 0);
+        assertThat(stats.getDraws()).isEqualTo((short) 1);
+        assertThat(stats.getLosses()).isEqualTo((short) 0);
+    }
+
 }

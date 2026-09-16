@@ -206,4 +206,37 @@ public class MatchUpdateIntegrationTest extends BaseIntegrationTest {
         assertThat(updated.getMatchDate()).isEqualTo(LocalDate.of(2026, 9, 1));
     }
 
+    @Test
+    void shouldThrowExceptionWhenUpdatingPreviousSeasonMatch() {
+        CreateMatchRequest previousSeasonRequest = new CreateMatchRequest();
+        previousSeasonRequest.setMatchDate(LocalDate.of(2025, 8, 25));
+        previousSeasonRequest.setSeasonYear((short) 2025);
+        previousSeasonRequest.setCaptainAId(captainA.getId());
+        previousSeasonRequest.setCaptainBId(captainB.getId());
+        previousSeasonRequest.setScoreA((short) 3);
+        previousSeasonRequest.setScoreB((short) 1);
+        previousSeasonRequest.setDurationMins((short) 60);
+        previousSeasonRequest.setTeamAPlayerIds(List.of(captainA.getId()));
+        previousSeasonRequest.setTeamBPlayerIds(List.of(captainB.getId()));
+        previousSeasonRequest.setGoalScorers(List.of());
+
+        Match previousSeasonMatch = matchService.createMatch(previousSeasonRequest);
+
+        CreateMatchRequest updateRequest = new CreateMatchRequest();
+        updateRequest.setMatchDate(LocalDate.of(2025, 8, 25));
+        updateRequest.setSeasonYear((short) 2025);
+        updateRequest.setCaptainAId(captainA.getId());
+        updateRequest.setCaptainBId(captainB.getId());
+        updateRequest.setScoreA((short) 2);
+        updateRequest.setScoreB((short) 2);
+        updateRequest.setDurationMins((short) 60);
+        updateRequest.setTeamAPlayerIds(List.of(captainA.getId()));
+        updateRequest.setTeamBPlayerIds(List.of(captainB.getId()));
+        updateRequest.setGoalScorers(List.of());
+
+        org.junit.jupiter.api.Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> matchService.updateMatch(previousSeasonMatch.getId(), updateRequest));
+    }
+
 }

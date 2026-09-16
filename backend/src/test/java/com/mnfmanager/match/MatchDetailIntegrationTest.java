@@ -136,4 +136,52 @@ public class MatchDetailIntegrationTest extends BaseIntegrationTest {
 
         assertThat(detail.getWinnerId()).isEqualTo(captainA.getId());
     }
+
+    @Test
+    void shouldReturnOwnGoalCorrectly() {
+        CreateMatchRequest request = new CreateMatchRequest();
+        request.setMatchDate(LocalDate.of(2026, 8, 26));
+        request.setSeasonYear((short) 2026);
+        request.setCaptainAId(captainA.getId());
+        request.setCaptainBId(captainB.getId());
+        request.setScoreA((short) 1);
+        request.setScoreB((short) 0);
+        request.setDurationMins((short) 60);
+        request.setTeamAPlayerIds(List.of(captainA.getId()));
+        request.setTeamBPlayerIds(List.of(captainB.getId()));
+
+        CreateMatchRequest.GoalScorerRequest og = new CreateMatchRequest.GoalScorerRequest();
+        og.setPlayerId(captainB.getId());
+        og.setGoals((short) 1);
+        og.setTeam('B');
+        og.setIsOwnGoal(true);
+        request.setGoalScorers(List.of(og));
+
+        Match match = matchService.createMatch(request);
+        MatchDetailResponse detail = matchService.getMatchDetail(match.getId());
+
+        assertThat(detail.getGoalScorers()).hasSize(1);
+        assertThat(detail.getGoalScorers().get(0).getIsOwnGoal()).isTrue();
+    }
+
+    @Test
+    void shouldReturnNullWinnerOnDraw() {
+        CreateMatchRequest request = new CreateMatchRequest();
+        request.setMatchDate(LocalDate.of(2026, 8, 26));
+        request.setSeasonYear((short) 2026);
+        request.setCaptainAId(captainA.getId());
+        request.setCaptainBId(captainB.getId());
+        request.setScoreA((short) 2);
+        request.setScoreB((short) 2);
+        request.setDurationMins((short) 60);
+        request.setTeamAPlayerIds(List.of(captainA.getId()));
+        request.setTeamBPlayerIds(List.of(captainB.getId()));
+        request.setGoalScorers(List.of());
+
+        Match match = matchService.createMatch(request);
+        MatchDetailResponse detail = matchService.getMatchDetail(match.getId());
+
+        assertThat(detail.getIsDraw()).isTrue();
+        assertThat(detail.getWinnerId()).isNull();
+    }
 }

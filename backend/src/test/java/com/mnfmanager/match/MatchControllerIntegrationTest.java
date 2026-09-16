@@ -16,6 +16,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
@@ -74,8 +75,7 @@ public class MatchControllerIntegrationTest extends BaseIntegrationTest {
                 "durationMins", 60,
                 "teamAPlayerIds", List.of(captainA.getId()),
                 "teamBPlayerIds", List.of(captainB.getId()),
-                "goalScorers", List.of()
-        );
+                "goalScorers", List.of());
 
         mockMvc.perform(post("/api/v1/matches")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -100,8 +100,7 @@ public class MatchControllerIntegrationTest extends BaseIntegrationTest {
                 "durationMins", 60,
                 "teamAPlayerIds", List.of(captainA.getId()),
                 "teamBPlayerIds", List.of(captainB.getId()),
-                "goalScorers", List.of()
-        );
+                "goalScorers", List.of());
 
         String response = mockMvc.perform(post("/api/v1/matches")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -133,8 +132,7 @@ public class MatchControllerIntegrationTest extends BaseIntegrationTest {
                 "durationMins", 60,
                 "teamAPlayerIds", List.of(captainA.getId()),
                 "teamBPlayerIds", List.of(captainB.getId()),
-                "goalScorers", List.of()
-        );
+                "goalScorers", List.of());
 
         String response = mockMvc.perform(post("/api/v1/matches")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -171,5 +169,94 @@ public class MatchControllerIntegrationTest extends BaseIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value("Not found"));
+    }
+
+    @Test
+    void shouldReturn403WhenCreatingMatchWithoutAuth() throws Exception {
+        Map<String, Object> match = Map.of(
+                "matchDate", "2026-08-25",
+                "seasonYear", 2026,
+                "captainAId", captainA.getId(),
+                "captainBId", captainB.getId(),
+                "scoreA", 3,
+                "scoreB", 1,
+                "durationMins", 60,
+                "teamAPlayerIds", List.of(captainA.getId()),
+                "teamBPlayerIds", List.of(captainB.getId()),
+                "goalScorers", List.of());
+
+        mockMvc.perform(post("/api/v1/matches")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(match)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldUpdateMatchWithStatus200() throws Exception {
+        Map<String, Object> match = Map.of(
+                "matchDate", "2026-08-25",
+                "seasonYear", 2026,
+                "captainAId", captainA.getId(),
+                "captainBId", captainB.getId(),
+                "scoreA", 3,
+                "scoreB", 1,
+                "durationMins", 60,
+                "teamAPlayerIds", List.of(captainA.getId()),
+                "teamBPlayerIds", List.of(captainB.getId()),
+                "goalScorers", List.of());
+
+        String response = mockMvc.perform(post("/api/v1/matches")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(match)))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Long matchId = objectMapper.readTree(response).get("id").asLong();
+
+        Map<String, Object> updatedMatch = Map.of(
+                "matchDate", "2026-08-25",
+                "seasonYear", 2026,
+                "captainAId", captainA.getId(),
+                "captainBId", captainB.getId(),
+                "scoreA", 2,
+                "scoreB", 2,
+                "durationMins", 60,
+                "teamAPlayerIds", List.of(captainA.getId()),
+                "teamBPlayerIds", List.of(captainB.getId()),
+                "goalScorers", List.of());
+
+        mockMvc.perform(put("/api/v1/matches/{id}", matchId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatedMatch)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.scoreA").value(2))
+                .andExpect(jsonPath("$.scoreB").value(2))
+                .andExpect(jsonPath("$.isDraw").value(true));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldCreateExhibitionMatchWithStatus201() throws Exception {
+        Map<String, Object> match = new HashMap<>();
+        match.put("matchDate", "2026-08-25");
+        match.put("seasonYear", 2026);
+        match.put("captainAId", captainA.getId());
+        match.put("captainBId", captainB.getId());
+        match.put("scoreA", 5);
+        match.put("scoreB", 0);
+        match.put("durationMins", 60);
+        match.put("isExhibition", true);
+        match.put("teamAPlayerIds", List.of(captainA.getId()));
+        match.put("teamBPlayerIds", List.of(captainB.getId()));
+        match.put("goalScorers", List.of());
+
+        mockMvc.perform(post("/api/v1/matches")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(match)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.isExhibition").value(true));
     }
 }
