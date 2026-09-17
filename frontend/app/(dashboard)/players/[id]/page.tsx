@@ -5,21 +5,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { usePlayerMatches, usePlayerProfile } from '@/lib/hooks';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
-import MatchDetailModal from '../../matches/MatchDetailModal';
 
-function RatingBar({ value, color }: { value: number; color: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="flex-1 bg-gray-100 rounded-full h-2">
-        <div
-          className={`h-2 rounded-full ${color}`}
-          style={{ width: `${value * 10}%` }}
-        />
-      </div>
-      <span className="text-sm font-bold min-w-6 text-right">{value}/10</span>
-    </div>
-  );
-}
+import MatchDetailModal from '../../matches/MatchDetailModal';
+import RatingBar from '@/components/ui/RatingBar';
+import DeltaBadge from '@/components/ui/DeltaBadge';
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
@@ -91,17 +80,6 @@ function PlayerMatchHistoryModal({
         </div>
       </div>
     </div>
-  );
-}
-
-function DeltaBadge({ delta }: { delta: number | null }) {
-  if (!delta || delta === 0) return null;
-  return (
-    <span className={`text-xs font-bold ml-1 ${
-      delta > 0 ? 'text-green-500' : 'text-red-400'
-    }`}>
-      {delta > 0 ? `+${delta}` : delta}
-    </span>
   );
 }
 

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useAuth } from '@/lib/auth';
 import { GoogleLogin } from '@react-oauth/google';
 import api from '@/lib/api';
@@ -12,11 +13,13 @@ export default function AuthNav() {
       {user ? (
         <div className="flex items-center gap-3">
           {user.picture && (
-            <img
-              src={user.picture}
-              alt={user.name}
-              className="w-8 h-8 rounded-full"
-              referrerPolicy="no-referrer"
+            <Image
+                src={user.picture}
+                alt={user.name}
+                width={32}
+                height={32}
+                className="rounded-full"
+                referrerPolicy="no-referrer"
             />
           )}
           <div className="text-right">

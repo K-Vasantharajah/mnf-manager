@@ -5,6 +5,9 @@ import { Player } from '@/lib/types';
 import Link from 'next/link';
 import { useState } from 'react';
 
+import RatingBar from '@/components/ui/RatingBar';
+import DeltaBadge from '@/components/ui/DeltaBadge';
+
 const POSITION_GROUPS = {
   'All': null,
   'GK': ['GK'],
@@ -12,42 +15,6 @@ const POSITION_GROUPS = {
   'Midfield': ['CDM', 'CM', 'CAM'],
   'Attack': ['LW', 'RW', 'ST'],
 };
-
-function RatingBar({ value, color }: { value: number; color: string }) {
-  const colorMap: Record<string, string> = {
-    'bg-red-400': '#f87171',
-    'bg-blue-500': '#3b82f6',
-    'bg-green-500': '#22c55e',
-  };
-
-  const bgColor = colorMap[color] || '#22c55e';
-
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
-      <div style={{ flexGrow: 1, backgroundColor: '#e5e7eb', borderRadius: '9999px', height: '6px', overflow: 'hidden' }}>
-        <div
-          style={{ 
-            width: `${value * 10}%`,
-            backgroundColor: bgColor,
-            height: '6px',
-          }}
-        />
-      </div>
-      <span style={{ fontSize: '12px', fontWeight: 700, minWidth: '16px', textAlign: 'right', color: '#111827' }}>{value}</span>
-    </div>
-  );
-}
-
-function DeltaBadge({ delta }: { delta: number | null }) {
-  if (!delta || delta === 0) return null;
-  return (
-    <span className={`text-xs font-bold ml-1 ${
-      delta > 0 ? 'text-green-500' : 'text-red-400'
-    }`}>
-      {delta > 0 ? `+${delta}` : delta}
-    </span>
-  );
-}
 
 function PlayerCard({ player }: { player: Player }) {
   const initials = player.name.slice(0, 2).toUpperCase();
