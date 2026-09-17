@@ -205,7 +205,7 @@ public class MatchService {
 
         return matchesByCaptain.entrySet().stream()
                 .map(entry -> buildCaptainStats(entry.getKey(), entry.getValue(), seasonYear))
-                .sorted((a, b) -> Double.compare(b.getWinRate(), a.getWinRate()))
+                .sorted((a, b) -> Double.compare(b.getPointsPercentage(), a.getPointsPercentage()))
                 .toList();
     }
 
@@ -355,9 +355,6 @@ public class MatchService {
                 .count();
         int losses = captainMatches.size() - wins - draws;
 
-        double winRate = captainMatches.isEmpty() ? 0.0
-                : Math.round((wins * 100.0 / captainMatches.size()) * 10.0) / 10.0;
-
         double pointsPercentage = captainMatches.isEmpty() ? 0.0
                 : Math.round(((wins * 3.0 + draws) / (captainMatches.size() * 3.0)) * 100.0 * 10.0) / 10.0;
 
@@ -404,7 +401,6 @@ public class MatchService {
                 .wins(wins)
                 .draws(draws)
                 .losses(losses)
-                .winRate(winRate)
                 .pointsPercentage(pointsPercentage)
                 .mostPickedPlayers(mostPicked)
                 .seasonYear(seasonYear)

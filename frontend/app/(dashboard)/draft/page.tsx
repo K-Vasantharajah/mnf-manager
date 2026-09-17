@@ -379,7 +379,7 @@ export default function DraftPage() {
                       last_match_id_captained: 0,
                     } as CaptainRecommendation))
                 ).map(rec => {
-                  const playerId = rec.player_id ?? (rec as unknown as Player).id;
+                  const playerId = rec.player_id;
                   const playerName = rec.name;
                   const playerPosition = rec.position;
                   return (

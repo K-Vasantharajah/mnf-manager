@@ -3,6 +3,8 @@
 import { usePlayers, useMatches, useDashboardStats, useLeaderboard } from '@/lib/hooks';
 import Link from 'next/link';
 
+import LoadingState from '@/components/ui/LoadingState';
+
 export default function DashboardPage() {
   const currentYear = new Date().getFullYear();
 
@@ -10,19 +12,13 @@ export default function DashboardPage() {
   const { data: matches, isLoading: matchesLoading } = useMatches();
   const { data: dashboardStats, isLoading: statsLoading } = useDashboardStats();
   const { data: leaderboard } = useLeaderboard(currentYear);
-
-
   const isLoading = playersLoading || matchesLoading || statsLoading;
   const currentSeasonMatches = matches?.filter(m => m.seasonYear === currentYear) || [];
   const recentMatches = matches?.slice(0, 5) || [];
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading dashboard...</div>
-      </div>
-    );
-  }
+    if (isLoading) {
+      return <LoadingState message="Loading dashboard..." />;
+    }
 
   return (
     <div>
@@ -70,7 +66,7 @@ export default function DashboardPage() {
             🏆 Season {currentYear} longest unbeaten streak
           </h2>
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-green-700 flex items-center justify-center text-white text-lg font-black flex-shrink-0">
+            <div className="w-14 h-14 rounded-full bg-green-700 flex items-center justify-center text-white text-lg font-black shrink-0">
               {dashboardStats?.longestCurrentSeasonStreakCaptain?.slice(0, 2).toUpperCase()}
             </div>
             <div className="flex-1">

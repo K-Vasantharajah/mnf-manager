@@ -18,7 +18,6 @@ public class PlayerLeaderboardEntry {
     private Integer losses;
     private Integer goals;
     private Integer assists;
-    private Double winRate;
     private Double pointsPercentage;
     private Double goalsPerGame;
     private Short ability;

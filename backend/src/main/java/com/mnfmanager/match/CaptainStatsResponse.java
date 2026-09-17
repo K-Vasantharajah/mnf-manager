@@ -14,7 +14,6 @@ public class CaptainStatsResponse {
     private Integer wins;
     private Integer draws;
     private Integer losses;
-    private Double winRate;
     private Double pointsPercentage;
     private List<String> mostPickedPlayers;
     private Integer seasonYear;

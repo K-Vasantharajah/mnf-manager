@@ -28,7 +28,6 @@ export interface Player {
 export interface PlayerStats {
   playerId: number;
   name: string;
-  winRate: number;
   contributionScore: number;
 }
 
@@ -56,7 +55,6 @@ export interface PlayerLeaderboardEntry {
   losses: number;
   goals: number;
   assists: number;
-  winRate: number;
   pointsPercentage: number;
   goalsPerGame: number;
   ability: number;
@@ -108,7 +106,6 @@ export interface SeasonStatsDetail {
   losses: number;
   goals: number;
   assists: number;
-  winRate: number;
   pointsPercentage: number;
   goalsPerGame: number;
 }
@@ -137,7 +134,6 @@ export interface PlayerProfile {
     totalLosses: number;
     totalGoals: number;
     totalAssists: number;
-    careerWinRate: number;
     careerPointsPercentage: number;
     careerGoalsPerGame: number;
   };
@@ -160,7 +156,6 @@ export interface CaptainStats {
   wins: number;
   draws: number;
   losses: number;
-  winRate: number;
   pointsPercentage: number;
   mostPickedPlayers: string[];
   seasonYear: number | null;

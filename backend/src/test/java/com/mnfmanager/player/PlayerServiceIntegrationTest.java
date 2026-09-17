@@ -35,16 +35,15 @@ public class PlayerServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void shouldCalculateWinRate() {
-        Player player = Player.builder()
-                .name("Win Rate Player")
+    void shouldCalculatePointsPercentageCorrectly() {
+        Player player = playerRepository.save(Player.builder()
+                .name("Pt% Player")
                 .strongFoot("Right")
                 .active(true)
-                .build();
-        Player saved = playerRepository.save(player);
+                .build());
 
         PlayerSeasonStats stats = PlayerSeasonStats.builder()
-                .player(saved)
+                .player(player)
                 .seasonYear((short) 2026)
                 .matchesPlayed((short) 10)
                 .wins((short) 7)
@@ -53,13 +52,16 @@ public class PlayerServiceIntegrationTest extends BaseIntegrationTest {
                 .goals((short) 5)
                 .assists((short) 3)
                 .build();
-        saved.getSeasonStats().add(stats);
-        playerRepository.save(saved);
+        player.getSeasonStats().add(stats);
+        playerRepository.save(player);
 
-        Player withStats = playerRepository.findByIdWithFullDetails(saved.getId()).orElseThrow();
-        double winRate = playerService.calculateWinRate(withStats);
+        List<PlayerLeaderboardEntry> leaderboard = playerService.getLeaderboard(2026);
+        var entry = leaderboard.stream()
+                .filter(e -> e.getName().equals("Pt% Player"))
+                .findFirst().orElseThrow();
 
-        assertThat(winRate).isEqualTo(70.0);
+        // (7*3 + 1) / (10*3) * 100 = 22/30 * 100 = 73.3
+        assertThat(entry.getPointsPercentage()).isEqualTo(73.3);
     }
 
     @Test

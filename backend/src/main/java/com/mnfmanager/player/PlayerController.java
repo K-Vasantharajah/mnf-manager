@@ -54,17 +54,6 @@ public class PlayerController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}/stats")
-    public ResponseEntity<PlayerStatsResponse> getPlayerStats(@PathVariable Long id) {
-        Player player = playerService.getPlayerById(id);
-        return ResponseEntity.ok(PlayerStatsResponse.builder()
-                .playerId(player.getId())
-                .name(player.getName())
-                .winRate(playerService.calculateWinRate(player))
-                .contributionScore(playerService.calculateContributionScore(player))
-                .build());
-    }
-
     @GetMapping("/leaderboard")
     public ResponseEntity<List<PlayerLeaderboardEntry>> getLeaderboard(
             @RequestParam(required = false) Integer seasonYear) {

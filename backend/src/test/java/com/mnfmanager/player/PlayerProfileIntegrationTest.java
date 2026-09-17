@@ -110,7 +110,7 @@ public class PlayerProfileIntegrationTest extends BaseIntegrationTest {
         assertThat(stats2026.getDraws()).isEqualTo(1);
         assertThat(stats2026.getLosses()).isEqualTo(2);
         assertThat(stats2026.getGoals()).isEqualTo(5);
-        assertThat(stats2026.getWinRate()).isEqualTo(70.0);
+        assertThat(stats2026.getPointsPercentage()).isEqualTo(73.3);
         assertThat(stats2026.getGoalsPerGame()).isEqualTo(0.5);
     }
 
@@ -121,7 +121,7 @@ public class PlayerProfileIntegrationTest extends BaseIntegrationTest {
         assertThat(profile.getCareerStats().getTotalMatches()).isEqualTo(30);
         assertThat(profile.getCareerStats().getTotalWins()).isEqualTo(19);
         assertThat(profile.getCareerStats().getTotalGoals()).isEqualTo(13);
-        assertThat(profile.getCareerStats().getCareerWinRate()).isEqualTo(63.3);
+        assertThat(profile.getCareerStats().getCareerPointsPercentage()).isEqualTo(67.8);
     }
 
     @Test
@@ -136,7 +136,7 @@ public class PlayerProfileIntegrationTest extends BaseIntegrationTest {
 
         assertThat(profile.getSeasonStats()).isEmpty();
         assertThat(profile.getCareerStats().getTotalMatches()).isEqualTo(0);
-        assertThat(profile.getCareerStats().getCareerWinRate()).isEqualTo(0.0);
+        assertThat(profile.getCareerStats().getCareerPointsPercentage()).isEqualTo(0.0);
     }
 
     @Test

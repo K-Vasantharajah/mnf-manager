@@ -38,7 +38,6 @@ public class PlayerProfileResponse {
         private Integer losses;
         private Integer goals;
         private Integer assists;
-        private Double winRate;
         private Double pointsPercentage;
         private Double goalsPerGame;
     }
@@ -52,7 +51,6 @@ public class PlayerProfileResponse {
         private Integer totalLosses;
         private Integer totalGoals;
         private Integer totalAssists;
-        private Double careerWinRate;
         private Double careerPointsPercentage;
         private Double careerGoalsPerGame;
     }

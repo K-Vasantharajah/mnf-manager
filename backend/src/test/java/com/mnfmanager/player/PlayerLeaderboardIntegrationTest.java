@@ -26,19 +26,19 @@ public class PlayerLeaderboardIntegrationTest extends BaseIntegrationTest {
     @BeforeEach
     void setUp() {
         player1 = playerRepository.save(Player.builder()
-                .name("High Win Rate")
+                .name("High Pt%")
                 .strongFoot("Right")
                 .active(true)
                 .build());
 
         player2 = playerRepository.save(Player.builder()
-                .name("Mid Win Rate")
+                .name("Mid Pt%")
                 .strongFoot("Right")
                 .active(true)
                 .build());
 
         player3 = playerRepository.save(Player.builder()
-                .name("Low Win Rate")
+                .name("Low Pt%")
                 .strongFoot("Right")
                 .active(true)
                 .build());
@@ -66,23 +66,23 @@ public class PlayerLeaderboardIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void shouldReturnLeaderboardSortedByWinRate() {
+    void shouldReturnLeaderboardSortedByPointsPercentage() {
         List<PlayerLeaderboardEntry> leaderboard = playerService.getLeaderboard(2026);
 
         assertThat(leaderboard).isNotEmpty();
         var ourPlayers = leaderboard.stream()
-                .filter(e -> e.getName().equals("High Win Rate")
-                        || e.getName().equals("Mid Win Rate")
-                        || e.getName().equals("Low Win Rate"))
+                .filter(e -> e.getName().equals("High Pt%")
+                        || e.getName().equals("Mid Pt%")
+                        || e.getName().equals("Low Pt%"))
                 .toList();
 
         assertThat(ourPlayers).hasSize(3);
-        assertThat(ourPlayers.get(0).getName()).isEqualTo("High Win Rate");
-        assertThat(ourPlayers.get(0).getWinRate()).isEqualTo(90.0);
-        assertThat(ourPlayers.get(1).getName()).isEqualTo("Mid Win Rate");
-        assertThat(ourPlayers.get(1).getWinRate()).isEqualTo(50.0);
-        assertThat(ourPlayers.get(2).getName()).isEqualTo("Low Win Rate");
-        assertThat(ourPlayers.get(2).getWinRate()).isEqualTo(20.0);
+        assertThat(ourPlayers.get(0).getName()).isEqualTo("High Pt%");
+        assertThat(ourPlayers.get(0).getPointsPercentage()).isEqualTo(90.0);
+        assertThat(ourPlayers.get(1).getName()).isEqualTo("Mid Pt%");
+        assertThat(ourPlayers.get(1).getPointsPercentage()).isEqualTo(50.0);
+        assertThat(ourPlayers.get(2).getName()).isEqualTo("Low Pt%");
+        assertThat(ourPlayers.get(2).getPointsPercentage()).isEqualTo(20.0);
     }
 
     @Test
@@ -91,11 +91,11 @@ public class PlayerLeaderboardIntegrationTest extends BaseIntegrationTest {
         List<PlayerLeaderboardEntry> leaderboard2025 = playerService.getLeaderboard(2025);
 
         var player1In2026 = leaderboard2026.stream()
-                .filter(e -> e.getName().equals("High Win Rate"))
+                .filter(e -> e.getName().equals("High Pt%"))
                 .findFirst().orElseThrow();
 
         var player1In2025 = leaderboard2025.stream()
-                .filter(e -> e.getName().equals("High Win Rate"))
+                .filter(e -> e.getName().equals("High Pt%"))
                 .findFirst().orElseThrow();
 
         assertThat(player1In2026.getMatchesPlayed()).isEqualTo(10);
@@ -107,7 +107,7 @@ public class PlayerLeaderboardIntegrationTest extends BaseIntegrationTest {
         List<PlayerLeaderboardEntry> allTime = playerService.getLeaderboard(null);
 
         var player1AllTime = allTime.stream()
-                .filter(e -> e.getName().equals("High Win Rate"))
+                .filter(e -> e.getName().equals("High Pt%"))
                 .findFirst().orElseThrow();
 
         assertThat(player1AllTime.getMatchesPlayed()).isEqualTo(25);
@@ -119,7 +119,7 @@ public class PlayerLeaderboardIntegrationTest extends BaseIntegrationTest {
         List<PlayerLeaderboardEntry> leaderboard2025 = playerService.getLeaderboard(2025);
 
         var player2In2025 = leaderboard2025.stream()
-                .filter(e -> e.getName().equals("Mid Win Rate"))
+                .filter(e -> e.getName().equals("Mid Pt%"))
                 .findFirst();
 
         assertThat(player2In2025).isEmpty();
@@ -130,7 +130,7 @@ public class PlayerLeaderboardIntegrationTest extends BaseIntegrationTest {
         List<PlayerLeaderboardEntry> leaderboard = playerService.getLeaderboard(2026);
 
         var player1Entry = leaderboard.stream()
-                .filter(e -> e.getName().equals("High Win Rate"))
+                .filter(e -> e.getName().equals("High Pt%"))
                 .findFirst().orElseThrow();
 
         assertThat(player1Entry.getGoals()).isEqualTo(5);
@@ -141,20 +141,16 @@ public class PlayerLeaderboardIntegrationTest extends BaseIntegrationTest {
     void shouldCalculatePointsPercentageCorrectly() {
         List<PlayerLeaderboardEntry> leaderboard = playerService.getLeaderboard(2026);
 
-        var highWinRate = leaderboard.stream()
-                .filter(e -> e.getName().equals("High Win Rate"))
+        var highPt = leaderboard.stream()
+                .filter(e -> e.getName().equals("High Pt%"))
                 .findFirst().orElseThrow();
 
-        // 9 wins, 0 draws, 1 loss, 10 matches
-        // (9*3 + 0) / (10*3) * 100 = 27/30 * 100 = 90.0
-        assertThat(highWinRate.getPointsPercentage()).isEqualTo(90.0);
+        assertThat(highPt.getPointsPercentage()).isEqualTo(90.0);
 
-        var midWinRate = leaderboard.stream()
-                .filter(e -> e.getName().equals("Mid Win Rate"))
+        var midPt = leaderboard.stream()
+                .filter(e -> e.getName().equals("Mid Pt%"))
                 .findFirst().orElseThrow();
 
-        // 5 wins, 0 draws, 5 losses, 10 matches
-        // (5*3 + 0) / (10*3) * 100 = 15/30 * 100 = 50.0
-        assertThat(midWinRate.getPointsPercentage()).isEqualTo(50.0);
+        assertThat(midPt.getPointsPercentage()).isEqualTo(50.0);
     }
 }

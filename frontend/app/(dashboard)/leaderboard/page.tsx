@@ -5,13 +5,16 @@ import { useLeaderboard } from '@/lib/hooks';
 import { PlayerLeaderboardEntry } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
+import LoadingState from '@/components/ui/LoadingState';
+import ErrorState from '@/components/ui/ErrorState';
+
 function getRatingColor(value: number) {
   if (value >= 8) return 'text-green-600';
   if (value >= 6) return 'text-amber-500';
   return 'text-red-400';
 }
 
-function getWinRateColor(value: number) {
+function getPointsPercentageColor(value: number) {
   if (value >= 70) return 'text-green-600';
   if (value >= 40) return 'text-amber-500';
   return 'text-red-400';
@@ -39,7 +42,7 @@ function LeaderboardTable({
   onPlayerClick: (id: number) => void;
 }) {
   const sorted = [...entries].sort((a, b) => getValue(b) - getValue(a));
-  const valuesWithCounts = sorted.map(e => ({ value: getValue(e) }));
+  const valuesWithCounts = sorted.map((e) => ({ value: getValue(e) }));
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
@@ -63,13 +66,18 @@ function LeaderboardTable({
         <div>
           {sorted.slice(0, 10).map((entry) => {
             const currentValue = getValue(entry);
-            const rank = valuesWithCounts.filter(e => e.value > currentValue).length + 1;
-            const isTied = valuesWithCounts.filter(e => e.value === currentValue).length > 1;
-            const rankDisplay = rank === 1 ? '🥇'
-            : rank === 2 ? '🥈'
-            : rank === 3 ? '🥉'
-            : isTied ? `=${rank}`
-            : `${rank}`;
+            const rank = valuesWithCounts.filter((e) => e.value > currentValue).length + 1;
+            const isTied = valuesWithCounts.filter((e) => e.value === currentValue).length > 1;
+            const rankDisplay =
+              rank === 1
+                ? '🥇'
+                : rank === 2
+                  ? '🥈'
+                  : rank === 3
+                    ? '🥉'
+                    : isTied
+                      ? `=${rank}`
+                      : `${rank}`;
 
             return (
               <div
@@ -88,9 +96,7 @@ function LeaderboardTable({
                 >
                   {entry.name}
                 </button>
-                <span className="text-xs text-gray-400 mr-2">
-                  {entry.matchesPlayed}mp
-                </span>
+                <span className="text-xs text-gray-400 mr-2">{entry.matchesPlayed}mp</span>
                 <span className={`font-bold text-sm ${colorFn(currentValue)}`}>
                   {formatValue(entry)}
                 </span>
@@ -117,7 +123,7 @@ function RatingTable({
   onPlayerClick: (id: number) => void;
 }) {
   const sorted = [...entries].sort((a, b) => getValue(b) - getValue(a));
-  const valuesWithCounts = sorted.map(e => ({ value: getValue(e) }));
+  const valuesWithCounts = sorted.map((e) => ({ value: getValue(e) }));
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
@@ -135,13 +141,18 @@ function RatingTable({
       <div>
         {sorted.slice(0, 10).map((entry) => {
           const currentValue = getValue(entry);
-          const rank = valuesWithCounts.filter(e => e.value > currentValue).length + 1;
-          const isTied = valuesWithCounts.filter(e => e.value === currentValue).length > 1;
-          const rankDisplay = rank === 1 ? '🥇'
-          : rank === 2 ? '🥈'
-          : rank === 3 ? '🥉'
-          : isTied ? `=${rank}`
-          : `${rank}`;
+          const rank = valuesWithCounts.filter((e) => e.value > currentValue).length + 1;
+          const isTied = valuesWithCounts.filter((e) => e.value === currentValue).length > 1;
+          const rankDisplay =
+            rank === 1
+              ? '🥇'
+              : rank === 2
+                ? '🥈'
+                : rank === 3
+                  ? '🥉'
+                  : isTied
+                    ? `=${rank}`
+                    : `${rank}`;
 
           return (
             <div
@@ -187,30 +198,32 @@ function LeaderboardModal({
   onPlayerClick: (id: number) => void;
 }) {
   const sorted = [...data.entries].sort((a, b) => data.getValue(b) - data.getValue(a));
-  const valuesWithCounts = sorted.map(e => ({ value: data.getValue(e) }));
+  const valuesWithCounts = sorted.map((e) => ({ value: data.getValue(e) }));
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl w-full max-w-md max-h-[80vh] flex flex-col">
         <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
           <h2 className="font-semibold text-gray-900">{data.title}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-lg font-bold"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg font-bold">
             ✕
           </button>
         </div>
         <div className="overflow-y-auto flex-1">
           {sorted.map((entry) => {
             const currentValue = data.getValue(entry);
-            const rank = valuesWithCounts.filter(e => e.value > currentValue).length + 1;
-            const isTied = valuesWithCounts.filter(e => e.value === currentValue).length > 1;
-            const rankDisplay = rank === 1 ? '🥇'
-              : rank === 2 ? '🥈'
-              : rank === 3 ? '🥉'
-              : isTied ? `=${rank}`
-              : `${rank}`;
+            const rank = valuesWithCounts.filter((e) => e.value > currentValue).length + 1;
+            const isTied = valuesWithCounts.filter((e) => e.value === currentValue).length > 1;
+            const rankDisplay =
+              rank === 1
+                ? '🥇'
+                : rank === 2
+                  ? '🥈'
+                  : rank === 3
+                    ? '🥉'
+                    : isTied
+                      ? `=${rank}`
+                      : `${rank}`;
 
             return (
               <div
@@ -232,9 +245,7 @@ function LeaderboardModal({
                 >
                   {entry.name}
                 </button>
-                <span className="text-xs text-gray-400 mr-2">
-                  {entry.matchesPlayed}mp
-                </span>
+                <span className="text-xs text-gray-400 mr-2">{entry.matchesPlayed}mp</span>
                 <span className={`font-bold text-sm ${data.colorFn(currentValue)}`}>
                   {data.formatValue(entry)}
                 </span>
@@ -252,33 +263,21 @@ export default function LeaderboardPage() {
   const { data: entries, isLoading, isError } = useLeaderboard(seasonYear);
 
   const [modalData, setModalData] = useState<{
-  title: string;
-  entries: PlayerLeaderboardEntry[];
-  getValue: (e: PlayerLeaderboardEntry) => number;
-  formatValue: (e: PlayerLeaderboardEntry) => string;
-  colorFn: (v: number) => string;
-} | null>(null);
-const router = useRouter();
+    title: string;
+    entries: PlayerLeaderboardEntry[];
+    getValue: (e: PlayerLeaderboardEntry) => number;
+    formatValue: (e: PlayerLeaderboardEntry) => string;
+    colorFn: (v: number) => string;
+  } | null>(null);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading leaderboard...</div>
-      </div>
-    );
-  }
+  const router = useRouter();
 
-  if (isError) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-red-400">Failed to load data. Is the backend running?</div>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingState message="Loading leaderboard..." />;
+  if (isError) return <ErrorState message="Failed to load data. Is the backend running?" />;
 
   const allEntries = entries || [];
-  const playedEntries = allEntries.filter(e => e.matchesPlayed > 0);
-  const qualifiedEntries = playedEntries.filter(e => 
+  const playedEntries = allEntries.filter((e) => e.matchesPlayed > 0);
+  const qualifiedEntries = playedEntries.filter((e) =>
     seasonYear === undefined ? e.matchesPlayed >= 28 : e.matchesPlayed >= 14
   );
   const handlePlayerClick = (id: number) => {
@@ -344,32 +343,36 @@ const router = useRouter();
           entries={qualifiedEntries}
           getValue={(e) => e.pointsPercentage}
           formatValue={(e) => `${e.pointsPercentage}%`}
-          colorFn={getWinRateColor}
+          colorFn={getPointsPercentageColor}
           emptyMessage="Record more matches to qualify"
-          onViewAll={() => setModalData({
-          title: '🏆 Points percentage',
-          entries: qualifiedEntries,
-          getValue: (e) => e.pointsPercentage,
-          formatValue: (e) => `${e.pointsPercentage}%`,
-          colorFn: getWinRateColor,
-        })}
-        onPlayerClick={handlePlayerClick}
+          onViewAll={() =>
+            setModalData({
+              title: '🏆 Points percentage',
+              entries: qualifiedEntries,
+              getValue: (e) => e.pointsPercentage,
+              formatValue: (e) => `${e.pointsPercentage}%`,
+              colorFn: getPointsPercentageColor,
+            })
+          }
+          onPlayerClick={handlePlayerClick}
         />
         <LeaderboardTable
           title="⚽ Goals scored"
           entries={playedEntries}
           getValue={(e) => e.goals}
           formatValue={(e) => `${e.goals} goals`}
-          colorFn={(v) => v > 0 ? 'text-green-600' : 'text-gray-400'}
+          colorFn={(v) => (v > 0 ? 'text-green-600' : 'text-gray-400')}
           emptyMessage="No goals recorded yet"
-          onViewAll={() => setModalData({
-          title: '⚽ Goals scored',
-          entries: playedEntries,
-          getValue: (e) => e.goals,
-          formatValue: (e) => `${e.goals} goals`,
-          colorFn: (v) => v > 0 ? 'text-green-600' : 'text-gray-400',
-        })}
-        onPlayerClick={handlePlayerClick}
+          onViewAll={() =>
+            setModalData({
+              title: '⚽ Goals scored',
+              entries: playedEntries,
+              getValue: (e) => e.goals,
+              formatValue: (e) => `${e.goals} goals`,
+              colorFn: (v) => (v > 0 ? 'text-green-600' : 'text-gray-400'),
+            })
+          }
+          onPlayerClick={handlePlayerClick}
         />
         <LeaderboardTable
           title="🎮 Matches played"
@@ -378,14 +381,16 @@ const router = useRouter();
           formatValue={(e) => `${e.matchesPlayed} played`}
           colorFn={() => 'text-blue-600'}
           emptyMessage="No matches recorded yet"
-          onViewAll={() => setModalData({
-          title: '🎮 Matches played',
-          entries: playedEntries,
-          getValue: (e) => e.matchesPlayed,
-          formatValue: (e) => `${e.matchesPlayed} played`,
-          colorFn: () => 'text-blue-600',
-        })}
-        onPlayerClick={handlePlayerClick}
+          onViewAll={() =>
+            setModalData({
+              title: '🎮 Matches played',
+              entries: playedEntries,
+              getValue: (e) => e.matchesPlayed,
+              formatValue: (e) => `${e.matchesPlayed} played`,
+              colorFn: () => 'text-blue-600',
+            })
+          }
+          onPlayerClick={handlePlayerClick}
         />
       </div>
 
@@ -394,40 +399,46 @@ const router = useRouter();
           title="⚔️ Attack rating"
           entries={allEntries}
           getValue={(e) => e.attackRating || 0}
-          onViewAll={() => setModalData({
-          title: '⚔️ Attack rating',
-          entries: allEntries,
-          getValue: (e) => e.attackRating || 0,
-          formatValue: (e) => `${e.attackRating || 0}/10`,
-          colorFn: getRatingColor,
-        })}
-        onPlayerClick={handlePlayerClick}
+          onViewAll={() =>
+            setModalData({
+              title: '⚔️ Attack rating',
+              entries: allEntries,
+              getValue: (e) => e.attackRating || 0,
+              formatValue: (e) => `${e.attackRating || 0}/10`,
+              colorFn: getRatingColor,
+            })
+          }
+          onPlayerClick={handlePlayerClick}
         />
         <RatingTable
           title="🛡️ Defence Rating"
           entries={allEntries}
           getValue={(e) => e.defenceRating || 0}
-          onViewAll={() => setModalData({
-          title: '🛡️ Defence Rating',
-          entries: allEntries,
-          getValue: (e) => e.defenceRating || 0,
-          formatValue: (e) => `${e.defenceRating || 0}/10`,
-          colorFn: getRatingColor,
-        })}
-        onPlayerClick={handlePlayerClick}
+          onViewAll={() =>
+            setModalData({
+              title: '🛡️ Defence Rating',
+              entries: allEntries,
+              getValue: (e) => e.defenceRating || 0,
+              formatValue: (e) => `${e.defenceRating || 0}/10`,
+              colorFn: getRatingColor,
+            })
+          }
+          onPlayerClick={handlePlayerClick}
         />
         <RatingTable
           title="📅 Reliability rating"
           entries={allEntries}
           getValue={(e) => e.reliability || 0}
-          onViewAll={() => setModalData({
-          title: '📅 Reliability rating',
-          entries: allEntries,
-          getValue: (e) => e.reliability || 0,
-          formatValue: (e) => `${e.reliability || 0}/10`,
-          colorFn: getRatingColor,
-        })}
-        onPlayerClick={handlePlayerClick}
+          onViewAll={() =>
+            setModalData({
+              title: '📅 Reliability rating',
+              entries: allEntries,
+              getValue: (e) => e.reliability || 0,
+              formatValue: (e) => `${e.reliability || 0}/10`,
+              colorFn: getRatingColor,
+            })
+          }
+          onPlayerClick={handlePlayerClick}
         />
       </div>
     </div>

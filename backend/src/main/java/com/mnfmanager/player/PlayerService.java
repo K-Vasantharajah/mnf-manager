@@ -65,34 +65,16 @@ public class PlayerService {
         playerRepository.save(player);
     }
 
-    public double calculateWinRate(Player player) {
-        int totalPlayed = player.getSeasonStats().stream()
-                .mapToInt(s -> s.getMatchesPlayed())
-                .sum();
-        if (totalPlayed == 0)
+    public double calculatePointsPercentage(Player player) {
+        int totalMatches = player.getSeasonStats().stream()
+                .mapToInt(s -> s.getMatchesPlayed()).sum();
+        if (totalMatches == 0)
             return 0.0;
-        int totalWins = player.getSeasonStats().stream()
-                .mapToInt(s -> s.getWins())
-                .sum();
-        return Math.round((totalWins * 100.0 / totalPlayed) * 10.0) / 10.0;
-    }
-
-    public double calculateContributionScore(Player player) {
-        if (player.getRating() == null)
-            return 0.0;
-        int totalGoals = player.getSeasonStats().stream()
-                .mapToInt(s -> s.getGoals()).sum();
-        int totalAssists = player.getSeasonStats().stream()
-                .mapToInt(s -> s.getAssists()).sum();
         int totalWins = player.getSeasonStats().stream()
                 .mapToInt(s -> s.getWins()).sum();
-        double reliability = player.getRating().getReliability();
-        double ability = player.getRating().getAbility();
-        double goalThreat = player.getRating().getGoalThreat();
-        return Math.round(
-                (totalGoals * 1.5 + totalAssists + totalWins * 0.5
-                        + reliability * 2.5 + ability + goalThreat) / 4.0 * 10.0)
-                / 10.0;
+        int totalDraws = player.getSeasonStats().stream()
+                .mapToInt(s -> s.getDraws()).sum();
+        return Math.round(((totalWins * 3.0 + totalDraws) / (totalMatches * 3.0)) * 100.0 * 10.0) / 10.0;
     }
 
     public List<PlayerLeaderboardEntry> getLeaderboard(Integer seasonYear) {
@@ -116,7 +98,6 @@ public class PlayerService {
         int goals = stats.stream().mapToInt(s -> s.getGoals()).sum();
         int assists = stats.stream().mapToInt(s -> s.getAssists()).sum();
 
-        double winRate = matchesPlayed == 0 ? 0.0 : Math.round((wins * 100.0 / matchesPlayed) * 10.0) / 10.0;
         double pointsPercentage = matchesPlayed == 0 ? 0.0
                 : Math.round(((wins * 3.0 + draws * 1.0) / (matchesPlayed * 3.0)) * 100.0 * 10.0) / 10.0;
         double goalsPerGame = matchesPlayed == 0 ? 0.0 : Math.round((goals * 1.0 / matchesPlayed) * 10.0) / 10.0;
@@ -130,7 +111,6 @@ public class PlayerService {
                 .losses(losses)
                 .goals(goals)
                 .assists(assists)
-                .winRate(winRate)
                 .pointsPercentage(pointsPercentage)
                 .goalsPerGame(goalsPerGame)
                 .ability(player.getRating() != null ? player.getRating().getAbility() : null)
@@ -150,8 +130,6 @@ public class PlayerService {
                 .stream()
                 .sorted((a, b) -> Short.compare(b.getSeasonYear(), a.getSeasonYear()))
                 .map(s -> {
-                    double winRate = s.getMatchesPlayed() == 0 ? 0.0
-                            : Math.round((s.getWins() * 100.0 / s.getMatchesPlayed()) * 10.0) / 10.0;
                     double goalsPerGame = s.getMatchesPlayed() == 0 ? 0.0
                             : Math.round((s.getGoals() * 1.0 / s.getMatchesPlayed()) * 10.0) / 10.0;
                     double pointsPercentage = s.getMatchesPlayed() == 0 ? 0.0
@@ -167,7 +145,6 @@ public class PlayerService {
                             .losses((int) s.getLosses())
                             .goals((int) s.getGoals())
                             .assists((int) s.getAssists())
-                            .winRate(winRate)
                             .pointsPercentage(pointsPercentage)
                             .goalsPerGame(goalsPerGame)
                             .build();
@@ -182,7 +159,6 @@ public class PlayerService {
         int totalGoals = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getGoals).sum();
         int totalAssists = seasonStats.stream().mapToInt(PlayerProfileResponse.SeasonStatsDetail::getAssists).sum();
 
-        double careerWinRate = totalMatches == 0 ? 0.0 : Math.round((totalWins * 100.0 / totalMatches) * 10.0) / 10.0;
         double careerGoalsPerGame = totalMatches == 0 ? 0.0
                 : Math.round((totalGoals * 1.0 / totalMatches) * 10.0) / 10.0;
         double careerPointsPercentage = totalMatches == 0 ? 0.0
@@ -212,7 +188,6 @@ public class PlayerService {
                         .totalLosses(totalLosses)
                         .totalGoals(totalGoals)
                         .totalAssists(totalAssists)
-                        .careerWinRate(careerWinRate)
                         .careerPointsPercentage(careerPointsPercentage)
                         .careerGoalsPerGame(careerGoalsPerGame)
                         .build())

@@ -6,6 +6,8 @@ import { CaptainStats } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import MatchDetailModal from '../matches/MatchDetailModal';
 
+import LoadingState from '@/components/ui/LoadingState';
+import ErrorState from '@/components/ui/ErrorState';
 
 function MatchHistoryModal({
   captain,
@@ -22,12 +24,11 @@ function MatchHistoryModal({
         <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
           <div>
             <h2 className="font-semibold text-gray-900">{captain.name}&apos;s match history</h2>
-            <p className="text-xs text-gray-400 mt-0.5">{captain.matchesCaptained} matches as captain</p>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {captain.matchesCaptained} matches as captain
+            </p>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-lg font-bold"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg font-bold">
             ✕
           </button>
         </div>
@@ -44,11 +45,15 @@ function MatchHistoryModal({
               <span className="text-xs text-gray-400 min-w-10">
                 {match.gameWeek || `S${match.seasonYear}`}
               </span>
-              <span className={`text-xs font-bold px-2 py-0.5 rounded-full min-w-10 text-center ${
-                match.result === 'WIN' ? 'bg-green-100 text-green-700' :
-                match.result === 'DRAW' ? 'bg-amber-100 text-amber-700' :
-                'bg-red-100 text-red-500'
-              }`}>
+              <span
+                className={`text-xs font-bold px-2 py-0.5 rounded-full min-w-10 text-center ${
+                  match.result === 'WIN'
+                    ? 'bg-green-100 text-green-700'
+                    : match.result === 'DRAW'
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'bg-red-100 text-red-500'
+                }`}
+              >
                 {match.result}
               </span>
               <span className="text-sm flex-1 text-gray-600">vs {match.opponentName}</span>
@@ -72,19 +77,11 @@ export default function CaptainsPage() {
   const [previousCaptain, setPreviousCaptain] = useState<CaptainStats | null>(null);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading captain stats...</div>
-      </div>
-    );
+    return <LoadingState message="Loading captain stats..." />;
   }
 
   if (isError) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-red-400">Failed to load data. Is the backend running?</div>
-      </div>
-    );
+    return <ErrorState message="Failed to load data. Is the backend running?" />;
   }
 
   return (
@@ -96,32 +93,34 @@ export default function CaptainsPage() {
             setSelectedMatchId(null);
             setPreviousCaptain(null);
           }}
-          onBack={previousCaptain ? () => {
-            setSelectedMatchId(null);
-            setSelectedCaptain(previousCaptain);
-            setPreviousCaptain(null);
-          } : undefined}
+          onBack={
+            previousCaptain
+              ? () => {
+                  setSelectedMatchId(null);
+                  setSelectedCaptain(previousCaptain);
+                  setPreviousCaptain(null);
+                }
+              : undefined
+          }
         />
       )}
-    
+
       {selectedCaptain && (
-      <MatchHistoryModal
-        captain={selectedCaptain}
-        onClose={() => setSelectedCaptain(null)}
-        onMatchClick={(matchId) => {
-          setPreviousCaptain(selectedCaptain);
-          setSelectedCaptain(null);
-          setSelectedMatchId(matchId);
-        }}
-      />
-    )}
+        <MatchHistoryModal
+          captain={selectedCaptain}
+          onClose={() => setSelectedCaptain(null)}
+          onMatchClick={(matchId) => {
+            setPreviousCaptain(selectedCaptain);
+            setSelectedCaptain(null);
+            setSelectedMatchId(matchId);
+          }}
+        />
+      )}
 
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Captains</h1>
-          <p className="text-sm text-gray-400 mt-1">
-            {captains?.length} captains this season
-          </p>
+          <p className="text-sm text-gray-400 mt-1">{captains?.length} captains this season</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -158,28 +157,25 @@ export default function CaptainsPage() {
       </div>
 
       {captains?.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
-          No captain data for this season
-        </div>
+        <div className="text-center py-16 text-gray-400">No captain data for this season</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {captains?.map((captain, index) => {
-            const ptColor = captain.pointsPercentage >= 60
-              ? 'text-green-600'
-              : captain.pointsPercentage >= 40
-              ? 'text-amber-500'
-              : 'text-red-400';
+            const ptColor =
+              captain.pointsPercentage >= 60
+                ? 'text-green-600'
+                : captain.pointsPercentage >= 40
+                  ? 'text-amber-500'
+                  : 'text-red-400';
 
-            const barColor = captain.pointsPercentage >= 60
-              ? 'bg-green-500'
-              : captain.pointsPercentage >= 40
-              ? 'bg-amber-400'
-              : 'bg-red-400';
+            const barColor =
+              captain.pointsPercentage >= 60
+                ? 'bg-green-500'
+                : captain.pointsPercentage >= 40
+                  ? 'bg-amber-400'
+                  : 'bg-red-400';
 
-            const medal = index === 0 ? '🥇'
-              : index === 1 ? '🥈'
-              : index === 2 ? '🥉'
-              : null;
+            const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : null;
 
             return (
               <div
@@ -261,17 +257,16 @@ export default function CaptainsPage() {
                           i === 0
                             ? 'bg-green-100 text-green-800'
                             : i === 1
-                            ? 'bg-blue-50 text-blue-700'
-                            : 'bg-gray-100 text-gray-600'
+                              ? 'bg-blue-50 text-blue-700'
+                              : 'bg-gray-100 text-gray-600'
                         }`}
                       >
-                        {i === 0 && '⭐ '}{player}
+                        {i === 0 && '⭐ '}
+                        {player}
                       </span>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-400 mt-3">
-                    Click card to view match history
-                  </p>
+                  <p className="text-xs text-gray-400 mt-3">Click card to view match history</p>
                 </div>
               </div>
             );
