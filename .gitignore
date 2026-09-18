@@ -39,3 +39,4 @@ data/
 *.csvml-service/venv/
 backend/src/main/resources/application-secrets.yml
 frontend/.env.local
+db/
