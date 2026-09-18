@@ -15,31 +15,38 @@ import pandas as pd
 from sklearn.linear_model import Ridge
 from data.loader import load_match_compositions_with_scores, load_all_players
 
+_impact_cache = None
+
+# Regularisation strength for ridge regression — higher = more shrinkage toward zero,
+# prevents overfitting on small datasets. Tuned for ~30 matches.
 RIDGE_ALPHA = 50.0
 
 
 def build_design_matrix():
+    """Build binary player presence matrix and outcome vectors for ridge regression."""
     comps = load_match_compositions_with_scores()
-    
-    comps['team_instance'] = (
-        comps['match_id'].astype(str) + '_' + comps['team']
-    )
+    comps["team_instance"] = comps["match_id"].astype(str) + "_" + comps["team"]
 
-    X = pd.crosstab(comps['team_instance'], comps['player_id'])
+    X = pd.crosstab(comps["team_instance"], comps["player_id"])
     X = (X > 0).astype(int)
 
     outcomes = (
-        comps.groupby('team_instance')[['goals_for', 'goals_against']]
+        comps.groupby("team_instance")[["goals_for", "goals_against"]]
         .first()
         .reindex(X.index)
     )
 
     appearances = X.sum(axis=0)
 
-    return X, outcomes['goals_for'], outcomes['goals_against'], appearances
+    return X, outcomes["goals_for"], outcomes["goals_against"], appearances
 
 
 def fit_impact_model():
+    """Fit ridge regression impact model and return per-player attack/defence coefficients."""
+    global _impact_cache
+    if _impact_cache is not None and not force_refresh:
+        return _impact_cache
+
     X, goals_for, goals_against, appearances = build_design_matrix()
 
     # Attack model: predict goals FOR — only credits players whose team scored
@@ -50,21 +57,26 @@ def fit_impact_model():
     defence_model = Ridge(alpha=RIDGE_ALPHA, fit_intercept=True)
     defence_model.fit(X.values, goals_against.values)
 
-    impact = pd.DataFrame({
-        'player_id': X.columns,
-        'attack_impact': attack_model.coef_,
-        'defence_impact': -defence_model.coef_,
-        'appearances': appearances.values,
-    })
+    impact = pd.DataFrame(
+        {
+            "player_id": X.columns,
+            "attack_impact": attack_model.coef_,
+            "defence_impact": -defence_model.coef_,
+            "appearances": appearances.values,
+        }
+    )
 
-    impact['total_impact'] = impact['attack_impact'] + impact['defence_impact']
+    impact["total_impact"] = impact["attack_impact"] + impact["defence_impact"]
 
     players = load_all_players()
     impact = impact.merge(
-        players[['id', 'name', 'position', 'active']],
-        left_on='player_id',
-        right_on='id',
-        how='left',
-    ).drop(columns=['id'])
+        players[["id", "name", "position", "active"]],
+        left_on="player_id",
+        right_on="id",
+        how="left",
+    ).drop(columns=["id"])
 
-    return impact.sort_values('total_impact', ascending=False).reset_index(drop=True)
+    _impact_cache = impact.sort_values("total_impact", ascending=False).reset_index(
+        drop=True
+    )
+    return _impact_cache
