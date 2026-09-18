@@ -18,37 +18,41 @@ services:
       timeout: 5s
       retries: 5
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.0
-    container_name: mnf-zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
-  kafka:
-    image: confluentinc/cp-kafka:7.6.0
-    container_name: mnf-kafka
-    depends_on:
-      - zookeeper
+  backend:
+    build: ./backend
+    container_name: mnf-backend
     ports:
-      - "9092:9092"
+      - "8080:8080"
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
-
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    container_name: mnf-kafka-ui
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mnfmanager
+      SPRING_DATASOURCE_USERNAME: mnf
+      SPRING_DATASOURCE_PASSWORD: mnf_local_password
+      ML_SERVICE_URL: http://ml-service:5001
     depends_on:
-      - kafka
+      postgres:
+        condition: service_healthy
+
+  ml-service:
+    build: ./ml-service
+    container_name: mnf-ml-service
     ports:
-      - "8090:8080"
+      - "5001:5001"
     environment:
-      KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      DATABASE_URL: postgresql://mnf:mnf_local_password@postgres:5432/mnfmanager
+      FLASK_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: mnf-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
