@@ -11,17 +11,25 @@
 - Team size limit — maximum 9 players per team
 
 ### Player management ✅
-- 67 players across two seasons (40 active, 27 inactive)
+- 69 players across two seasons
 - Player profiles with career stats, pt% and season breakdown
 - Position tracking with filter by position group
 - Edit player profile — name, position, strong foot, active status
-- Subjective ratings — ability, reliability, goal threat
 - Player match history — click season row to view all matches
 - Own goal tracking — excluded from player goal tallies
 
+### ML ratings ✅
+- Ridge regression adjusted plus-minus impact model (α=50)
+- Attack and defence ratings on a shared scale — comparable across positions
+- Reliability rating from attendance rate scaled independently
+- Minimum 10 appearances threshold — below threshold receives NULL
+- Weekly delta tracking — shows rating changes since last update
+- Ratings updated via protected POST endpoint after each match night
+
 ### Leaderboard ✅
-- Points percentage: (W×3 + D×1) / (MP×3) × 100
+- Points percentage: (W×3 + D) / (MP×3) × 100
 - Minimum match threshold (14 season, 28 all time)
+- ML ratings tables: attack, defence, reliability
 - Expandable modals for full rankings
 - Clickable player names navigate to profile
 
@@ -30,6 +38,21 @@
 - Most picked players (captain excluded from own list)
 - Match history modal per captain
 - Unbeaten streak tracking — season and all time
+- Captain rotation recommendations (who should captain next)
+
+### Draft simulator ✅
+- Squad selection up to 18 players
+- Captain preference recommendations from historical co-occurrence
+- Live win probability bar using ridge regression impact coefficients
+- Team chemistry scores — pairwise win rate vs expected
+- Last-3-players rule auto-assignment
+- Undo last pick support
+
+### Chemistry analysis ✅
+- Pairwise chemistry scores for all player combinations with 5+ matches together
+- Chemistry score = win rate together − average individual win rate
+- Team chemistry score for any group of players
+- Exposed via draft simulator UI with colour-coded badges
 
 ### Dashboard ✅
 - Current winning captain and unbeaten streak
@@ -37,72 +60,43 @@
 - Top performers — pt% leader, top scorer, most played
 - Recent match results in GW format
 
-### Data ✅
-- 57 matches imported (28 × 2025, 29 × 2026)
-- 195 goal scorer records
-- 7 historical own goals recorded
-- Excel import endpoint for bulk data loading
+### Authentication ✅
+- Google OAuth 2.0 via GoogleIdTokenVerifier
+- JWT stateless sessions
+- Admin role via email whitelist
+- Edit buttons and protected endpoints visible only to admins
 
 ### Testing ✅
-- 52 integration tests running against real PostgreSQL
-- Service layer, domain logic and HTTP layer covered
+- 71 integration tests running against real PostgreSQL via Testcontainers
+- Service layer, domain logic, HTTP layer and auth covered
 - Tests run in CI via GitHub Actions on every push
+
+### Data ✅
+- 57 matches imported (28 × 2025, 29 × 2026) + 2 additional 2026 matches
+- 195 goal scorer records
+- 7 historical own goals recorded
 
 ---
 
 ## Up next
 
-### Derived ratings algorithm
-Replace subjective ratings with data-driven scores:
-
-**Goal threat** — goals per game relative to squad average. Top scorers get higher ratings automatically.
-
-**Reliability** — matches attended / total matches available during active period. Objective, automatically updated, impossible to game.
-
-**Ability** — composite of win rate + goal contribution + defensive record. Weighted and normalised across the squad.
-
-All ratings auto-recalculated after each match is recorded.
-
----
-
-### Draft prediction engine
-**Problem:** Draft pick order is confidential — captains jumble names after selection so players aren't disheartened by their pick position.
-
-**Solution:** Infer draft preference from team co-occurrence data.
-- Track how many times Player X appears on Captain A's team
-- Calculate co-occurrence rate: appearances on captain's team / total matches captained
-- Players with 80%+ rate are near-certain early picks
-- Players with 20% or below are likely avoided picks
-- At scale, noise averages out and preference patterns emerge clearly
-
-**Why this works:** Consistent team selection across many matches is a stronger signal than a single pick order data point.
-
-**Known limitation:** Cannot distinguish early picks from late picks — only that a player consistently ends up on that captain's team.
-
-**Exception:** Kobi has kept a personal record of his own draft pick order when captaining. This can be imported later to validate the co-occurrence model.
-
----
-
-### Match prediction engine
-Real-time win probability as teams are drafted:
-- Publish pick events to Kafka as the draft progresses
-- Prediction engine consumes events and updates win probability
-- Output: predicted score, win probability per team, key player matchups
-- Powered by historical team composition and chemistry data
-
----
-
-### Authentication and authorisation (pre-deployment)
-Required before Azure deployment:
-- Spring Security JWT authentication
-- Google OAuth 2.0 login via NextAuth.js
-- Role-based access: ADMIN and USER roles
-- Admin-only features: delete match, manage players
-- Protected API endpoints
+### Azure deployment
+- Azure Container Apps (backend + ML service, scale to zero)
+- Azure Static Web Apps (frontend, free tier)
+- Azure PostgreSQL Flexible Server (~£12-16/month)
+- pg_dump data migration from local PostgreSQL
+- GitHub Actions auto-deploy on push to main
+- Environment variables and secrets via Azure Key Vault
 
 ---
 
 ## Future features
+
+### Frontend redesign — football analytics UI
+- Dark mode with navy/slate background and neon green accents
+- Draft simulator pitch view — top-down SVG with formation slots
+- Players animate into position as they are picked
+- Chemistry badges and win probability panel alongside the pitch
 
 ### Goals against analysis
 Track which defensive combinations concede the most goals.
@@ -115,42 +109,20 @@ Does picking first actually correlate with winning?
 - The challenging captain picks first — is this a meaningful advantage?
 - If first-picking captain wins >50% significantly, weight the prediction engine accordingly
 
-### Captain preference tracking
-For each captain, rank all players by co-occurrence rate.
-- Display as "most likely picks" in the draft simulator with confidence percentages
-- Akshay example: consistently picked Kobi first in Season 2025
-
 ### Goalkeeper tracking
 Track who played in goal per match.
-- Nimanka was dedicated goalkeeper, now rotates
 - Enables goals conceded per goalkeeper analysis
 - Feeds into defensive strength calculations
-
-### Live draft assistant
-Real-time pick suggestions during the actual Monday night draft.
-- Input: captains and available players
-- Output: ranked pick suggestions with reasoning
-- Updates in real time as picks are made via Kafka events
 
 ### Player availability tracking
 Track who is available each week before the draft.
 - Reduces uncertainty in draft prediction
 - Enables "who should I pick given tonight's availability" queries
 
-### Team balancing recommendations
-Given a pool of available players, suggest the most balanced two teams.
-- Uses derived ratings and historical co-occurrence data
-- Output: two balanced squads with predicted match outcome
-
 ### AI generated match reports
 Post-match narrative generated from match data.
 - "Kobi's team dominated with a high-reliability defensive core"
 - "Ibrahim's individual brilliance couldn't overcome collective reliability deficit"
-
-### Azure deployment
-- Azure App Service + Azure PostgreSQL Flexible Server
-- GitHub Actions auto-deploy on push to main
-- Password protected until ready for public access
 
 ---
 
