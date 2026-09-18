@@ -1,99 +1,83 @@
 # MNF Manager — System Architecture
 
-Designed before development began as the blueprint for the full system.
-
 ## System Diagram
 
 ```mermaid
 graph TD
     subgraph Client["Client Layer"]
-        FE["Next.js 14\nTypeScript · Tailwind"]
-        RQ["React Query\nServer state · caching"]
-        AUTH["NextAuth.js\nGoogle OAuth · email login"]
+        FE["Next.js · TypeScript · Tailwind"]
+        RQ["React Query · server state · caching"]
+        AUTH["Google OAuth 2.0 · JWT · localStorage"]
     end
 
-    subgraph Gateway["API Gateway · Spring Boot 3"]
-        GW["JWT filter · rate limiting\nCORS · request routing"]
+    subgraph Backend["Backend · Java 21 · Spring Boot 3"]
+        SEC["Spring Security · JWT filter · CORS"]
+        PS["Player Service\nProfiles · stats · leaderboard"]
+        MS["Match Service\nResults · scorers · captains · dashboard"]
+        AC["Auth Controller\nGoogle token verification · JWT issue"]
+        DC["Draft Controller\nML proxy · security boundary"]
     end
 
-    subgraph Services["Backend Services · Java 21 · Spring Boot 3"]
-        PS["Player Service\nProfiles · ratings · stats"]
-        MS["Match Service\nResults · scorers · captains"]
-        DE["Draft Intelligence Engine\nPick prediction · confidence scores"]
-        PE["Prediction Engine\nWin probability · chemistry · team strength"]
-    end
-
-    subgraph Messaging["Messaging · Apache Kafka"]
-        K1["match.completed"]
-        K2["draft.picked"]
-        K3["player.rated"]
-        SC["Stats Consumer\nAggregates player stats"]
-        AU["Audit Logger\nEvent trail"]
+    subgraph ML["ML Service · Python · Flask"]
+        IM["Impact Model\nRidge regression α=50"]
+        RA["Ratings\nAttack · defence · reliability"]
+        CH["Chemistry\nPairwise win rate vs expected"]
+        DR["Draft Simulator\nCo-occurrence · win probability"]
     end
 
     subgraph Data["Data Layer"]
-        DB[("PostgreSQL\nPlayers · matches · drafts\nratings · chemistry")]
-        FW["Flyway\nVersioned migrations"]
-        JPA["Spring Data JPA\nRepositories · entity mapping"]
-    end
-
-    subgraph Security["Security"]
-        SEC["Spring Security · JWT\nRole-based access"]
-        OA["Google OAuth 2.0"]
-        TLS["HTTPS · CORS\nEnv secrets"]
+        DB[("PostgreSQL 16\nPlayers · matches · ratings\nseason stats · goal scorers")]
+        FW["Flyway · V1–V9 migrations"]
+        JPA["Spring Data JPA · repositories"]
     end
 
     subgraph Infra["Infrastructure · CI/CD"]
-        DC["Docker Compose\nLocal development"]
-        TC["Testcontainers\nIntegration testing"]
-        GA["GitHub Actions\nBuild · test · deploy"]
-        AZ["Azure App Service\nAzure PostgreSQL Flexible"]
+        DC2["Docker Compose · local development"]
+        TC["Testcontainers · 71 integration tests"]
+        GA["GitHub Actions · build · test"]
+        AZ["Azure Container Apps\nAzure PostgreSQL Flexible Server\nAzure Static Web Apps"]
     end
 
     FE --> RQ
-    FE --> AUTH
-    RQ -->|HTTPS REST| GW
-    AUTH --> GW
+    RQ -->|HTTPS REST| SEC
+    FE -->|Google ID token| AC
+    AC -->|JWT| FE
 
-    GW --> PS
-    GW --> MS
-    GW --> DE
-    GW --> PE
+    SEC --> PS
+    SEC --> MS
+    SEC --> DC
 
-    PS -->|player.rated| K3
-    MS -->|match.completed| K1
-    MS -->|draft.picked| K2
-
-    K1 --> SC
-    K2 --> SC
-    K3 --> SC
-    K1 --> AU
+    DC -->|proxy| DR
+    DC -->|proxy| CH
 
     PS --> JPA
     MS --> JPA
-    DE --> JPA
-    PE --> JPA
-
     JPA --> DB
     FW --> DB
 
-    SEC --> GW
-    OA --> AUTH
-    TLS --> GW
+    IM --> RA
+    IM --> DR
+    RA -->|weekly POST| MS
+    CH --> DR
+    ML --> DB
 
-    DC --> DB
+    DC2 --> DB
     TC --> GA
     GA --> AZ
 ```
 
 ## Key Design Decisions
 
-**Flyway over Hibernate auto-DDL** — every schema change is a versioned migration file. Safe for production, auditable, and reversible.
+**Flyway over Hibernate auto-DDL** — every schema change is a versioned migration file (V1–V9). Safe for production, auditable, and reversible.
 
-**Reliability as a first-class metric** — player ratings are deliberately simplified to three scores: ability, reliability, and goal threat. Complex subjective attributes were rejected in favour of fewer, more honest data points. Reliability is hypothesised to be more predictive of match outcomes than raw ability scores alone.
+**ML service behind Spring Boot proxy** — the frontend never calls the Python service directly. All ML endpoints are proxied through `DraftController`, keeping the security boundary at the Spring layer and preventing unauthenticated access to the model.
 
-**Kafka from day one** — event-driven architecture is not a v2 addition. Match and draft events flow through Kafka from the first match recorded, giving the system an audit trail and enabling decoupled consumers from the start.
+**Ridge regression over subjective ratings** — adjusted plus-minus style impact model controls for teammate quality. A player's attack rating reflects their contribution to goals scored after accounting for who else was on the pitch. Minimum 10 appearances threshold — null is more honest than a floor value.
+
+**Points percentage over win rate** — (W×3 + D) / (MP×3) × 100 rewards draws appropriately and matches the football points system the players already understand.
 
 **Set over List for JPA collections** — Hibernate's MultipleBagFetchException is avoided by using Set for all OneToMany relationships, allowing multiple simultaneous JOIN FETCH operations without cartesian product issues.
 
-**Simplified ratings model** — a deliberate decision to avoid FIFA-style multi-attribute complexity. Three meaningful scores per player rather than ten subjective ones means the data is actually filled in accurately and consistently.
+**Stateless JWT authentication** — no server-side session state. Google OAuth exchanges an ID token for a signed JWT; the JWT is stored in localStorage and sent via Axios interceptor on every request. Admin access is controlled by an email whitelist in application-secrets.yml.
+
+**Chemistry caching** — pairwise chemistry, impact model, and ratings all cache their results in module-level variables. A `force_refresh` parameter allows the weekly ratings update to bust the cache without restarting the service.
