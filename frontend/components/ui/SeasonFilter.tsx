@@ -6,7 +6,7 @@ interface SeasonFilterProps {
 export default function SeasonFilter({ selected, onChange }: SeasonFilterProps) {
   return (
     <div className="flex gap-2">
-      {['All', '2026', '2025'].map(season => (
+      {['All', '2026', '2025'].map((season) => (
         <button
           key={season}
           onClick={() => onChange(season)}

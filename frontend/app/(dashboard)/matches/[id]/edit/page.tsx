@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { usePlayers, useMatchDetail  } from '@/lib/hooks';
+import { usePlayers, useMatchDetail } from '@/lib/hooks';
 import { useRouter, useParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
+
+import LoadingState from '@/components/ui/LoadingState';
 
 interface GoalScorerEntry {
   playerId: number;
@@ -22,7 +24,7 @@ export default function EditMatchPage() {
   const matchId = Number(params.id);
   const queryClient = useQueryClient();
   const { data: players } = usePlayers();
-  const { data: match, isLoading } = useMatchDetail (matchId);
+  const { data: match, isLoading } = useMatchDetail(matchId);
 
   const [matchDate, setMatchDate] = useState('');
   const seasonYear = matchDate ? new Date(matchDate).getFullYear() : new Date().getFullYear();
@@ -46,8 +48,8 @@ export default function EditMatchPage() {
     setCaptainBId(match.captainBId);
     setScoreA(match.scoreA);
     setScoreB(match.scoreB);
-    setTeamAPlayerIds(match.teamAPlayers?.map(p => p.playerId) || []);
-    setTeamBPlayerIds(match.teamBPlayers?.map(p => p.playerId) || []);
+    setTeamAPlayerIds(match.teamAPlayers?.map((p) => p.playerId) || []);
+    setTeamBPlayerIds(match.teamBPlayers?.map((p) => p.playerId) || []);
     setGoalScorers(
       (match.goalScorers || []).map((gs) => ({
         playerId: gs.playerId,
@@ -85,21 +87,13 @@ export default function EditMatchPage() {
     if (team === 'A') {
       setTeamAPlayerIds((prev) => {
         if (!prev.includes(playerId) && prev.length >= 9) return prev;
-        return prev.includes(playerId)
-          ? prev.filter((id) => id !== playerId)
-          : [...prev, playerId]
-      }
-        
-        
-      );
+        return prev.includes(playerId) ? prev.filter((id) => id !== playerId) : [...prev, playerId];
+      });
     } else {
       setTeamBPlayerIds((prev) => {
         if (!prev.includes(playerId) && prev.length >= 9) return prev;
-        return prev.includes(playerId)
-          ? prev.filter((id) => id !== playerId)
-          : [...prev, playerId]
-        }
-      );
+        return prev.includes(playerId) ? prev.filter((id) => id !== playerId) : [...prev, playerId];
+      });
     }
   }
 
@@ -110,9 +104,7 @@ export default function EditMatchPage() {
   }
 
   function updateGoals(index: number, goals: number) {
-    setGoalScorers((prev) =>
-      prev.map((g, i) => (i === index ? { ...g, goals } : g))
-    );
+    setGoalScorers((prev) => prev.map((g, i) => (i === index ? { ...g, goals } : g)));
   }
 
   function removeGoalScorer(index: number) {
@@ -139,9 +131,11 @@ export default function EditMatchPage() {
       showError('Captains must be different players');
       return;
     }
-    
+
     if (goalScorers.length > 0 && !goalsMatch) {
-      showError(`Goals attributed (${teamAGoals}-${teamBGoals}) don't match the score (${scoreA}-${scoreB})`);
+      showError(
+        `Goals attributed (${teamAGoals}-${teamBGoals}) don't match the score (${scoreA}-${scoreB})`
+      );
       return;
     }
 
@@ -159,7 +153,7 @@ export default function EditMatchPage() {
         scoreB,
         teamAPlayerIds,
         teamBPlayerIds,
-        goalScorers: goalScorers.map(gs => ({
+        goalScorers: goalScorers.map((gs) => ({
           playerId: gs.playerId,
           goals: gs.goals,
           team: gs.team,
@@ -174,27 +168,23 @@ export default function EditMatchPage() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading match...</div>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingState message="Loading match..." />;
 
-  const teamAGoals = goalScorers
-    .filter(gs => gs.team === 'A' && !gs.isOwnGoal)
-    .reduce((sum, gs) => sum + gs.goals, 0) +
+  const teamAGoals =
     goalScorers
-    .filter(gs => gs.team === 'B' && gs.isOwnGoal)
-    .reduce((sum, gs) => sum + gs.goals, 0);
+      .filter((gs) => gs.team === 'A' && !gs.isOwnGoal)
+      .reduce((sum, gs) => sum + gs.goals, 0) +
+    goalScorers
+      .filter((gs) => gs.team === 'B' && gs.isOwnGoal)
+      .reduce((sum, gs) => sum + gs.goals, 0);
 
-  const teamBGoals = goalScorers
-    .filter(gs => gs.team === 'B' && !gs.isOwnGoal)
-    .reduce((sum, gs) => sum + gs.goals, 0) +
+  const teamBGoals =
     goalScorers
-    .filter(gs => gs.team === 'A' && gs.isOwnGoal)
-    .reduce((sum, gs) => sum + gs.goals, 0);
+      .filter((gs) => gs.team === 'B' && !gs.isOwnGoal)
+      .reduce((sum, gs) => sum + gs.goals, 0) +
+    goalScorers
+      .filter((gs) => gs.team === 'A' && gs.isOwnGoal)
+      .reduce((sum, gs) => sum + gs.goals, 0);
 
   const goalsMatch = teamAGoals === scoreA && teamBGoals === scoreB;
 
@@ -219,7 +209,7 @@ export default function EditMatchPage() {
       {/* Match details */}
       <div className="bg-white rounded-xl border border-gray-100 p-5 mb-4">
         <h2 className="font-semibold text-gray-900 mb-4">Match details</h2>
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="text-xs text-gray-600 block mb-1">Date</label>
             <input
@@ -254,16 +244,16 @@ export default function EditMatchPage() {
                 const id = Number(e.target.value);
                 setCaptainAId(id);
                 if (id) {
-                  setTeamAPlayerIds(prev =>
-                    prev.includes(id) ? prev : [...prev, id]
-                  );
+                  setTeamAPlayerIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
                 }
               }}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="">Select captain</option>
               {activePlayers.map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
               ))}
             </select>
           </div>
@@ -300,16 +290,16 @@ export default function EditMatchPage() {
                 const id = Number(e.target.value);
                 setCaptainBId(id);
                 if (id) {
-                  setTeamBPlayerIds(prev =>
-                    prev.includes(id) ? prev : [...prev, id]
-                  );
+                  setTeamBPlayerIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
                 }
               }}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="">Select captain</option>
               {activePlayers.map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
               ))}
             </select>
           </div>
@@ -326,9 +316,7 @@ export default function EditMatchPage() {
 
           return (
             <div key={team} className="bg-white rounded-xl border border-gray-100 p-5">
-              <h2 className="font-semibold text-gray-900 mb-1">
-                {captainName}&apos;s team
-              </h2>
+              <h2 className="font-semibold text-gray-900 mb-1">{captainName}&apos;s team</h2>
               <p className="text-xs text-gray-400 mb-3">
                 {teamPlayerIds.length}/9 players selected
               </p>
@@ -345,31 +333,39 @@ export default function EditMatchPage() {
                       type="button"
                       key={player.id}
                       onClick={() => {
-                        const isCaptain = player.id === Number(captainAId) || player.id === Number(captainBId);
+                        const isCaptain =
+                          player.id === Number(captainAId) || player.id === Number(captainBId);
                         if (!isCaptain && !onOtherTeam) toggleTeamPlayer(player.id, team);
                       }}
-                      disabled={onOtherTeam || (team === 'A' && player.id === Number(captainAId)) || (team === 'B' && player.id === Number(captainBId)) || (teamFull && !selected)}
+                      disabled={
+                        onOtherTeam ||
+                        (team === 'A' && player.id === Number(captainAId)) ||
+                        (team === 'B' && player.id === Number(captainBId)) ||
+                        (teamFull && !selected)
+                      }
                       className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
                         selected
                           ? 'bg-green-50 text-green-700 font-medium'
                           : onOtherTeam
-                          ? 'opacity-30 cursor-not-allowed text-gray-400'
-                          : (team === 'A' && player.id === Number(captainAId)) || (team === 'B' && player.id === Number(captainBId))
-                          ? 'bg-green-50 text-green-700 font-medium cursor-not-allowed'
-                          : teamFull && !selected
-                          ? 'opacity-30 cursor-not-allowed text-gray-400'
-                          : 'hover:bg-gray-50 text-gray-700'
+                            ? 'opacity-30 cursor-not-allowed text-gray-400'
+                            : (team === 'A' && player.id === Number(captainAId)) ||
+                                (team === 'B' && player.id === Number(captainBId))
+                              ? 'bg-green-50 text-green-700 font-medium cursor-not-allowed'
+                              : teamFull && !selected
+                                ? 'opacity-30 cursor-not-allowed text-gray-400'
+                                : 'hover:bg-gray-50 text-gray-700'
                       }`}
                     >
-                      <div className={`w-4 h-4 rounded border shrink-0 flex items-center justify-center text-xs ${
-                        selected
-                          ? 'bg-green-500 border-green-500 text-white'
-                          : 'border-gray-300'
-                      }`}>
+                      <div
+                        className={`w-4 h-4 rounded border shrink-0 flex items-center justify-center text-xs ${
+                          selected ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300'
+                        }`}
+                      >
                         {selected && '✓'}
                       </div>
                       {player.name}
-                      {((team === 'A' && player.id === Number(captainAId)) || (team === 'B' && player.id === Number(captainBId))) && (
+                      {((team === 'A' && player.id === Number(captainAId)) ||
+                        (team === 'B' && player.id === Number(captainBId))) && (
                         <span className="ml-auto text-xs text-green-600 font-medium">Captain</span>
                       )}
                     </button>
@@ -424,9 +420,11 @@ export default function EditMatchPage() {
               >
                 <span className="text-sm font-semibold text-gray-900 flex-1">
                   {getPlayerName(gs.playerId)}
-                  <span className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full ${
-                    gs.team === 'A' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                  }`}>
+                  <span
+                    className={`ml-2 text-xs font-bold px-2 py-0.5 rounded-full ${
+                      gs.team === 'A' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                    }`}
+                  >
                     Team {gs.team}
                   </span>
                   {gs.isOwnGoal && (
@@ -471,29 +469,29 @@ export default function EditMatchPage() {
             const teamPlayerIds = team === 'A' ? teamAPlayerIds : teamBPlayerIds;
             const captainId = team === 'A' ? captainAId : captainBId;
             const captainName = captainId ? getPlayerName(Number(captainId)) : `Team ${team}`;
-            const availablePlayers = activePlayers.filter(
-              (p) => {
-                if (!teamPlayerIds.includes(p.id)) return false;
-                const hasRegularGoal = goalScorers.some(g => g.playerId === p.id && !g.isOwnGoal);
-                const hasOwnGoal = goalScorers.some(g => g.playerId === p.id && g.isOwnGoal);
-                return !hasRegularGoal || !hasOwnGoal;
-              }
-            );
+            const availablePlayers = activePlayers.filter((p) => {
+              if (!teamPlayerIds.includes(p.id)) return false;
+              const hasRegularGoal = goalScorers.some((g) => g.playerId === p.id && !g.isOwnGoal);
+              const hasOwnGoal = goalScorers.some((g) => g.playerId === p.id && g.isOwnGoal);
+              return !hasRegularGoal || !hasOwnGoal;
+            });
 
             return (
               <div key={team}>
                 <p className="text-xs text-gray-500 mb-2">{captainName}&apos;s team scorers</p>
                 {availablePlayers.length === 0 ? (
                   <p className="text-xs text-gray-400 italic">
-                    {teamPlayerIds.length === 0
-                      ? 'Select team players first'
-                      : 'All players added'}
+                    {teamPlayerIds.length === 0 ? 'Select team players first' : 'All players added'}
                   </p>
                 ) : (
                   <div className="space-y-1">
                     {availablePlayers.map((p) => {
-                      const hasRegularGoal = goalScorers.some(g => g.playerId === p.id && !g.isOwnGoal);
-                      const hasOwnGoal = goalScorers.some(g => g.playerId === p.id && g.isOwnGoal);
+                      const hasRegularGoal = goalScorers.some(
+                        (g) => g.playerId === p.id && !g.isOwnGoal
+                      );
+                      const hasOwnGoal = goalScorers.some(
+                        (g) => g.playerId === p.id && g.isOwnGoal
+                      );
 
                       return (
                         <div key={p.id} className="flex items-center gap-1">
@@ -507,7 +505,9 @@ export default function EditMatchPage() {
                             </button>
                           )}
                           {hasRegularGoal && (
-                            <span className="flex-1 text-sm px-3 py-1.5 text-gray-400">{p.name}</span>
+                            <span className="flex-1 text-sm px-3 py-1.5 text-gray-400">
+                              {p.name}
+                            </span>
                           )}
                           {!hasOwnGoal && (
                             <button
@@ -532,10 +532,11 @@ export default function EditMatchPage() {
 
       {!goalsMatch && goalScorers.length > 0 && (
         <div className="mb-4 bg-amber-50 border border-amber-200 text-amber-700 text-sm px-4 py-3 rounded-lg">
-          ⚠️ Goals attributed ({teamAGoals}-{teamBGoals}) don&apos;t match the score ({scoreA}-{scoreB})
+          ⚠️ Goals attributed ({teamAGoals}-{teamBGoals}) don&apos;t match the score ({scoreA}-
+          {scoreB})
         </div>
       )}
-      
+
       {/* Submit */}
       <div className="flex items-center justify-between">
         <button

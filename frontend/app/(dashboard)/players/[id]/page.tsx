@@ -9,16 +9,9 @@ import api from '@/lib/api';
 import MatchDetailModal from '../../matches/MatchDetailModal';
 import RatingBar from '@/components/ui/RatingBar';
 import DeltaBadge from '@/components/ui/DeltaBadge';
-
-function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
-  return (
-    <div className="bg-gray-50 rounded-xl p-4">
-      <div className="text-xs text-gray-400 uppercase tracking-wide mb-1">{label}</div>
-      <div className="text-2xl font-black text-gray-900">{value}</div>
-      {sub && <div className="text-xs text-gray-400 mt-1">{sub}</div>}
-    </div>
-  );
-}
+import LoadingState from '@/components/ui/LoadingState';
+import ErrorState from '@/components/ui/ErrorState';
+import StatCard from '@/components/ui/StatCard';
 
 function PlayerMatchHistoryModal({
   playerId,
@@ -41,7 +34,9 @@ function PlayerMatchHistoryModal({
             <h2 className="font-semibold text-gray-900">Season {seasonYear} matches</h2>
             <p className="text-xs text-gray-400 mt-0.5">{matches?.length || 0} matches</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg font-bold">✕</button>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg font-bold">
+            ✕
+          </button>
         </div>
         <div className="overflow-y-auto flex-1">
           {isLoading ? (
@@ -61,11 +56,15 @@ function PlayerMatchHistoryModal({
                 <span className="text-xs text-gray-400 min-w-10">
                   {match.gameWeek || `S${match.seasonYear}`}
                 </span>
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full min-w-10 text-center ${
-                  match.result === 'WIN' ? 'bg-green-100 text-green-700' :
-                  match.result === 'DRAW' ? 'bg-amber-100 text-amber-700' :
-                  'bg-red-100 text-red-500'
-                }`}>
+                <span
+                  className={`text-xs font-bold px-2 py-0.5 rounded-full min-w-10 text-center ${
+                    match.result === 'WIN'
+                      ? 'bg-green-100 text-green-700'
+                      : match.result === 'DRAW'
+                        ? 'bg-amber-100 text-amber-700'
+                        : 'bg-red-100 text-red-500'
+                  }`}
+                >
                   {match.result}
                 </span>
                 <span className="text-sm flex-1 text-gray-600">
@@ -101,7 +100,6 @@ export default function PlayerProfilePage() {
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
   const [previousSeasonYear, setPreviousSeasonYear] = useState<number | null>(null);
 
-
   function startEditingProfile() {
     setEditName(profile?.name || '');
     setEditStrongFoot(profile?.strongFoot || 'Right');
@@ -129,27 +127,17 @@ export default function PlayerProfilePage() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading player profile...</div>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingState message="Loading player profile..." />;
 
-  if (isError || !profile) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-red-400">Failed to load player. Is the backend running?</div>
-      </div>
-    );
-  }
+  if (isError || !profile)
+    return <ErrorState message="Failed to load player. Is the backend running?" />;
 
-  const pointPercentageColor = profile.careerStats.careerPointsPercentage >= 60
-    ? 'text-green-600'
-    : profile.careerStats.careerPointsPercentage >= 40
-    ? 'text-amber-500'
-    : 'text-red-400';
+  const pointPercentageColor =
+    profile.careerStats.careerPointsPercentage >= 60
+      ? 'text-green-600'
+      : profile.careerStats.careerPointsPercentage >= 40
+        ? 'text-amber-500'
+        : 'text-red-400';
 
   return (
     <div className="max-w-4xl">
@@ -173,11 +161,15 @@ export default function PlayerProfilePage() {
             setSelectedMatchId(null);
             setPreviousSeasonYear(null);
           }}
-          onBack={previousSeasonYear ? () => {
-            setSelectedMatchId(null);
-            setSelectedSeasonYear(previousSeasonYear);
-            setPreviousSeasonYear(null);
-          } : undefined}
+          onBack={
+            previousSeasonYear
+              ? () => {
+                  setSelectedMatchId(null);
+                  setSelectedSeasonYear(previousSeasonYear);
+                  setPreviousSeasonYear(null);
+                }
+              : undefined
+          }
         />
       )}
       <button
@@ -199,11 +191,11 @@ export default function PlayerProfilePage() {
               <span className="bg-green-800 text-green-200 text-xs px-2 py-1 rounded-lg">
                 {profile.strongFoot} foot
               </span>
-              <span className={`text-xs px-2 py-1 rounded-lg ${
-                profile.active
-                  ? 'bg-green-500 text-white'
-                  : 'bg-gray-600 text-gray-300'
-              }`}>
+              <span
+                className={`text-xs px-2 py-1 rounded-lg ${
+                  profile.active ? 'bg-green-500 text-white' : 'bg-gray-600 text-gray-300'
+                }`}
+              >
                 {profile.active ? 'Active' : 'Inactive'}
               </span>
             </div>
@@ -229,10 +221,7 @@ export default function PlayerProfilePage() {
               sub={`${profile.careerStats.totalWins}W ${profile.careerStats.totalDraws}D ${profile.careerStats.totalLosses}L`}
             />
             <StatCard label="Goals" value={profile.careerStats.totalGoals} />
-            <StatCard
-              label="Goals per game"
-              value={profile.careerStats.careerGoalsPerGame}
-            />
+            <StatCard label="Goals per game" value={profile.careerStats.careerGoalsPerGame} />
           </div>
         </div>
 
@@ -250,7 +239,8 @@ export default function PlayerProfilePage() {
               {/* Overall */}
               <div className="bg-green-50 rounded-xl p-4 flex items-center justify-between mb-2">
                 <span className="text-sm font-semibold text-green-900">Overall</span>
-                <span className="text-2xl font-black text-green-700">{profile.overallRating}/10
+                <span className="text-2xl font-black text-green-700">
+                  {profile.overallRating}/10
                   <DeltaBadge delta={profile.overallDelta} />
                 </span>
               </div>
@@ -258,7 +248,8 @@ export default function PlayerProfilePage() {
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm text-gray-600">⚔️ Attack</span>
-                  <span className="text-sm font-bold text-gray-900">{profile.attackRating}/10
+                  <span className="text-sm font-bold text-gray-900">
+                    {profile.attackRating}/10
                     <DeltaBadge delta={profile.attackDelta} />
                   </span>
                 </div>
@@ -268,7 +259,8 @@ export default function PlayerProfilePage() {
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm text-gray-600">🛡️ Defence</span>
-                  <span className="text-sm font-bold text-gray-900">{profile.defenceRating}/10
+                  <span className="text-sm font-bold text-gray-900">
+                    {profile.defenceRating}/10
                     <DeltaBadge delta={profile.defenceDelta} />
                   </span>
                 </div>
@@ -278,7 +270,8 @@ export default function PlayerProfilePage() {
               <div>
                 <div className="flex justify-between mb-1">
                   <span className="text-sm text-gray-600">📅 Reliability</span>
-                  <span className="text-sm font-bold text-gray-900">{profile.reliability}/10
+                  <span className="text-sm font-bold text-gray-900">
+                    {profile.reliability}/10
                     <DeltaBadge delta={profile.reliabilityDelta} />
                   </span>
                 </div>
@@ -293,7 +286,6 @@ export default function PlayerProfilePage() {
           )}
         </div>
       </div>
-        
 
       {/* Profile edit card */}
       <div className="bg-white rounded-xl border border-gray-100 p-5 mb-6">
@@ -339,7 +331,9 @@ export default function PlayerProfilePage() {
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">Status</span>
-              <span className={`font-medium ${profile.active ? 'text-green-600' : 'text-gray-400'}`}>
+              <span
+                className={`font-medium ${profile.active ? 'text-green-600' : 'text-gray-400'}`}
+              >
                 {profile.active ? 'Active' : 'Inactive'}
               </span>
             </div>
@@ -407,29 +401,41 @@ export default function PlayerProfilePage() {
       <div className="bg-white rounded-xl border border-gray-100 p-5">
         <h2 className="font-semibold text-gray-900 mb-4">Season breakdown</h2>
         {profile.seasonStats.length === 0 ? (
-          <div className="text-center py-8 text-gray-400 text-sm">
-            No match data yet
-          </div>
+          <div className="text-center py-8 text-gray-400 text-sm">No match data yet</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th className="text-left py-2 px-3 text-xs text-gray-400 font-medium uppercase">Season</th>
-                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">Played</th>
-                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">W</th>
-                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">D</th>
-                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">L</th>
-                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">Goals</th>
-                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">Pt %</th>
+                  <th className="text-left py-2 px-3 text-xs text-gray-400 font-medium uppercase">
+                    Season
+                  </th>
+                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">
+                    Played
+                  </th>
+                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">
+                    W
+                  </th>
+                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">
+                    D
+                  </th>
+                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">
+                    L
+                  </th>
+                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">
+                    Goals
+                  </th>
+                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">
+                    Pt %
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {profile.seasonStats.map((s) => (
-                  <tr 
-                  key={s.seasonYear} 
-                  className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer"
-                  onClick={() => setSelectedSeasonYear(s.seasonYear)}
+                  <tr
+                    key={s.seasonYear}
+                    className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer"
+                    onClick={() => setSelectedSeasonYear(s.seasonYear)}
                   >
                     <td className="py-3 px-3 font-semibold text-gray-900">{s.seasonYear}</td>
                     <td className="py-3 px-3 text-center text-gray-600">{s.matchesPlayed}</td>
@@ -438,10 +444,15 @@ export default function PlayerProfilePage() {
                     <td className="py-3 px-3 text-center text-red-400 font-medium">{s.losses}</td>
                     <td className="py-3 px-3 text-center text-gray-600">{s.goals}</td>
                     <td className="py-3 px-3 text-center">
-                      <span className={`font-bold ${
-                        s.pointsPercentage >= 60 ? 'text-green-600' :
-                        s.pointsPercentage >= 40 ? 'text-amber-500' : 'text-red-400'
-                      }`}>
+                      <span
+                        className={`font-bold ${
+                          s.pointsPercentage >= 60
+                            ? 'text-green-600'
+                            : s.pointsPercentage >= 40
+                              ? 'text-amber-500'
+                              : 'text-red-400'
+                        }`}
+                      >
                         {s.pointsPercentage}%
                       </span>
                     </td>

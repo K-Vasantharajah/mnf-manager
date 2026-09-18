@@ -50,40 +50,41 @@ export default function DraftPage() {
   const [prediction, setPrediction] = useState<Prediction | null>(null);
   const [loadingPrefs, setLoadingPrefs] = useState(false);
   const [captainRecommendations, setCaptainRecommendations] = useState<CaptainRecommendation[]>([]);
-  const activePlayers = (allPlayers || []).filter(p => p.active);
+  const activePlayers = (allPlayers || []).filter((p) => p.active);
   const [teamAChemistry, setTeamAChemistry] = useState<number | null>(null);
   const [teamBChemistry, setTeamBChemistry] = useState<number | null>(null);
 
-  const squadPlayers = activePlayers.filter(p => squadIds.includes(p.id));
-  const captainA = activePlayers.find(p => p.id === captainAId);
-  const captainB = activePlayers.find(p => p.id === captainBId);
+  const squadPlayers = activePlayers.filter((p) => squadIds.includes(p.id));
+  const captainA = activePlayers.find((p) => p.id === captainAId);
+  const captainB = activePlayers.find((p) => p.id === captainBId);
 
-  const teamA = picks.filter(p => p.team === 'A');
+  const teamA = picks.filter((p) => p.team === 'A');
 
   const pickedIds = new Set([
-    ...picks.map(p => p.playerId),
+    ...picks.map((p) => p.playerId),
     ...(captainAId ? [captainAId] : []),
     ...(captainBId ? [captainBId] : []),
   ]);
 
-  const availablePlayers = squadPlayers.filter(p => !pickedIds.has(p.id));
+  const availablePlayers = squadPlayers.filter((p) => !pickedIds.has(p.id));
 
   function toggleSquad(playerId: number) {
-    setSquadIds(prev =>
+    setSquadIds((prev) =>
       prev.includes(playerId)
-        ? prev.filter(id => id !== playerId)
+        ? prev.filter((id) => id !== playerId)
         : prev.length < 18
-        ? [...prev, playerId]
-        : prev
+          ? [...prev, playerId]
+          : prev
     );
   }
 
   function startDraft() {
     if (!captainAId || !captainBId) return;
     setPhase('draft');
-    loadPreferences(captainBId, squadPlayers
-      .filter(p => p.id !== captainAId && p.id !== captainBId)
-      .map(p => p.id));
+    loadPreferences(
+      captainBId,
+      squadPlayers.filter((p) => p.id !== captainAId && p.id !== captainBId).map((p) => p.id)
+    );
   }
 
   async function loadPreferences(captainId: number, availableIds: number[]) {
@@ -113,15 +114,19 @@ export default function DraftPage() {
     setPicks(newPicks);
 
     const remainingIds = squadPlayers
-      .filter(p => !new Set([
-        ...newPicks.map(pk => pk.playerId),
-        captainAId!,
-        captainBId!,
-      ]).has(p.id))
-      .map(p => p.id);
+      .filter(
+        (p) => !new Set([...newPicks.map((pk) => pk.playerId), captainAId!, captainBId!]).has(p.id)
+      )
+      .map((p) => p.id);
 
-    const teamAIds = [captainAId!, ...newPicks.filter(p => p.team === 'A').map(p => p.playerId)];
-    const teamBIds = [captainBId!, ...newPicks.filter(p => p.team === 'B').map(p => p.playerId)];
+    const teamAIds = [
+      captainAId!,
+      ...newPicks.filter((p) => p.team === 'A').map((p) => p.playerId),
+    ];
+    const teamBIds = [
+      captainBId!,
+      ...newPicks.filter((p) => p.team === 'B').map((p) => p.playerId),
+    ];
 
     await updatePrediction(teamAIds, teamBIds);
     await updateTeamChemistry(teamAIds, teamBIds);
@@ -134,19 +139,22 @@ export default function DraftPage() {
     // Last 3 players rule — Team A picks 2, Team B gets last one by default
     if (remainingIds.length === 1) {
       // Auto-assign last player to Team B
-      const lastPlayer = squadPlayers.find(p => remainingIds.includes(p.id));
+      const lastPlayer = squadPlayers.find((p) => remainingIds.includes(p.id));
       if (lastPlayer) {
-        const finalPicks = [...newPicks, {
-          playerId: lastPlayer.id,
-          playerName: lastPlayer.name,
-          team: 'B' as const,
-          position: lastPlayer.position,
-        }];
+        const finalPicks = [
+          ...newPicks,
+          {
+            playerId: lastPlayer.id,
+            playerName: lastPlayer.name,
+            team: 'B' as const,
+            position: lastPlayer.position,
+          },
+        ];
         setPicks(finalPicks);
         setPhase('complete');
         await updatePrediction(
-          [captainAId!, ...finalPicks.filter(p => p.team === 'A').map(p => p.playerId)],
-          [captainBId!, ...finalPicks.filter(p => p.team === 'B').map(p => p.playerId)]
+          [captainAId!, ...finalPicks.filter((p) => p.team === 'A').map((p) => p.playerId)],
+          [captainBId!, ...finalPicks.filter((p) => p.team === 'B').map((p) => p.playerId)]
         );
       }
       return;
@@ -180,23 +188,21 @@ export default function DraftPage() {
 
     const prevCaptainId = prevTurn === 'A' ? captainAId! : captainBId!;
     const remainingIds = squadPlayers
-      .filter(p => !new Set([
-        ...newPicks.map(pk => pk.playerId),
-        captainAId!,
-        captainBId!,
-      ]).has(p.id))
-      .map(p => p.id);
+      .filter(
+        (p) => !new Set([...newPicks.map((pk) => pk.playerId), captainAId!, captainBId!]).has(p.id)
+      )
+      .map((p) => p.id);
 
     await loadPreferences(prevCaptainId, remainingIds);
 
     if (newPicks.length > 0) {
       await updatePrediction(
-        [captainAId!, ...newPicks.filter(p => p.team === 'A').map(p => p.playerId)],
-        [captainBId!, ...newPicks.filter(p => p.team === 'B').map(p => p.playerId)]
+        [captainAId!, ...newPicks.filter((p) => p.team === 'A').map((p) => p.playerId)],
+        [captainBId!, ...newPicks.filter((p) => p.team === 'B').map((p) => p.playerId)]
       );
       await updateTeamChemistry(
-        [captainAId!, ...newPicks.filter(p => p.team === 'A').map(p => p.playerId)],
-        [captainBId!, ...newPicks.filter(p => p.team === 'B').map(p => p.playerId)]
+        [captainAId!, ...newPicks.filter((p) => p.team === 'A').map((p) => p.playerId)],
+        [captainBId!, ...newPicks.filter((p) => p.team === 'B').map((p) => p.playerId)]
       );
     } else {
       setPrediction(null);
@@ -254,11 +260,14 @@ export default function DraftPage() {
 
   useEffect(() => {
     if (phase === 'captains' && squadIds.length > 0) {
-      api.post('/api/v1/draft/captain-recommendations', {
-        availablePlayerIds: squadIds,
-      }).then(({ data }) => {
-        setCaptainRecommendations(data.recommendations || []);
-      }).catch(() => setCaptainRecommendations([]));
+      api
+        .post('/api/v1/draft/captain-recommendations', {
+          availablePlayerIds: squadIds,
+        })
+        .then(({ data }) => {
+          setCaptainRecommendations(data.recommendations || []);
+        })
+        .catch(() => setCaptainRecommendations([]));
     }
   }, [phase, squadIds]);
 
@@ -268,9 +277,10 @@ export default function DraftPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Draft Simulator</h1>
           <p className="text-sm text-gray-400 mt-1">
-            {phase === 'squad' && 'Select tonight\'s squad (max 18 players)'}
+            {phase === 'squad' && "Select tonight's squad (max 18 players)"}
             {phase === 'captains' && 'Select the two captains'}
-            {phase === 'draft' && `${currentCaptainName}'s pick · ${availablePlayers.length} players remaining`}
+            {phase === 'draft' &&
+              `${currentCaptainName}'s pick · ${availablePlayers.length} players remaining`}
             {phase === 'complete' && 'Draft complete'}
           </p>
         </div>
@@ -288,9 +298,7 @@ export default function DraftPage() {
       {phase === 'squad' && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-gray-600">
-              {squadIds.length}/18 players selected
-            </p>
+            <p className="text-sm text-gray-600">{squadIds.length}/18 players selected</p>
             <button
               onClick={() => setPhase('captains')}
               disabled={squadIds.length < 2}
@@ -300,7 +308,7 @@ export default function DraftPage() {
             </button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-            {activePlayers.map(player => {
+            {activePlayers.map((player) => {
               const selected = squadIds.includes(player.id);
               const full = squadIds.length >= 18 && !selected;
               return (
@@ -313,8 +321,8 @@ export default function DraftPage() {
                     selected
                       ? 'bg-green-600 text-white'
                       : full
-                      ? 'opacity-30 cursor-not-allowed bg-white border border-gray-200 text-gray-600'
-                      : 'bg-white border border-gray-200 text-gray-700 hover:bg-green-50 hover:border-green-300'
+                        ? 'opacity-30 cursor-not-allowed bg-white border border-gray-200 text-gray-600'
+                        : 'bg-white border border-gray-200 text-gray-700 hover:bg-green-50 hover:border-green-300'
                   }`}
                 >
                   <div className="w-6 h-6 rounded-full bg-white bg-opacity-20 flex items-center justify-center text-xs font-bold flex-shrink-0">
@@ -322,7 +330,9 @@ export default function DraftPage() {
                   </div>
                   <span className="truncate">{player.name}</span>
                   {player.position && player.position !== 'UNKNOWN' && (
-                    <span className={`ml-auto text-xs ${selected ? 'text-green-200' : 'text-gray-400'}`}>
+                    <span
+                      className={`ml-auto text-xs ${selected ? 'text-green-200' : 'text-gray-400'}`}
+                    >
                       {player.position}
                     </span>
                   )}
@@ -341,7 +351,7 @@ export default function DraftPage() {
               <h2 className="font-semibold text-gray-900 mb-3">Captain A</h2>
               <p className="text-xs text-gray-400 mb-3">Winning captain — picks second</p>
               <div className="space-y-1 max-h-64 overflow-y-auto">
-                {squadPlayers.map(player => (
+                {squadPlayers.map((player) => (
                   <button
                     key={player.id}
                     type="button"
@@ -351,8 +361,8 @@ export default function DraftPage() {
                       player.id === captainAId
                         ? 'bg-green-600 text-white'
                         : player.id === captainBId
-                        ? 'opacity-30 cursor-not-allowed text-gray-400'
-                        : 'hover:bg-gray-50 text-gray-700'
+                          ? 'opacity-30 cursor-not-allowed text-gray-400'
+                          : 'hover:bg-gray-50 text-gray-700'
                     }`}
                   >
                     {player.name}
@@ -367,18 +377,23 @@ export default function DraftPage() {
             <div className="bg-white rounded-xl border border-gray-100 p-5">
               <h2 className="font-semibold text-gray-900 mb-3">Captain B</h2>
               <p className="text-xs text-gray-400 mb-1">Challenging captain — picks first</p>
-              <p className="text-xs text-amber-600 mb-3 font-medium">⭐ Ordered by who should captain next</p>
+              <p className="text-xs text-amber-600 mb-3 font-medium">
+                ⭐ Ordered by who should captain next
+              </p>
               <div className="space-y-1 max-h-64 overflow-y-auto">
                 {(captainRecommendations.length > 0
-                  ? captainRecommendations.filter(r => squadIds.includes(r.player_id))
-                  : squadPlayers.map(p => ({
-                      player_id: p.id,
-                      name: p.name,
-                      position: p.position,
-                      times_captained_this_season: -1,
-                      last_match_id_captained: 0,
-                    } as CaptainRecommendation))
-                ).map(rec => {
+                  ? captainRecommendations.filter((r) => squadIds.includes(r.player_id))
+                  : squadPlayers.map(
+                      (p) =>
+                        ({
+                          player_id: p.id,
+                          name: p.name,
+                          position: p.position,
+                          times_captained_this_season: -1,
+                          last_match_id_captained: 0,
+                        }) as CaptainRecommendation
+                    )
+                ).map((rec) => {
                   const playerId = rec.player_id;
                   const playerName = rec.name;
                   const playerPosition = rec.position;
@@ -392,20 +407,26 @@ export default function DraftPage() {
                         playerId === captainBId
                           ? 'bg-blue-600 text-white'
                           : playerId === captainAId
-                          ? 'opacity-30 cursor-not-allowed text-gray-400'
-                          : 'hover:bg-gray-50 text-gray-700'
+                            ? 'opacity-30 cursor-not-allowed text-gray-400'
+                            : 'hover:bg-gray-50 text-gray-700'
                       }`}
                     >
                       <span className="flex-1">{playerName}</span>
                       {playerPosition && playerPosition !== 'UNKNOWN' && (
                         <span className="text-xs opacity-60">{playerPosition}</span>
                       )}
-                      {'times_captained_this_season' in rec && rec.times_captained_this_season === 0 && (
-                        <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded">New</span>
-                      )}
-                      {'times_captained_this_season' in rec && rec.times_captained_this_season > 0 && (
-                        <span className="text-xs text-gray-400">{rec.times_captained_this_season}x</span>
-                      )}
+                      {'times_captained_this_season' in rec &&
+                        rec.times_captained_this_season === 0 && (
+                          <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded">
+                            New
+                          </span>
+                        )}
+                      {'times_captained_this_season' in rec &&
+                        rec.times_captained_this_season > 0 && (
+                          <span className="text-xs text-gray-400">
+                            {rec.times_captained_this_season}x
+                          </span>
+                        )}
                     </button>
                   );
                 })}
@@ -437,18 +458,22 @@ export default function DraftPage() {
       )}
       {(phase === 'draft' || phase === 'complete') && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
           {/* Team A */}
           <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <div className="bg-green-700 px-5 py-3">
               <h2 className="font-bold text-white">👑 {captainA?.name}</h2>
               {teamAChemistry !== null && (
-                <div className={`text-xs px-2 py-1 rounded-lg text-center font-medium mt-2 ${
-                  teamAChemistry > 10 ? 'bg-green-100 text-green-700' :
-                  teamAChemistry > 0 ? 'bg-amber-100 text-amber-700' :
-                  'bg-red-100 text-red-600'
-                }`}>
-                  ⚗️ Chemistry: {teamAChemistry > 0 ? '+' : ''}{teamAChemistry}
+                <div
+                  className={`text-xs px-2 py-1 rounded-lg text-center font-medium mt-2 ${
+                    teamAChemistry > 10
+                      ? 'bg-green-100 text-green-700'
+                      : teamAChemistry > 0
+                        ? 'bg-amber-100 text-amber-700'
+                        : 'bg-red-100 text-red-600'
+                  }`}
+                >
+                  ⚗️ Chemistry: {teamAChemistry > 0 ? '+' : ''}
+                  {teamAChemistry}
                 </div>
               )}
               <p className="text-green-300 text-xs">Team A · picks second</p>
@@ -460,7 +485,10 @@ export default function DraftPage() {
                 <span className="text-xs text-green-500 ml-auto">{captainA?.position}</span>
               </div>
               {teamA.map((pick, i) => (
-                <div key={pick.playerId} className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded-lg">
+                <div
+                  key={pick.playerId}
+                  className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded-lg"
+                >
                   <span className="text-xs text-gray-400 w-4">{i + 1}</span>
                   <span className="text-sm text-gray-900">{pick.playerName}</span>
                   <span className="text-xs text-gray-400 ml-auto">{pick.position}</span>
@@ -507,20 +535,20 @@ export default function DraftPage() {
             {/* Recommended picks */}
             {phase === 'draft' && (
               <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                <div className={`px-5 py-3 ${currentTurn === 'A' ? 'bg-green-700' : 'bg-blue-600'}`}>
+                <div
+                  className={`px-5 py-3 ${currentTurn === 'A' ? 'bg-green-700' : 'bg-blue-600'}`}
+                >
                   <h3 className="font-bold text-white text-sm">
                     {currentCaptainName}&apos;s recommended picks
                   </h3>
-                  <p className="text-xs text-white opacity-70">
-                    Based on historical preferences
-                  </p>
+                  <p className="text-xs text-white opacity-70">Based on historical preferences</p>
                 </div>
                 {loadingPrefs ? (
                   <div className="p-4 text-center text-gray-400 text-sm">Loading...</div>
                 ) : (
                   <div className="divide-y divide-gray-50">
                     {preferences.slice(0, 8).map((pref) => {
-                      const player = squadPlayers.find(p => p.id === pref.player_id);
+                      const player = squadPlayers.find((p) => p.id === pref.player_id);
                       if (!player || pickedIds.has(player.id)) return null;
                       return (
                         <button
@@ -530,18 +558,22 @@ export default function DraftPage() {
                           className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left"
                         >
                           <div className="flex-1">
-                            <div className="text-sm font-medium text-gray-900">{pref.player_name}</div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {pref.player_name}
+                            </div>
                             <div className="text-xs text-gray-400">
                               {player.position} · {pref.cooccurrence_rate.toFixed(0)}% co-occurrence
                             </div>
                           </div>
-                          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                            pref.cooccurrence_rate >= 60
-                              ? 'bg-green-100 text-green-700'
-                              : pref.cooccurrence_rate >= 30
-                              ? 'bg-amber-100 text-amber-700'
-                              : 'bg-gray-100 text-gray-500'
-                          }`}>
+                          <span
+                            className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                              pref.cooccurrence_rate >= 60
+                                ? 'bg-green-100 text-green-700'
+                                : pref.cooccurrence_rate >= 30
+                                  ? 'bg-amber-100 text-amber-700'
+                                  : 'bg-gray-100 text-gray-500'
+                            }`}
+                          >
                             {pref.cooccurrence_rate.toFixed(0)}%
                           </span>
                         </button>
@@ -561,7 +593,7 @@ export default function DraftPage() {
                   </h3>
                 </div>
                 <div className="divide-y divide-gray-50 max-h-48 overflow-y-auto">
-                  {availablePlayers.map(player => (
+                  {availablePlayers.map((player) => (
                     <button
                       key={player.id}
                       type="button"
@@ -591,12 +623,17 @@ export default function DraftPage() {
             <div className="bg-blue-600 px-5 py-3">
               <h2 className="font-bold text-white">👑 {captainB?.name}</h2>
               {teamBChemistry !== null && (
-                <div className={`text-xs px-2 py-1 rounded-lg text-center font-medium mt-2 ${
-                  teamBChemistry > 10 ? 'bg-green-100 text-green-700' :
-                  teamBChemistry > 0 ? 'bg-amber-100 text-amber-700' :
-                  'bg-red-100 text-red-600'
-                }`}>
-                  ⚗️ Chemistry: {teamBChemistry > 0 ? '+' : ''}{teamBChemistry}
+                <div
+                  className={`text-xs px-2 py-1 rounded-lg text-center font-medium mt-2 ${
+                    teamBChemistry > 10
+                      ? 'bg-green-100 text-green-700'
+                      : teamBChemistry > 0
+                        ? 'bg-amber-100 text-amber-700'
+                        : 'bg-red-100 text-red-600'
+                  }`}
+                >
+                  ⚗️ Chemistry: {teamBChemistry > 0 ? '+' : ''}
+                  {teamBChemistry}
                 </div>
               )}
               <p className="text-blue-200 text-xs">Team B · picks first</p>
@@ -607,13 +644,18 @@ export default function DraftPage() {
                 <span className="text-sm font-medium text-blue-900">{captainB?.name}</span>
                 <span className="text-xs text-blue-400 ml-auto">{captainB?.position}</span>
               </div>
-              {picks.filter(p => p.team === 'B').map((pick, i) => (
-                <div key={pick.playerId} className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded-lg">
-                  <span className="text-xs text-gray-400 w-4">{i + 1}</span>
-                  <span className="text-sm text-gray-900">{pick.playerName}</span>
-                  <span className="text-xs text-gray-400 ml-auto">{pick.position}</span>
-                </div>
-              ))}
+              {picks
+                .filter((p) => p.team === 'B')
+                .map((pick, i) => (
+                  <div
+                    key={pick.playerId}
+                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded-lg"
+                  >
+                    <span className="text-xs text-gray-400 w-4">{i + 1}</span>
+                    <span className="text-sm text-gray-900">{pick.playerName}</span>
+                    <span className="text-xs text-gray-400 ml-auto">{pick.position}</span>
+                  </div>
+                ))}
               {phase === 'draft' && currentTurn === 'B' && (
                 <div className="flex items-center gap-2 px-2 py-1.5 border-2 border-dashed border-blue-300 rounded-lg">
                   <span className="text-xs text-blue-500 animate-pulse">Picking...</span>

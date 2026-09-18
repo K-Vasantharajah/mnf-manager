@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import MatchDetailModal from './MatchDetailModal';
-
 import { useMatches } from '@/lib/hooks';
 import Link from 'next/link';
-
 import { useAuth } from '@/lib/auth';
 
+import LoadingState from '@/components/ui/LoadingState';
+import ErrorState from '@/components/ui/ErrorState';
 
 export default function MatchesPage() {
   const { data: matches, isLoading, isError } = useMatches();
@@ -15,41 +15,23 @@ export default function MatchesPage() {
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
   const { isAdmin } = useAuth();
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading matches...</div>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingState message="Loading matches..." />;
 
-  if (isError) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-red-400">
-          Failed to load matches. Is the backend running?
-        </div>
-      </div>
-    );
-  }
+  if (isError) return <ErrorState message="Failed to load matches. Is the backend running?" />;
 
-  const filteredMatches = matches?.filter((m) =>
-    seasonFilter === 'all' ? true : m.seasonYear === seasonFilter
-  ) || [];
+  const filteredMatches =
+    matches?.filter((m) => (seasonFilter === 'all' ? true : m.seasonYear === seasonFilter)) || [];
 
   return (
     <div>
       {selectedMatchId && (
-        <MatchDetailModal
-          matchId={selectedMatchId}
-          onClose={() => setSelectedMatchId(null)}
-        />
+        <MatchDetailModal matchId={selectedMatchId} onClose={() => setSelectedMatchId(null)} />
       )}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Match history</h1>
           <p className="text-sm text-gray-400 mt-1">
-            {filteredMatches.length} {seasonFilter === 'all' ? 'total' : "matches recorded"}
+            {filteredMatches.length} {seasonFilter === 'all' ? 'total' : 'matches recorded'}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -97,9 +79,7 @@ export default function MatchesPage() {
       </div>
 
       {filteredMatches.length === 0 && (
-        <div className="text-center py-16 text-gray-400">
-          No matches recorded for this season
-        </div>
+        <div className="text-center py-16 text-gray-400">No matches recorded for this season</div>
       )}
 
       <div className="space-y-4">
@@ -143,9 +123,7 @@ export default function MatchesPage() {
                 <div className="flex-1 text-right">
                   <div
                     className={`font-bold text-lg ${
-                      winnerName === captainAName
-                        ? 'text-green-600'
-                        : 'text-gray-400'
+                      winnerName === captainAName ? 'text-green-600' : 'text-gray-400'
                     }`}
                   >
                     {captainAName}
@@ -158,17 +136,20 @@ export default function MatchesPage() {
                     className={`text-3xl font-black ${
                       match.scoreA > match.scoreB
                         ? 'text-green-600'
-                        : 'text-gray-300'
+                        : isDraw
+                          ? 'text-amber-500'
+                          : 'text-gray-300'
                     }`}
                   >
                     {match.scoreA}
                   </span>
-                  <span className="text-gray-300 font-light">—</span>
                   <span
                     className={`text-3xl font-black ${
                       match.scoreB > match.scoreA
                         ? 'text-green-600'
-                        : 'text-gray-300'
+                        : isDraw
+                          ? 'text-amber-500'
+                          : 'text-gray-300'
                     }`}
                   >
                     {match.scoreB}
@@ -178,9 +159,7 @@ export default function MatchesPage() {
                 <div className="flex-1">
                   <div
                     className={`font-bold text-lg ${
-                      winnerName === captainBName
-                        ? 'text-green-600'
-                        : 'text-gray-400'
+                      winnerName === captainBName ? 'text-green-600' : 'text-gray-400'
                     }`}
                   >
                     {captainBName}
@@ -192,9 +171,7 @@ export default function MatchesPage() {
               <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-between">
                 <span
                   className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                    isDraw
-                      ? 'bg-amber-50 text-amber-600'
-                      : 'bg-green-50 text-green-600'
+                    isDraw ? 'bg-amber-50 text-amber-600' : 'bg-green-50 text-green-600'
                   }`}
                 >
                   {isDraw ? 'Draw' : `${winnerName} wins`}

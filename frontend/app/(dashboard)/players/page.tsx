@@ -7,13 +7,15 @@ import { useState } from 'react';
 
 import RatingBar from '@/components/ui/RatingBar';
 import DeltaBadge from '@/components/ui/DeltaBadge';
+import LoadingState from '@/components/ui/LoadingState';
+import ErrorState from '@/components/ui/ErrorState';
 
 const POSITION_GROUPS = {
-  'All': null,
-  'GK': ['GK'],
-  'Defence': ['CB', 'LB', 'RB'],
-  'Midfield': ['CDM', 'CM', 'CAM'],
-  'Attack': ['LW', 'RW', 'ST'],
+  All: null,
+  GK: ['GK'],
+  Defence: ['CB', 'LB', 'RB'],
+  Midfield: ['CDM', 'CM', 'CAM'],
+  Attack: ['LW', 'RW', 'ST'],
 };
 
 function PlayerCard({ player }: { player: Player }) {
@@ -21,36 +23,44 @@ function PlayerCard({ player }: { player: Player }) {
 
   return (
     <Link href={`/players/${player.id}`}>
-      <div className={`bg-white rounded-xl border border-gray-100 p-5 hover:shadow-md transition-shadow cursor-pointer ${!player.active ? 'opacity-60' : ''}`}>
+      <div
+        className={`bg-white rounded-xl border border-gray-100 p-5 hover:shadow-md transition-shadow cursor-pointer ${!player.active ? 'opacity-60' : ''}`}
+      >
         <div className="flex items-center gap-3 mb-4">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0 ${player.active ? 'bg-green-700' : 'bg-gray-400'}`}>
+          <div
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0 ${player.active ? 'bg-green-700' : 'bg-gray-400'}`}
+          >
             {initials}
           </div>
           <div className="flex-1 min-w-0">
             <div className="font-semibold text-gray-900 truncate">{player.name}</div>
-            {!player.active && (
-              <div className="text-xs text-gray-400">Inactive</div>
-            )}
+            {!player.active && <div className="text-xs text-gray-400">Inactive</div>}
           </div>
-            {player.rating?.overallRating && (
-              <div className="relative shrink-0">
-                <div className="flex flex-col items-center justify-center w-9 h-9 rounded-full border-2 border-green-600 text-green-700">
-                  <span className="text-sm font-black leading-none">{player.rating.overallRating}</span>
-                </div>
-                {player.rating.overallDelta !== null && player.rating.overallDelta !== 0 && (
-                  <span className={`absolute -top-1 -right-2 text-xs font-bold ${
-                    player.rating.overallDelta > 0 ? 'text-green-500' : 'text-red-400'
-                  }`}>
-                    {player.rating.overallDelta > 0 ? `+${player.rating.overallDelta}` : player.rating.overallDelta}
-                  </span>
-                )}
+          {player.rating?.overallRating && (
+            <div className="relative shrink-0">
+              <div className="flex flex-col items-center justify-center w-9 h-9 rounded-full border-2 border-green-600 text-green-700">
+                <span className="text-sm font-black leading-none">
+                  {player.rating.overallRating}
+                </span>
               </div>
-            )}
-            {player.position && player.position !== 'UNKNOWN' && (
-              <span className="text-xs bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded">
-                {player.position}
-              </span>
-            )}
+              {player.rating.overallDelta !== null && player.rating.overallDelta !== 0 && (
+                <span
+                  className={`absolute -top-1 -right-2 text-xs font-bold ${
+                    player.rating.overallDelta > 0 ? 'text-green-500' : 'text-red-400'
+                  }`}
+                >
+                  {player.rating.overallDelta > 0
+                    ? `+${player.rating.overallDelta}`
+                    : player.rating.overallDelta}
+                </span>
+              )}
+            </div>
+          )}
+          {player.position && player.position !== 'UNKNOWN' && (
+            <span className="text-xs bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded">
+              {player.position}
+            </span>
+          )}
         </div>
 
         {player.rating?.overallRating ? (
@@ -86,23 +96,11 @@ export default function PlayersPage() {
   const [positionFilter, setPositionFilter] = useState<string>('All');
   const [showInactive, setShowInactive] = useState(false);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-gray-400">Loading squad...</div>
-      </div>
-    );
-  }
+  if (isLoading) return <LoadingState message="Loading squad..." />;
 
-  if (isError) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-red-400">Failed to load players. Is the backend running?</div>
-      </div>
-    );
-  }
+  if (isError) return <ErrorState message="Failed to load players." />;
 
-  const filteredPlayers = (players || []).filter(p => {
+  const filteredPlayers = (players || []).filter((p) => {
     if (!showInactive && !p.active) return false;
     if (positionFilter === 'All') return true;
     const positions = POSITION_GROUPS[positionFilter as keyof typeof POSITION_GROUPS];
@@ -114,9 +112,7 @@ export default function PlayersPage() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Players</h1>
-          <p className="text-sm text-gray-400 mt-1">
-            {filteredPlayers.length} players
-          </p>
+          <p className="text-sm text-gray-400 mt-1">{filteredPlayers.length} players</p>
         </div>
         <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
           <input
@@ -131,7 +127,7 @@ export default function PlayersPage() {
 
       {/* Position filter */}
       <div className="flex gap-2 mb-6 flex-wrap">
-        {Object.keys(POSITION_GROUPS).map(group => (
+        {Object.keys(POSITION_GROUPS).map((group) => (
           <button
             key={group}
             onClick={() => setPositionFilter(group)}
@@ -153,9 +149,7 @@ export default function PlayersPage() {
       </div>
 
       {filteredPlayers.length === 0 && (
-        <div className="text-center py-16 text-gray-400">
-          No players found for this filter
-        </div>
+        <div className="text-center py-16 text-gray-400">No players found for this filter</div>
       )}
     </div>
   );

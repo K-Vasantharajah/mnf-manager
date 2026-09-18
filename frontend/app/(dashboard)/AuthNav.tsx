@@ -14,19 +14,17 @@ export default function AuthNav() {
         <div className="flex items-center gap-3">
           {user.picture && (
             <Image
-                src={user.picture}
-                alt={user.name}
-                width={32}
-                height={32}
-                className="rounded-full"
-                referrerPolicy="no-referrer"
+              src={user.picture}
+              alt={user.name}
+              width={32}
+              height={32}
+              className="rounded-full"
+              referrerPolicy="no-referrer"
             />
           )}
           <div className="text-right">
             <div className="text-xs text-green-200">{user.name}</div>
-            {isAdmin && (
-              <div className="text-xs text-green-400">Admin</div>
-            )}
+            {isAdmin && <div className="text-xs text-green-400">Admin</div>}
           </div>
           <button
             onClick={logout}

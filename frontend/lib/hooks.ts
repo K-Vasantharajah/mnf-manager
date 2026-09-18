@@ -1,6 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import api from './api';
-import { Player, PlayerStats, Match, PlayerLeaderboardEntry, MatchDetail, PlayerProfile, CaptainStats } from './types';
+import {
+  Player,
+  PlayerStats,
+  Match,
+  PlayerLeaderboardEntry,
+  MatchDetail,
+  PlayerProfile,
+  CaptainStats,
+} from './types';
 
 export function usePlayers() {
   return useQuery<Player[]>({
@@ -147,7 +155,9 @@ export function usePlayerMatches(playerId: number, seasonYear: number) {
   return useQuery<PlayerMatchEntry[]>({
     queryKey: ['players', playerId, 'matches', seasonYear],
     queryFn: async () => {
-      const { data } = await api.get(`/api/v1/players/${playerId}/matches?seasonYear=${seasonYear}`);
+      const { data } = await api.get(
+        `/api/v1/players/${playerId}/matches?seasonYear=${seasonYear}`
+      );
       return data;
     },
     enabled: !!playerId && !!seasonYear,

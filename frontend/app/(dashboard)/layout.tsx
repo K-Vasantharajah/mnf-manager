@@ -3,14 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 
 const AuthNav = dynamic(() => import('./AuthNav'), { ssr: false });
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   const navItems = [
@@ -28,6 +25,7 @@ export default function DashboardLayout({
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-8 h-14">
             <div className="flex items-center gap-3">
+              <Image src="/icon.png" alt="MNF" width={50} height={50} />
               <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
                 MNF
               </span>
@@ -52,9 +50,7 @@ export default function DashboardLayout({
           </div>
         </div>
       </nav>
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        {children}
-      </main>
+      <main className="max-w-7xl mx-auto px-4 py-6">{children}</main>
     </div>
   );
 }

@@ -20,6 +20,13 @@ function getPointsPercentageColor(value: number) {
   return 'text-red-400';
 }
 
+function getRankDisplay(rank: number, isTied: boolean): string {
+  if (rank === 1) return '🥇';
+  if (rank === 2) return '🥈';
+  if (rank === 3) return '🥉';
+  return isTied ? `=${rank}` : `${rank}`;
+}
+
 function LeaderboardTable({
   title,
   subtitle,
@@ -68,16 +75,6 @@ function LeaderboardTable({
             const currentValue = getValue(entry);
             const rank = valuesWithCounts.filter((e) => e.value > currentValue).length + 1;
             const isTied = valuesWithCounts.filter((e) => e.value === currentValue).length > 1;
-            const rankDisplay =
-              rank === 1
-                ? '🥇'
-                : rank === 2
-                  ? '🥈'
-                  : rank === 3
-                    ? '🥉'
-                    : isTied
-                      ? `=${rank}`
-                      : `${rank}`;
 
             return (
               <div
@@ -85,9 +82,9 @@ function LeaderboardTable({
                 className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors"
               >
                 <span className="text-sm font-bold text-gray-400 min-w-6 text-center">
-                  {rankDisplay}
+                  {getRankDisplay(rank, isTied)}
                 </span>
-                <div className="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                <div className="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
                   {entry.name.slice(0, 2).toUpperCase()}
                 </div>
                 <button
@@ -143,16 +140,6 @@ function RatingTable({
           const currentValue = getValue(entry);
           const rank = valuesWithCounts.filter((e) => e.value > currentValue).length + 1;
           const isTied = valuesWithCounts.filter((e) => e.value === currentValue).length > 1;
-          const rankDisplay =
-            rank === 1
-              ? '🥇'
-              : rank === 2
-                ? '🥈'
-                : rank === 3
-                  ? '🥉'
-                  : isTied
-                    ? `=${rank}`
-                    : `${rank}`;
 
           return (
             <div
@@ -160,7 +147,7 @@ function RatingTable({
               className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors"
             >
               <span className="text-sm font-bold text-gray-400 min-w-6 text-center">
-                {rankDisplay}
+                {getRankDisplay(rank, isTied)}
               </span>
               <div className="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
                 {entry.name.slice(0, 2).toUpperCase()}
@@ -214,16 +201,6 @@ function LeaderboardModal({
             const currentValue = data.getValue(entry);
             const rank = valuesWithCounts.filter((e) => e.value > currentValue).length + 1;
             const isTied = valuesWithCounts.filter((e) => e.value === currentValue).length > 1;
-            const rankDisplay =
-              rank === 1
-                ? '🥇'
-                : rank === 2
-                  ? '🥈'
-                  : rank === 3
-                    ? '🥉'
-                    : isTied
-                      ? `=${rank}`
-                      : `${rank}`;
 
             return (
               <div
@@ -231,7 +208,7 @@ function LeaderboardModal({
                 className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors"
               >
                 <span className="text-sm font-bold text-gray-400 min-w-6 text-center">
-                  {rankDisplay}
+                  {getRankDisplay(rank, isTied)}
                 </span>
                 <div className="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
                   {entry.name.slice(0, 2).toUpperCase()}
