@@ -4,6 +4,7 @@ spring:
 
   application:
     name: mnf-manager
+
   jackson:
     serialization:
       fail-on-empty-beans: false
@@ -25,19 +26,6 @@ spring:
       hibernate:
         format_sql: true
 
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    consumer:
-      group-id: mnf-manager
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "com.mnfmanager.*"
-
   sql:
     init:
       mode: always
@@ -54,6 +42,10 @@ google:
 
 admin-emails:
   - ${ADMIN_EMAIL:placeholder@gmail.com}
+
+ml:
+  service:
+    url: ${ML_SERVICE_URL:http://localhost:5001}
 
 logging:
   level:

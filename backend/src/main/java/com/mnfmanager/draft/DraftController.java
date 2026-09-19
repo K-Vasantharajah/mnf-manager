@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,9 @@ import java.util.Map;
 public class DraftController {
 
     private final RestTemplate restTemplate;
-    private static final String ML_SERVICE_URL = "http://localhost:5000";
+
+    @Value("${ml.service.url}")
+    private String mlServiceUrl;
 
     @PostMapping("/preferences/{captainId}")
     public ResponseEntity<Map> getCaptainPreferences(
@@ -27,7 +30,7 @@ public class DraftController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, List<Long>>> request = new HttpEntity<>(body, headers);
         ResponseEntity<Map> response = restTemplate.postForEntity(
-                ML_SERVICE_URL + "/api/draft/preferences/" + captainId,
+                mlServiceUrl + "/api/draft/preferences/" + captainId,
                 request,
                 Map.class);
         return ResponseEntity.ok(response.getBody());
@@ -41,7 +44,7 @@ public class DraftController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, List<Long>>> request = new HttpEntity<>(body, headers);
         ResponseEntity<Map> response = restTemplate.postForEntity(
-                ML_SERVICE_URL + "/api/draft/predict",
+                mlServiceUrl + "/api/draft/predict",
                 request,
                 Map.class);
         return ResponseEntity.ok(response.getBody());
@@ -55,7 +58,7 @@ public class DraftController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, List<Long>>> request = new HttpEntity<>(body, headers);
         ResponseEntity<Map> response = restTemplate.postForEntity(
-                ML_SERVICE_URL + "/api/draft/captain-recommendations",
+                mlServiceUrl + "/api/draft/captain-recommendations",
                 request,
                 Map.class);
         return ResponseEntity.ok(response.getBody());
@@ -65,7 +68,7 @@ public class DraftController {
     public ResponseEntity<Map> getPlayerChemistry(@PathVariable Long playerId) {
         log.info("Getting chemistry for player: {}", playerId);
         ResponseEntity<Map> response = restTemplate.getForEntity(
-                ML_SERVICE_URL + "/api/chemistry/player/" + playerId,
+                mlServiceUrl + "/api/chemistry/player/" + playerId,
                 Map.class);
         return ResponseEntity.ok(response.getBody());
     }
@@ -77,7 +80,7 @@ public class DraftController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, List<Long>>> request = new HttpEntity<>(body, headers);
         ResponseEntity<Map> response = restTemplate.postForEntity(
-                ML_SERVICE_URL + "/api/chemistry/team",
+                mlServiceUrl + "/api/chemistry/team",
                 request,
                 Map.class);
         return ResponseEntity.ok(response.getBody());
