@@ -143,6 +143,7 @@ export default function MatchesPage() {
                   >
                     {match.scoreA}
                   </span>
+                  <span className="text-gray-300 font-light">—</span>
                   <span
                     className={`text-3xl font-black ${
                       match.scoreB > match.scoreA
