@@ -1,26 +1,54 @@
 @import 'tailwindcss';
 
+/*
+  Design tokens for the redesign — dark, data-first, closer to a match-night
+  stats terminal than a generic SaaS dashboard. Registering these in @theme
+  (Tailwind v4) generates real utilities: bg-ink, bg-surface, border-line,
+  text-paper, text-muted, text-pitch, text-amber, text-signal, font-display,
+  font-mono, etc. — including opacity modifiers like bg-pitch/10.
+*/
+@theme {
+  --color-ink: #0b0f0d;
+  --color-surface: #131a17;
+  --color-surface-2: #182019;
+  --color-line: #26332d;
+  --color-paper: #edf2ef;
+  --color-muted: #7c8c84;
+  --color-pitch: #3fa66b;
+  --color-amber: #d7a44a;
+  --color-signal: #c05746;
+
+  --font-display: var(--font-fraunces), serif;
+  --font-sans: var(--font-space-grotesk), sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), monospace;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: var(--color-ink);
+  --foreground: var(--color-paper);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/*
+  The redesign is a fixed dark theme (it's the identity, not a mode), so the
+  old prefers-color-scheme toggle is removed. If you still want a light mode
+  later, reintroduce it as an explicit user setting rather than an OS default.
+*/
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  /*
+    Tells the browser to draw its native form controls — the date input's
+    calendar icon, select dropdown arrows, scrollbars — in a light-on-dark
+    theme. Without this the calendar icon in particular renders as solid
+    black and disappears against the dark input background; Tailwind
+    classes can't reach it since it's a browser-drawn control, not markup.
+  */
+  color-scheme: dark;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-pitch) 35%, transparent);
 }

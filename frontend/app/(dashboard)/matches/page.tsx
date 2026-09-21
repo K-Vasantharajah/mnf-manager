@@ -27,41 +27,35 @@ export default function MatchesPage() {
       {selectedMatchId && (
         <MatchDetailModal matchId={selectedMatchId} onClose={() => setSelectedMatchId(null)} />
       )}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-end justify-between mb-10 pb-6 border-b border-line">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Match history</h1>
-          <p className="text-sm text-gray-400 mt-1">
+          <h1 className="font-display text-4xl text-paper">Match history</h1>
+          <p className="text-sm text-muted mt-2">
             {filteredMatches.length} {seasonFilter === 'all' ? 'total' : 'matches recorded'}
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex gap-1">
+          <div className="flex items-center gap-1 bg-surface border border-line rounded-lg p-1">
             <button
               onClick={() => setSeasonFilter(2026)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                seasonFilter === 2026
-                  ? 'bg-green-600 text-white'
-                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+              className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                seasonFilter === 2026 ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
               }`}
             >
               2026
             </button>
             <button
               onClick={() => setSeasonFilter(2025)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                seasonFilter === 2025
-                  ? 'bg-green-600 text-white'
-                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+              className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                seasonFilter === 2025 ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
               }`}
             >
               2025
             </button>
             <button
               onClick={() => setSeasonFilter('all')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                seasonFilter === 'all'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+              className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                seasonFilter === 'all' ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
               }`}
             >
               All
@@ -70,7 +64,7 @@ export default function MatchesPage() {
           {isAdmin && (
             <Link
               href="/matches/new"
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors"
+              className="bg-pitch hover:opacity-90 text-ink px-4 py-2 rounded-lg text-sm transition-opacity"
             >
               + Record match
             </Link>
@@ -79,7 +73,7 @@ export default function MatchesPage() {
       </div>
 
       {filteredMatches.length === 0 && (
-        <div className="text-center py-16 text-gray-400">No matches recorded for this season</div>
+        <div className="text-center py-16 text-muted">No matches recorded for this season</div>
       )}
 
       <div className="space-y-4">
@@ -92,14 +86,14 @@ export default function MatchesPage() {
           return (
             <div
               key={match.id}
-              className="bg-white rounded-xl border border-gray-100 p-5 cursor-pointer hover:shadow-md transition-shadow"
+              className="bg-surface border border-line rounded-xl p-5 cursor-pointer hover:border-muted/50 transition-colors"
               onClick={() => setSelectedMatchId(match.id)}
             >
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-muted">
                   {match.gameWeek ? (
-                    <span className="font-medium text-gray-600">
-                      {match.gameWeek} · Season {match.seasonYear}
+                    <span className="font-mono text-muted">
+                      {match.gameWeek} &middot; Season {match.seasonYear}
                     </span>
                   ) : (
                     <>
@@ -122,35 +116,33 @@ export default function MatchesPage() {
               <div className="flex items-center justify-between">
                 <div className="flex-1 text-right">
                   <div
-                    className={`font-bold text-lg ${
-                      winnerName === captainAName ? 'text-green-600' : 'text-gray-400'
-                    }`}
+                    className={`text-lg ${winnerName === captainAName ? 'text-pitch' : 'text-muted'}`}
                   >
                     {captainAName}
                   </div>
-                  <div className="text-xs text-gray-400">captain</div>
+                  <div className="text-xs text-muted">captain</div>
                 </div>
 
                 <div className="flex items-center gap-3 px-6">
                   <span
-                    className={`text-3xl font-black ${
+                    className={`text-3xl font-mono ${
                       match.scoreA > match.scoreB
-                        ? 'text-green-600'
+                        ? 'text-pitch'
                         : isDraw
-                          ? 'text-amber-500'
-                          : 'text-gray-300'
+                          ? 'text-amber'
+                          : 'text-muted'
                     }`}
                   >
                     {match.scoreA}
                   </span>
-                  <span className="text-gray-300 font-light">—</span>
+                  <span className="text-muted font-light">&ndash;</span>
                   <span
-                    className={`text-3xl font-black ${
+                    className={`text-3xl font-mono ${
                       match.scoreB > match.scoreA
-                        ? 'text-green-600'
+                        ? 'text-pitch'
                         : isDraw
-                          ? 'text-amber-500'
-                          : 'text-gray-300'
+                          ? 'text-amber'
+                          : 'text-muted'
                     }`}
                   >
                     {match.scoreB}
@@ -159,20 +151,18 @@ export default function MatchesPage() {
 
                 <div className="flex-1">
                   <div
-                    className={`font-bold text-lg ${
-                      winnerName === captainBName ? 'text-green-600' : 'text-gray-400'
-                    }`}
+                    className={`text-lg ${winnerName === captainBName ? 'text-pitch' : 'text-muted'}`}
                   >
                     {captainBName}
                   </div>
-                  <div className="text-xs text-gray-400">captain</div>
+                  <div className="text-xs text-muted">captain</div>
                 </div>
               </div>
 
-              <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-between">
+              <div className="mt-3 pt-3 border-t border-line flex items-center justify-between">
                 <span
-                  className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                    isDraw ? 'bg-amber-50 text-amber-600' : 'bg-green-50 text-green-600'
+                  className={`text-xs px-3 py-1 rounded-full ${
+                    isDraw ? 'bg-amber/10 text-amber' : 'bg-pitch/10 text-pitch'
                   }`}
                 >
                   {isDraw ? 'Draw' : `${winnerName} wins`}
@@ -180,7 +170,7 @@ export default function MatchesPage() {
                 {match.seasonYear === new Date().getFullYear() && isAdmin && (
                   <Link
                     href={`/matches/${match.id}/edit`}
-                    className="text-xs text-green-600 hover:text-green-700 font-medium"
+                    className="text-xs text-pitch hover:opacity-80 transition-opacity"
                     onClick={(e) => e.stopPropagation()}
                   >
                     Edit match

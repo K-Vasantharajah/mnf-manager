@@ -16,19 +16,19 @@ export default function AuthNav() {
             <Image
               src={user.picture}
               alt={user.name}
-              width={32}
-              height={32}
-              className="rounded-full"
+              width={30}
+              height={30}
+              className="rounded-full ring-1 ring-line"
               referrerPolicy="no-referrer"
             />
           )}
           <div className="text-right">
-            <div className="text-xs text-green-200">{user.name}</div>
-            {isAdmin && <div className="text-xs text-green-400">Admin</div>}
+            <div className="text-xs text-paper">{user.name}</div>
+            {isAdmin && <div className="text-xs text-amber mt-0.5">Admin</div>}
           </div>
           <button
             onClick={logout}
-            className="text-xs text-green-300 hover:text-white border border-green-700 px-3 py-1 rounded-lg"
+            className="text-xs text-muted hover:text-paper border border-line px-3 py-1.5 rounded-lg transition-colors"
           >
             Sign out
           </button>
@@ -54,7 +54,7 @@ export default function AuthNav() {
           onError={() => alert('Google login failed')}
           useOneTap
           shape="pill"
-          theme="outline"
+          theme="filled_black"
           size="medium"
           text="signin_with"
         />

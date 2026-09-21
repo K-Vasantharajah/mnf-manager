@@ -20,26 +20,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-green-900 text-white shadow-lg">
+    <div className="min-h-screen bg-ink">
+      <nav className="border-b border-line">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center gap-8 h-14">
-            <div className="flex items-center gap-3">
-              <Image src="/icon.png" alt="MNF" width={50} height={50} />
-              <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
-                MNF
-              </span>
-              <span className="font-bold text-lg tracking-tight">Manager</span>
+          <div className="flex items-center gap-10 h-18">
+            <div className="flex items-center gap-2.5">
+              <Image src="/icon.png" alt="" width={22} height={22} className="opacity-90" />
+              <span className="font-display text-lg text-paper">MNF</span>
+              <span className="text-xs text-muted">Manager</span>
             </div>
-            <div className="flex gap-1 flex-1">
+            <div className="flex gap-8 flex-1">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-4 py-2 text-sm font-medium rounded transition-colors ${
+                  className={`text-sm pb-[26px] pt-[26px] border-b-2 transition-colors ${
                     pathname.startsWith(item.href)
-                      ? 'bg-green-700 text-white'
-                      : 'text-green-100 hover:text-white hover:bg-green-800'
+                      ? 'border-pitch text-paper'
+                      : 'border-transparent text-muted hover:text-paper'
                   }`}
                 >
                   {item.label}
@@ -50,7 +48,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
       </nav>
-      <main className="max-w-7xl mx-auto px-4 py-6">{children}</main>
+      <main className="max-w-7xl mx-auto px-4 py-10">{children}</main>
     </div>
   );
 }

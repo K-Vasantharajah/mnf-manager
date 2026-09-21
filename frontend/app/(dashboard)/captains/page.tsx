@@ -9,6 +9,25 @@ import MatchDetailModal from '../matches/MatchDetailModal';
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorState from '@/components/ui/ErrorState';
 
+function CloseIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <path
+        d="M1 1L13 13M13 1L1 13"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+const resultStyles: Record<string, string> = {
+  WIN: 'bg-pitch/10 text-pitch',
+  DRAW: 'bg-muted/15 text-muted',
+  LOSS: 'bg-signal/10 text-signal',
+};
+
 function MatchHistoryModal({
   captain,
   onClose,
@@ -19,46 +38,46 @@ function MatchHistoryModal({
   onMatchClick: (matchId: number) => void;
 }) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl w-full max-w-md max-h-[80vh] flex flex-col">
-        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+      <div className="bg-surface border border-line rounded-xl w-full max-w-md max-h-[80vh] flex flex-col">
+        <div className="px-5 py-4 border-b border-line flex items-center justify-between shrink-0">
           <div>
-            <h2 className="font-semibold text-gray-900">{captain.name}&apos;s match history</h2>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <h2 className="font-medium text-paper">{captain.name}&apos;s match history</h2>
+            <p className="text-xs text-muted mt-0.5">
               {captain.matchesCaptained} matches as captain
             </p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg font-bold">
-            ✕
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="text-muted hover:text-paper transition-colors"
+          >
+            <CloseIcon />
           </button>
         </div>
         <div className="overflow-y-auto flex-1">
           {captain.matchHistory.map((match, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors"
+              className="flex items-center gap-3 px-5 py-3 border-b border-line last:border-0 hover:bg-surface-2 cursor-pointer transition-colors"
               onClick={() => {
                 onClose();
                 onMatchClick(match.matchId);
               }}
             >
-              <span className="text-xs text-gray-400 min-w-10">
+              <span className="text-xs text-muted font-mono min-w-10">
                 {match.gameWeek || `S${match.seasonYear}`}
               </span>
               <span
-                className={`text-xs font-bold px-2 py-0.5 rounded-full min-w-10 text-center ${
-                  match.result === 'WIN'
-                    ? 'bg-green-100 text-green-700'
-                    : match.result === 'DRAW'
-                      ? 'bg-amber-100 text-amber-700'
-                      : 'bg-red-100 text-red-500'
+                className={`text-xs font-mono px-2 py-0.5 rounded min-w-14 text-center ${
+                  resultStyles[match.result] ?? resultStyles.DRAW
                 }`}
               >
                 {match.result}
               </span>
-              <span className="text-sm flex-1 text-gray-600">vs {match.opponentName}</span>
-              <span className="text-sm font-bold text-gray-900">
-                {match.scoreFor} — {match.scoreAgainst}
+              <span className="text-sm flex-1 text-paper/80">vs {match.opponentName}</span>
+              <span className="text-sm font-mono text-paper">
+                {match.scoreFor}&ndash;{match.scoreAgainst}
               </span>
             </div>
           ))}
@@ -117,38 +136,32 @@ export default function CaptainsPage() {
         />
       )}
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-end justify-between mb-10 pb-6 border-b border-line">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Captains</h1>
-          <p className="text-sm text-gray-400 mt-1">{captains?.length} captains this season</p>
+          <h1 className="font-display text-4xl text-paper">Captains</h1>
+          <p className="text-sm text-muted mt-2">{captains?.length} captains this season</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 bg-surface border border-line rounded-lg p-1">
           <button
             onClick={() => setSeasonYear(2026)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              seasonYear === 2026
-                ? 'bg-green-600 text-white'
-                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+              seasonYear === 2026 ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
             }`}
           >
             2026
           </button>
           <button
             onClick={() => setSeasonYear(2025)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              seasonYear === 2025
-                ? 'bg-green-600 text-white'
-                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+              seasonYear === 2025 ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
             }`}
           >
             2025
           </button>
           <button
             onClick={() => setSeasonYear(undefined)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              seasonYear === undefined
-                ? 'bg-green-600 text-white'
-                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+              seasonYear === undefined ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
             }`}
           >
             All time
@@ -157,36 +170,34 @@ export default function CaptainsPage() {
       </div>
 
       {captains?.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">No captain data for this season</div>
+        <div className="text-center py-16 text-muted">No captain data for this season</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {captains?.map((captain, index) => {
             const ptColor =
               captain.pointsPercentage >= 60
-                ? 'text-green-600'
+                ? 'text-pitch'
                 : captain.pointsPercentage >= 40
-                  ? 'text-amber-500'
-                  : 'text-red-400';
+                  ? 'text-amber'
+                  : 'text-signal';
 
             const barColor =
               captain.pointsPercentage >= 60
-                ? 'bg-green-500'
+                ? 'bg-pitch'
                 : captain.pointsPercentage >= 40
-                  ? 'bg-amber-400'
-                  : 'bg-red-400';
-
-            const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : null;
+                  ? 'bg-amber'
+                  : 'bg-signal';
 
             return (
               <div
                 key={captain.playerId}
-                className="bg-white rounded-xl border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                className="bg-surface border border-line rounded-xl overflow-hidden cursor-pointer hover:border-muted/50 transition-colors"
                 onClick={() => setSelectedCaptain(captain)}
               >
                 {/* Header */}
-                <div className="bg-green-900 px-6 py-4 flex items-center gap-4">
+                <div className="px-6 py-5 flex items-center gap-4 border-b border-line">
                   <div
-                    className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white text-lg font-black flex-shrink-0 cursor-pointer hover:bg-green-400 transition-colors"
+                    className="w-11 h-11 rounded-full bg-surface-2 border border-line flex items-center justify-center text-paper font-display text-sm flex-shrink-0 cursor-pointer hover:border-pitch transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                       router.push(`/players/${captain.playerId}`);
@@ -196,49 +207,57 @@ export default function CaptainsPage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h2 className="text-white font-bold text-lg">{captain.name}</h2>
-                      {medal && <span className="text-lg">{medal}</span>}
+                      <h2 className="text-paper text-base">{captain.name}</h2>
+                      {index < 3 && (
+                        <span
+                          className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-mono ${
+                            index === 0 ? 'bg-amber/15 text-amber' : 'bg-surface-2 text-muted'
+                          }`}
+                        >
+                          {index + 1}
+                        </span>
+                      )}
                     </div>
-                    <p className="text-green-300 text-sm">
+                    <p className="text-muted text-sm mt-0.5">
                       {captain.matchesCaptained} matches as captain
                     </p>
                   </div>
                   <div className="text-right">
-                    <div className={`text-3xl font-black ${ptColor}`}>
+                    <div className={`font-mono text-2xl ${ptColor}`}>
                       {captain.pointsPercentage}
                     </div>
-                    <div className="text-green-300 text-xs">Pt %</div>
+                    <div className="text-muted text-xs mt-0.5">Points %</div>
                   </div>
                 </div>
 
                 {/* Stats */}
-                <div className="px-6 py-4 border-b border-gray-50">
+                <div className="px-6 py-4 border-b border-line">
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
-                      <div className="text-2xl font-black text-green-600">{captain.wins}</div>
-                      <div className="text-xs text-gray-400 uppercase tracking-wide">Wins</div>
+                      <div className="font-mono text-xl text-paper">{captain.wins}</div>
+                      <div className="text-xs text-muted mt-1">Wins</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-black text-amber-500">{captain.draws}</div>
-                      <div className="text-xs text-gray-400 uppercase tracking-wide">Draws</div>
+                      <div className="font-mono text-xl text-paper">{captain.draws}</div>
+                      <div className="text-xs text-muted mt-1">Draws</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-black text-red-400">{captain.losses}</div>
-                      <div className="text-xs text-gray-400 uppercase tracking-wide">Losses</div>
+                      <div className="font-mono text-xl text-paper">{captain.losses}</div>
+                      <div className="text-xs text-muted mt-1">Losses</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Pt% bar */}
-                <div className="px-6 py-3 border-b border-gray-50">
+                <div className="px-6 py-3 border-b border-line">
                   <div className="flex items-center gap-3">
-                    <div className="flex-1 bg-gray-100 rounded-full h-2">
+                    <div className="flex-1 bg-line rounded-full h-1.5">
                       <div
-                        className={`h-2 rounded-full ${barColor}`}
+                        className={`h-1.5 rounded-full ${barColor}`}
                         style={{ width: `${captain.pointsPercentage}%` }}
                       />
                     </div>
-                    <span className="text-sm font-bold text-gray-600">
+                    <span className="text-sm font-mono text-muted">
                       {captain.pointsPercentage}%
                     </span>
                   </div>
@@ -246,27 +265,22 @@ export default function CaptainsPage() {
 
                 {/* Most picked */}
                 <div className="px-6 py-4">
-                  <div className="text-xs text-gray-500 uppercase tracking-wide mb-3">
-                    Most picked players
-                  </div>
+                  <div className="text-xs text-muted mb-3">Most picked players</div>
                   <div className="flex flex-wrap gap-2">
                     {captain.mostPickedPlayers.map((player, i) => (
                       <span
                         key={player}
-                        className={`text-xs font-medium px-3 py-1 rounded-full ${
+                        className={`text-xs px-3 py-1 rounded-full border ${
                           i === 0
-                            ? 'bg-green-100 text-green-800'
-                            : i === 1
-                              ? 'bg-blue-50 text-blue-700'
-                              : 'bg-gray-100 text-gray-600'
+                            ? 'border-amber/40 text-amber bg-amber/10'
+                            : 'border-line text-muted'
                         }`}
                       >
-                        {i === 0 && '⭐ '}
                         {player}
                       </span>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-400 mt-3">Click card to view match history</p>
+                  <p className="text-xs text-muted mt-3">Click card to view match history</p>
                 </div>
               </div>
             );

@@ -37,6 +37,26 @@ interface CaptainRecommendation {
   last_match_id_captained: number;
 }
 
+function UndoIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path
+        d="M3 5H10.5C12.433 5 14 6.567 14 8.5C14 10.433 12.433 12 10.5 12H6"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+      />
+      <path
+        d="M5.5 2.5L3 5L5.5 7.5"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function DraftPage() {
   const { data: allPlayers } = useAllPlayers();
 
@@ -273,21 +293,21 @@ export default function DraftPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 pb-6 border-b border-line">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Draft Simulator</h1>
-          <p className="text-sm text-gray-400 mt-1">
+          <h1 className="font-display text-3xl text-paper">Draft Simulator</h1>
+          <p className="text-sm text-muted mt-2">
             {phase === 'squad' && "Select tonight's squad (max 18 players)"}
             {phase === 'captains' && 'Select the two captains'}
             {phase === 'draft' &&
-              `${currentCaptainName}'s pick · ${availablePlayers.length} players remaining`}
+              `${currentCaptainName}'s pick \u00b7 ${availablePlayers.length} players remaining`}
             {phase === 'complete' && 'Draft complete'}
           </p>
         </div>
         {phase !== 'squad' && (
           <button
             onClick={reset}
-            className="text-sm text-gray-500 hover:text-gray-700 border border-gray-200 px-3 py-1.5 rounded-lg"
+            className="text-sm text-muted hover:text-paper border border-line px-3 py-1.5 rounded-lg transition-colors"
           >
             Start over
           </button>
@@ -298,13 +318,13 @@ export default function DraftPage() {
       {phase === 'squad' && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-gray-600">{squadIds.length}/18 players selected</p>
+            <p className="text-sm text-muted">{squadIds.length}/18 players selected</p>
             <button
               onClick={() => setPhase('captains')}
               disabled={squadIds.length < 2}
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+              className="bg-pitch hover:opacity-90 text-ink px-4 py-2 rounded-lg text-sm transition-opacity disabled:opacity-30"
             >
-              Select captains →
+              Select captains
             </button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
@@ -319,20 +339,18 @@ export default function DraftPage() {
                   disabled={full}
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-left ${
                     selected
-                      ? 'bg-green-600 text-white'
+                      ? 'bg-pitch text-ink'
                       : full
-                        ? 'opacity-30 cursor-not-allowed bg-white border border-gray-200 text-gray-600'
-                        : 'bg-white border border-gray-200 text-gray-700 hover:bg-green-50 hover:border-green-300'
+                        ? 'opacity-30 cursor-not-allowed bg-surface border border-line text-muted'
+                        : 'bg-surface border border-line text-paper/80 hover:border-pitch/50 hover:bg-surface-2'
                   }`}
                 >
-                  <div className="w-6 h-6 rounded-full bg-white bg-opacity-20 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-black/10 flex items-center justify-center text-xs flex-shrink-0">
                     {player.name.slice(0, 2).toUpperCase()}
                   </div>
                   <span className="truncate">{player.name}</span>
                   {player.position && player.position !== 'UNKNOWN' && (
-                    <span
-                      className={`ml-auto text-xs ${selected ? 'text-green-200' : 'text-gray-400'}`}
-                    >
+                    <span className={`ml-auto text-xs ${selected ? 'text-ink/60' : 'text-muted'}`}>
                       {player.position}
                     </span>
                   )}
@@ -347,9 +365,9 @@ export default function DraftPage() {
       {phase === 'captains' && (
         <div>
           <div className="grid grid-cols-2 gap-6 mb-6">
-            <div className="bg-white rounded-xl border border-gray-100 p-5">
-              <h2 className="font-semibold text-gray-900 mb-3">Captain A</h2>
-              <p className="text-xs text-gray-400 mb-3">Winning captain — picks second</p>
+            <div className="bg-surface border border-line rounded-xl p-5">
+              <h2 className="text-paper mb-1">Captain A</h2>
+              <p className="text-xs text-muted mb-3">Winning captain &middot; picks second</p>
               <div className="space-y-1 max-h-64 overflow-y-auto">
                 {squadPlayers.map((player) => (
                   <button
@@ -359,10 +377,10 @@ export default function DraftPage() {
                     disabled={player.id === captainBId}
                     className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                       player.id === captainAId
-                        ? 'bg-green-600 text-white'
+                        ? 'bg-pitch text-ink'
                         : player.id === captainBId
-                          ? 'opacity-30 cursor-not-allowed text-gray-400'
-                          : 'hover:bg-gray-50 text-gray-700'
+                          ? 'opacity-30 cursor-not-allowed text-muted'
+                          : 'hover:bg-surface-2 text-paper/80'
                     }`}
                   >
                     {player.name}
@@ -374,12 +392,10 @@ export default function DraftPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-100 p-5">
-              <h2 className="font-semibold text-gray-900 mb-3">Captain B</h2>
-              <p className="text-xs text-gray-400 mb-1">Challenging captain — picks first</p>
-              <p className="text-xs text-amber-600 mb-3 font-medium">
-                ⭐ Ordered by who should captain next
-              </p>
+            <div className="bg-surface border border-line rounded-xl p-5">
+              <h2 className="text-paper mb-1">Captain B</h2>
+              <p className="text-xs text-muted mb-1">Challenging captain &middot; picks first</p>
+              <p className="text-xs text-amber mb-3">Ordered by who should captain next</p>
               <div className="space-y-1 max-h-64 overflow-y-auto">
                 {(captainRecommendations.length > 0
                   ? captainRecommendations.filter((r) => squadIds.includes(r.player_id))
@@ -405,10 +421,10 @@ export default function DraftPage() {
                       disabled={playerId === captainAId}
                       className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
                         playerId === captainBId
-                          ? 'bg-blue-600 text-white'
+                          ? 'bg-[#4A90D9] text-ink'
                           : playerId === captainAId
-                            ? 'opacity-30 cursor-not-allowed text-gray-400'
-                            : 'hover:bg-gray-50 text-gray-700'
+                            ? 'opacity-30 cursor-not-allowed text-muted'
+                            : 'hover:bg-surface-2 text-paper/80'
                       }`}
                     >
                       <span className="flex-1">{playerName}</span>
@@ -417,13 +433,13 @@ export default function DraftPage() {
                       )}
                       {'times_captained_this_season' in rec &&
                         rec.times_captained_this_season === 0 && (
-                          <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded">
+                          <span className="text-xs bg-pitch/15 text-pitch px-1.5 py-0.5 rounded">
                             New
                           </span>
                         )}
                       {'times_captained_this_season' in rec &&
                         rec.times_captained_this_season > 0 && (
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs font-mono text-muted">
                             {rec.times_captained_this_season}x
                           </span>
                         )}
@@ -438,9 +454,9 @@ export default function DraftPage() {
             <button
               onClick={startDraft}
               disabled={!captainAId || !captainBId}
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2.5 rounded-lg text-sm disabled:opacity-50"
+              className="bg-pitch hover:opacity-90 text-ink px-6 py-2.5 rounded-lg text-sm transition-opacity disabled:opacity-30"
             >
-              Start draft →
+              Start draft
             </button>
           </div>
         </div>
@@ -451,52 +467,53 @@ export default function DraftPage() {
         <button
           type="button"
           onClick={undoPick}
-          className="text-sm text-amber-600 hover:text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg"
+          className="flex items-center gap-1.5 text-sm text-amber hover:opacity-80 border border-amber/30 px-3 py-1.5 rounded-lg mb-4 transition-opacity"
         >
-          ↩ Undo last pick
+          <UndoIcon />
+          Undo last pick
         </button>
       )}
       {(phase === 'draft' || phase === 'complete') && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Team A */}
-          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-            <div className="bg-green-700 px-5 py-3">
-              <h2 className="font-bold text-white">👑 {captainA?.name}</h2>
+          <div className="bg-surface border border-line rounded-xl overflow-hidden">
+            <div className="px-5 py-3 border-b border-pitch/30 bg-pitch/10">
+              <h2 className="text-paper">{captainA?.name}</h2>
               {teamAChemistry !== null && (
                 <div
-                  className={`text-xs px-2 py-1 rounded-lg text-center font-medium mt-2 ${
+                  className={`text-xs px-2 py-1 rounded-lg text-center font-mono mt-2 ${
                     teamAChemistry > 10
-                      ? 'bg-green-100 text-green-700'
+                      ? 'bg-pitch/15 text-pitch'
                       : teamAChemistry > 0
-                        ? 'bg-amber-100 text-amber-700'
-                        : 'bg-red-100 text-red-600'
+                        ? 'bg-amber/15 text-amber'
+                        : 'bg-signal/15 text-signal'
                   }`}
                 >
-                  ⚗️ Chemistry: {teamAChemistry > 0 ? '+' : ''}
+                  Chemistry: {teamAChemistry > 0 ? '+' : ''}
                   {teamAChemistry}
                 </div>
               )}
-              <p className="text-green-300 text-xs">Team A · picks second</p>
+              <p className="text-muted text-xs mt-1">Team A &middot; picks second</p>
             </div>
             <div className="p-4 space-y-1">
-              <div className="flex items-center gap-2 px-2 py-1.5 bg-green-50 rounded-lg">
-                <span className="text-xs font-bold text-green-700">CAP</span>
-                <span className="text-sm font-medium text-green-900">{captainA?.name}</span>
-                <span className="text-xs text-green-500 ml-auto">{captainA?.position}</span>
+              <div className="flex items-center gap-2 px-2 py-1.5 bg-pitch/10 rounded-lg">
+                <span className="text-xs font-mono text-pitch">CAP</span>
+                <span className="text-sm text-paper">{captainA?.name}</span>
+                <span className="text-xs text-muted ml-auto">{captainA?.position}</span>
               </div>
               {teamA.map((pick, i) => (
                 <div
                   key={pick.playerId}
-                  className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded-lg"
+                  className="flex items-center gap-2 px-2 py-1.5 hover:bg-surface-2 rounded-lg"
                 >
-                  <span className="text-xs text-gray-400 w-4">{i + 1}</span>
-                  <span className="text-sm text-gray-900">{pick.playerName}</span>
-                  <span className="text-xs text-gray-400 ml-auto">{pick.position}</span>
+                  <span className="text-xs font-mono text-muted w-4">{i + 1}</span>
+                  <span className="text-sm text-paper">{pick.playerName}</span>
+                  <span className="text-xs text-muted ml-auto">{pick.position}</span>
                 </div>
               ))}
               {phase === 'draft' && currentTurn === 'A' && (
-                <div className="flex items-center gap-2 px-2 py-1.5 border-2 border-dashed border-green-300 rounded-lg">
-                  <span className="text-xs text-green-500 animate-pulse">Picking...</span>
+                <div className="flex items-center gap-2 px-2 py-1.5 border-2 border-dashed border-pitch/40 rounded-lg">
+                  <span className="text-xs text-pitch animate-pulse">Picking&hellip;</span>
                 </div>
               )}
             </div>
@@ -506,47 +523,53 @@ export default function DraftPage() {
           <div className="space-y-4">
             {/* Win probability */}
             {prediction && (
-              <div className="bg-white rounded-xl border border-gray-100 p-4">
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Win probability</h3>
+              <div className="bg-surface border border-line rounded-xl p-4">
+                <h3 className="text-sm text-muted mb-3">Win probability</h3>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs text-gray-600 w-16 text-right">{captainA?.name}</span>
-                  <div className="flex-1 bg-gray-100 rounded-full h-3 overflow-hidden flex">
+                  <span className="text-xs text-muted w-16 text-right truncate">
+                    {captainA?.name}
+                  </span>
+                  <div className="flex-1 bg-line rounded-full h-3 overflow-hidden flex">
                     <div
-                      className="bg-green-500 h-3 transition-all duration-500"
+                      className="bg-pitch h-3 transition-all duration-500"
                       style={{ width: `${prediction.teamAWinProbability}%` }}
                     />
                     <div
-                      className="bg-blue-500 h-3 transition-all duration-500"
+                      className="bg-[#4A90D9] h-3 transition-all duration-500"
                       style={{ width: `${prediction.teamBWinProbability}%` }}
                     />
                   </div>
-                  <span className="text-xs text-gray-600 w-16">{captainB?.name}</span>
+                  <span className="text-xs text-muted w-16 truncate">{captainB?.name}</span>
                 </div>
-                <div className="flex justify-between text-xs font-bold">
-                  <span className="text-green-600">{prediction.teamAWinProbability}%</span>
-                  <span className="text-gray-400 text-center">
-                    {prediction.teamAExpectedGoals} — {prediction.teamBExpectedGoals}
+                <div className="flex justify-between text-xs font-mono">
+                  <span className="text-pitch">{prediction.teamAWinProbability}%</span>
+                  <span className="text-muted text-center">
+                    {prediction.teamAExpectedGoals}&ndash;{prediction.teamBExpectedGoals}
                   </span>
-                  <span className="text-blue-600">{prediction.teamBWinProbability}%</span>
+                  <span className="text-[#4A90D9]">{prediction.teamBWinProbability}%</span>
                 </div>
               </div>
             )}
 
             {/* Recommended picks */}
             {phase === 'draft' && (
-              <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+              <div className="bg-surface border border-line rounded-xl overflow-hidden">
                 <div
-                  className={`px-5 py-3 ${currentTurn === 'A' ? 'bg-green-700' : 'bg-blue-600'}`}
+                  className={`px-5 py-3 border-b ${
+                    currentTurn === 'A'
+                      ? 'bg-pitch/10 border-pitch/30'
+                      : 'bg-[#4A90D9]/10 border-[#4A90D9]/30'
+                  }`}
                 >
-                  <h3 className="font-bold text-white text-sm">
+                  <h3 className="text-sm text-paper">
                     {currentCaptainName}&apos;s recommended picks
                   </h3>
-                  <p className="text-xs text-white opacity-70">Based on historical preferences</p>
+                  <p className="text-xs text-muted mt-0.5">Based on historical preferences</p>
                 </div>
                 {loadingPrefs ? (
-                  <div className="p-4 text-center text-gray-400 text-sm">Loading...</div>
+                  <div className="p-4 text-center text-muted text-sm">Loading&hellip;</div>
                 ) : (
-                  <div className="divide-y divide-gray-50">
+                  <div className="divide-y divide-line">
                     {preferences.slice(0, 8).map((pref) => {
                       const player = squadPlayers.find((p) => p.id === pref.player_id);
                       if (!player || pickedIds.has(player.id)) return null;
@@ -555,23 +578,22 @@ export default function DraftPage() {
                           key={pref.player_id}
                           type="button"
                           onClick={() => makePick(player)}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors text-left"
+                          className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-surface-2 transition-colors text-left"
                         >
                           <div className="flex-1">
-                            <div className="text-sm font-medium text-gray-900">
-                              {pref.player_name}
-                            </div>
-                            <div className="text-xs text-gray-400">
-                              {player.position} · {pref.cooccurrence_rate.toFixed(0)}% co-occurrence
+                            <div className="text-sm text-paper">{pref.player_name}</div>
+                            <div className="text-xs text-muted">
+                              {player.position} &middot; {pref.cooccurrence_rate.toFixed(0)}%
+                              co-occurrence
                             </div>
                           </div>
                           <span
-                            className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                            className={`text-xs font-mono px-2 py-0.5 rounded-full ${
                               pref.cooccurrence_rate >= 60
-                                ? 'bg-green-100 text-green-700'
+                                ? 'bg-pitch/15 text-pitch'
                                 : pref.cooccurrence_rate >= 30
-                                  ? 'bg-amber-100 text-amber-700'
-                                  : 'bg-gray-100 text-gray-500'
+                                  ? 'bg-amber/15 text-amber'
+                                  : 'bg-line text-muted'
                             }`}
                           >
                             {pref.cooccurrence_rate.toFixed(0)}%
@@ -586,22 +608,20 @@ export default function DraftPage() {
 
             {/* All available players */}
             {phase === 'draft' && availablePlayers.length > 0 && (
-              <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-                <div className="px-5 py-3 border-b border-gray-50">
-                  <h3 className="font-semibold text-gray-900 text-sm">
-                    All available ({availablePlayers.length})
-                  </h3>
+              <div className="bg-surface border border-line rounded-xl overflow-hidden">
+                <div className="px-5 py-3 border-b border-line">
+                  <h3 className="text-sm text-muted">All available ({availablePlayers.length})</h3>
                 </div>
-                <div className="divide-y divide-gray-50 max-h-48 overflow-y-auto">
+                <div className="divide-y divide-line max-h-48 overflow-y-auto">
                   {availablePlayers.map((player) => (
                     <button
                       key={player.id}
                       type="button"
                       onClick={() => makePick(player)}
-                      className="w-full flex items-center gap-3 px-4 py-2 hover:bg-gray-50 transition-colors text-left"
+                      className="w-full flex items-center gap-3 px-4 py-2 hover:bg-surface-2 transition-colors text-left"
                     >
-                      <span className="text-sm text-gray-900 flex-1">{player.name}</span>
-                      <span className="text-xs text-gray-400">{player.position}</span>
+                      <span className="text-sm text-paper flex-1">{player.name}</span>
+                      <span className="text-xs text-muted">{player.position}</span>
                     </button>
                   ))}
                 </div>
@@ -609,56 +629,56 @@ export default function DraftPage() {
             )}
 
             {phase === 'complete' && (
-              <div className="bg-green-50 rounded-xl border border-green-100 p-4 text-center">
-                <p className="font-semibold text-green-800">Draft complete!</p>
-                <p className="text-xs text-green-600 mt-1">
-                  Predicted: {prediction?.teamAExpectedGoals} — {prediction?.teamBExpectedGoals}
+              <div className="bg-pitch/10 rounded-xl border border-pitch/30 p-4 text-center">
+                <p className="text-paper">Draft complete</p>
+                <p className="text-xs font-mono text-muted mt-1">
+                  Predicted: {prediction?.teamAExpectedGoals}&ndash;{prediction?.teamBExpectedGoals}
                 </p>
               </div>
             )}
           </div>
 
           {/* Team B */}
-          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-            <div className="bg-blue-600 px-5 py-3">
-              <h2 className="font-bold text-white">👑 {captainB?.name}</h2>
+          <div className="bg-surface border border-line rounded-xl overflow-hidden">
+            <div className="px-5 py-3 border-b border-[#4A90D9]/30 bg-[#4A90D9]/10">
+              <h2 className="text-paper">{captainB?.name}</h2>
               {teamBChemistry !== null && (
                 <div
-                  className={`text-xs px-2 py-1 rounded-lg text-center font-medium mt-2 ${
+                  className={`text-xs px-2 py-1 rounded-lg text-center font-mono mt-2 ${
                     teamBChemistry > 10
-                      ? 'bg-green-100 text-green-700'
+                      ? 'bg-pitch/15 text-pitch'
                       : teamBChemistry > 0
-                        ? 'bg-amber-100 text-amber-700'
-                        : 'bg-red-100 text-red-600'
+                        ? 'bg-amber/15 text-amber'
+                        : 'bg-signal/15 text-signal'
                   }`}
                 >
-                  ⚗️ Chemistry: {teamBChemistry > 0 ? '+' : ''}
+                  Chemistry: {teamBChemistry > 0 ? '+' : ''}
                   {teamBChemistry}
                 </div>
               )}
-              <p className="text-blue-200 text-xs">Team B · picks first</p>
+              <p className="text-muted text-xs mt-1">Team B &middot; picks first</p>
             </div>
             <div className="p-4 space-y-1">
-              <div className="flex items-center gap-2 px-2 py-1.5 bg-blue-50 rounded-lg">
-                <span className="text-xs font-bold text-blue-700">CAP</span>
-                <span className="text-sm font-medium text-blue-900">{captainB?.name}</span>
-                <span className="text-xs text-blue-400 ml-auto">{captainB?.position}</span>
+              <div className="flex items-center gap-2 px-2 py-1.5 bg-[#4A90D9]/10 rounded-lg">
+                <span className="text-xs font-mono text-[#4A90D9]">CAP</span>
+                <span className="text-sm text-paper">{captainB?.name}</span>
+                <span className="text-xs text-muted ml-auto">{captainB?.position}</span>
               </div>
               {picks
                 .filter((p) => p.team === 'B')
                 .map((pick, i) => (
                   <div
                     key={pick.playerId}
-                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded-lg"
+                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-surface-2 rounded-lg"
                   >
-                    <span className="text-xs text-gray-400 w-4">{i + 1}</span>
-                    <span className="text-sm text-gray-900">{pick.playerName}</span>
-                    <span className="text-xs text-gray-400 ml-auto">{pick.position}</span>
+                    <span className="text-xs font-mono text-muted w-4">{i + 1}</span>
+                    <span className="text-sm text-paper">{pick.playerName}</span>
+                    <span className="text-xs text-muted ml-auto">{pick.position}</span>
                   </div>
                 ))}
               {phase === 'draft' && currentTurn === 'B' && (
-                <div className="flex items-center gap-2 px-2 py-1.5 border-2 border-dashed border-blue-300 rounded-lg">
-                  <span className="text-xs text-blue-500 animate-pulse">Picking...</span>
+                <div className="flex items-center gap-2 px-2 py-1.5 border-2 border-dashed border-[#4A90D9]/40 rounded-lg">
+                  <span className="text-xs text-[#4A90D9] animate-pulse">Picking&hellip;</span>
                 </div>
               )}
             </div>

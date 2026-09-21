@@ -3,6 +3,41 @@
 import { useMatchDetail } from '@/lib/hooks';
 import LoadingState from '@/components/ui/LoadingState';
 
+function BackIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <path
+        d="M8.5 2.5L3 7L8.5 11.5"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <path
+        d="M1 1L13 13M13 1L1 13"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function CaptainBadge() {
+  return (
+    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber/15 text-amber text-[10px] font-mono mr-1.5 align-middle">
+      C
+    </span>
+  );
+}
+
 export default function MatchDetailModal({
   matchId,
   onClose,
@@ -15,32 +50,39 @@ export default function MatchDetailModal({
   const { data: match, isLoading } = useMatchDetail(matchId);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl w-full max-w-lg max-h-[80vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+      <div className="bg-surface border border-line rounded-xl w-full max-w-lg max-h-[80vh] flex flex-col">
         {/* Header */}
-        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
+        <div className="px-5 py-4 border-b border-line flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             {onBack && (
               <button
                 onClick={onBack}
-                className="text-gray-700 hover:text-gray-900 text-sm font-medium flex items-center gap-1"
+                className="text-muted hover:text-paper text-sm flex items-center gap-1 transition-colors"
               >
-                ← Back
+                <BackIcon />
+                Back
               </button>
             )}
             <div>
-              <h2 className="font-semibold text-gray-900">
-                {match ? `${match.gameWeek || ''} · Season ${match.seasonYear}` : 'Match details'}
+              <h2 className="text-paper">
+                {match
+                  ? `${match.gameWeek || ''} \u00b7 Season ${match.seasonYear}`
+                  : 'Match details'}
               </h2>
               {match && (
-                <p className="text-xs text-gray-400 mt-0.5">
+                <p className="text-xs text-muted mt-0.5">
                   {match.captainAName} vs {match.captainBName}
                 </p>
               )}
             </div>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg font-bold">
-            ✕
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="text-muted hover:text-paper transition-colors"
+          >
+            <CloseIcon />
           </button>
         </div>
 
@@ -50,37 +92,37 @@ export default function MatchDetailModal({
         ) : match ? (
           <div className="overflow-y-auto flex-1 p-5">
             {/* Score */}
-            <div className="flex items-center justify-between mb-6 bg-gray-50 rounded-xl p-4">
+            <div className="flex items-center justify-between mb-6 bg-surface-2 border border-line rounded-xl p-4">
               <div className="text-center flex-1">
                 <div
-                  className={`font-bold text-lg ${
-                    match.winnerId === match.captainAId ? 'text-green-600' : 'text-gray-400'
+                  className={`text-lg ${
+                    match.winnerId === match.captainAId ? 'text-pitch' : 'text-muted'
                   }`}
                 >
                   {match.captainAName}
                 </div>
-                <div className="text-xs text-gray-400">captain</div>
+                <div className="text-xs text-muted">captain</div>
               </div>
               <div className="flex items-center gap-3 px-4">
                 <span
-                  className={`text-4xl font-black ${
+                  className={`text-4xl font-mono ${
                     match.scoreA > match.scoreB
-                      ? 'text-green-600'
+                      ? 'text-pitch'
                       : match.isDraw
-                        ? 'text-amber-500'
-                        : 'text-gray-300'
+                        ? 'text-amber'
+                        : 'text-muted'
                   }`}
                 >
                   {match.scoreA}
                 </span>
-                <span className="text-gray-300">—</span>
+                <span className="text-muted">&ndash;</span>
                 <span
-                  className={`text-4xl font-black ${
+                  className={`text-4xl font-mono ${
                     match.scoreB > match.scoreA
-                      ? 'text-green-600'
+                      ? 'text-pitch'
                       : match.isDraw
-                        ? 'text-amber-500'
-                        : 'text-gray-300'
+                        ? 'text-amber'
+                        : 'text-muted'
                   }`}
                 >
                   {match.scoreB}
@@ -88,21 +130,21 @@ export default function MatchDetailModal({
               </div>
               <div className="text-center flex-1">
                 <div
-                  className={`font-bold text-lg ${
-                    match.winnerId === match.captainBId ? 'text-green-600' : 'text-gray-400'
+                  className={`text-lg ${
+                    match.winnerId === match.captainBId ? 'text-pitch' : 'text-muted'
                   }`}
                 >
                   {match.captainBName}
                 </div>
-                <div className="text-xs text-gray-400">captain</div>
+                <div className="text-xs text-muted">captain</div>
               </div>
             </div>
 
             {/* Result badge */}
             <div className="text-center mb-6">
               <span
-                className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                  match.isDraw ? 'bg-amber-50 text-amber-600' : 'bg-green-50 text-green-600'
+                className={`text-xs px-3 py-1 rounded-full ${
+                  match.isDraw ? 'bg-amber/10 text-amber' : 'bg-pitch/10 text-pitch'
                 }`}
               >
                 {match.isDraw
@@ -115,7 +157,7 @@ export default function MatchDetailModal({
             <div className="grid grid-cols-2 gap-4">
               {/* Team A */}
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Team A</h3>
+                <h3 className="text-sm text-muted mb-3">Team A</h3>
                 <div className="space-y-1.5">
                   {match.teamAPlayers.map((player) => {
                     const regularGoal = match.goalScorers.find(
@@ -130,24 +172,19 @@ export default function MatchDetailModal({
                         key={player.playerId}
                         className="flex items-center justify-between text-sm"
                       >
-                        <span
-                          className={
-                            regularGoal || ownGoal ? 'text-gray-900 font-medium' : 'text-gray-500'
-                          }
-                        >
-                          {player.playerId === match.captainAId
-                            ? `👑 ${player.playerName}`
-                            : player.playerName}
+                        <span className={regularGoal || ownGoal ? 'text-paper' : 'text-muted'}>
+                          {player.playerId === match.captainAId && <CaptainBadge />}
+                          {player.playerName}
                         </span>
-                        <span className="flex items-center gap-1 text-xs font-bold">
+                        <span className="flex items-center gap-1.5 text-xs font-mono">
                           {regularGoal && (
-                            <span className="text-green-600">
-                              ⚽{regularGoal.goals > 1 ? ` x${regularGoal.goals}` : ''}
+                            <span className="text-pitch">
+                              &#9917;{regularGoal.goals > 1 ? ` \u00d7${regularGoal.goals}` : ''}
                             </span>
                           )}
                           {ownGoal && (
-                            <span className="text-red-500">
-                              OG{ownGoal.goals > 1 ? ` x${ownGoal.goals}` : ''}
+                            <span className="text-signal">
+                              OG{ownGoal.goals > 1 ? ` \u00d7${ownGoal.goals}` : ''}
                             </span>
                           )}
                         </span>
@@ -159,7 +196,7 @@ export default function MatchDetailModal({
 
               {/* Team B */}
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3 text-sm">Team B</h3>
+                <h3 className="text-sm text-muted mb-3">Team B</h3>
                 <div className="space-y-1.5">
                   {match.teamBPlayers.map((player) => {
                     const regularGoal = match.goalScorers.find(
@@ -174,24 +211,19 @@ export default function MatchDetailModal({
                         key={player.playerId}
                         className="flex items-center justify-between text-sm"
                       >
-                        <span
-                          className={
-                            regularGoal || ownGoal ? 'text-gray-900 font-medium' : 'text-gray-500'
-                          }
-                        >
-                          {player.playerId === match.captainBId
-                            ? `👑 ${player.playerName}`
-                            : player.playerName}
+                        <span className={regularGoal || ownGoal ? 'text-paper' : 'text-muted'}>
+                          {player.playerId === match.captainBId && <CaptainBadge />}
+                          {player.playerName}
                         </span>
-                        <span className="flex items-center gap-1 text-xs font-bold">
+                        <span className="flex items-center gap-1.5 text-xs font-mono">
                           {regularGoal && (
-                            <span className="text-green-600">
-                              ⚽{regularGoal.goals > 1 ? ` x${regularGoal.goals}` : ''}
+                            <span className="text-pitch">
+                              &#9917;{regularGoal.goals > 1 ? ` \u00d7${regularGoal.goals}` : ''}
                             </span>
                           )}
                           {ownGoal && (
-                            <span className="text-red-500">
-                              OG{ownGoal.goals > 1 ? ` x${ownGoal.goals}` : ''}
+                            <span className="text-signal">
+                              OG{ownGoal.goals > 1 ? ` \u00d7${ownGoal.goals}` : ''}
                             </span>
                           )}
                         </span>

@@ -8,23 +8,43 @@ import { useRouter } from 'next/navigation';
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorState from '@/components/ui/ErrorState';
 
+function CloseIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <path
+        d="M1 1L13 13M13 1L1 13"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 function getRatingColor(value: number) {
-  if (value >= 8) return 'text-green-600';
-  if (value >= 6) return 'text-amber-500';
-  return 'text-red-400';
+  if (value >= 8) return 'text-pitch';
+  if (value >= 6) return 'text-amber';
+  return 'text-signal';
 }
 
 function getPointsPercentageColor(value: number) {
-  if (value >= 70) return 'text-green-600';
-  if (value >= 40) return 'text-amber-500';
-  return 'text-red-400';
+  if (value >= 70) return 'text-pitch';
+  if (value >= 40) return 'text-amber';
+  return 'text-signal';
 }
 
 function getRankDisplay(rank: number, isTied: boolean): string {
-  if (rank === 1) return '🥇';
-  if (rank === 2) return '🥈';
-  if (rank === 3) return '🥉';
   return isTied ? `=${rank}` : `${rank}`;
+}
+
+function RankBadge({ rank, isTied }: { rank: number; isTied: boolean }) {
+  return (
+    <span
+      className={`text-sm font-mono min-w-6 text-center ${rank <= 3 ? 'text-amber' : 'text-muted'}`}
+    >
+      {getRankDisplay(rank, isTied)}
+    </span>
+  );
 }
 
 function LeaderboardTable({
@@ -52,21 +72,18 @@ function LeaderboardTable({
   const valuesWithCounts = sorted.map((e) => ({ value: getValue(e) }));
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-      <div className="px-5 py-4 border-b border-gray-50">
-        <h2 className="font-semibold text-gray-900">{title}</h2>
-        {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
+    <div className="bg-surface border border-line rounded-xl overflow-hidden">
+      <div className="px-5 py-4 border-b border-line">
+        <h2 className="text-sm text-muted">{title}</h2>
+        {subtitle && <p className="text-xs text-muted mt-0.5">{subtitle}</p>}
         {entries.length > 10 && (
-          <button
-            onClick={onViewAll}
-            className="text-xs text-green-600 hover:text-green-700 font-medium"
-          >
+          <button onClick={onViewAll} className="text-xs text-pitch hover:opacity-80 mt-1">
             View all ({entries.length})
           </button>
         )}
       </div>
       {sorted.length === 0 ? (
-        <div className="px-5 py-8 text-center text-sm text-gray-400">
+        <div className="px-5 py-8 text-center text-sm text-muted">
           {emptyMessage || 'No data yet'}
         </div>
       ) : (
@@ -79,22 +96,20 @@ function LeaderboardTable({
             return (
               <div
                 key={entry.playerId}
-                className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-3 px-5 py-3 border-b border-line last:border-0 hover:bg-surface-2 transition-colors"
               >
-                <span className="text-sm font-bold text-gray-400 min-w-6 text-center">
-                  {getRankDisplay(rank, isTied)}
-                </span>
-                <div className="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                <RankBadge rank={rank} isTied={isTied} />
+                <div className="w-7 h-7 rounded-full bg-surface-2 border border-line flex items-center justify-center text-paper text-xs shrink-0">
                   {entry.name.slice(0, 2).toUpperCase()}
                 </div>
                 <button
                   onClick={() => onPlayerClick(entry.playerId)}
-                  className="font-medium text-gray-900 flex-1 text-left hover:text-green-600 transition-colors"
+                  className="text-paper flex-1 text-left hover:text-pitch transition-colors"
                 >
                   {entry.name}
                 </button>
-                <span className="text-xs text-gray-400 mr-2">{entry.matchesPlayed}mp</span>
-                <span className={`font-bold text-sm ${colorFn(currentValue)}`}>
+                <span className="text-xs font-mono text-muted mr-2">{entry.matchesPlayed}mp</span>
+                <span className={`font-mono text-sm ${colorFn(currentValue)}`}>
                   {formatValue(entry)}
                 </span>
               </div>
@@ -123,14 +138,11 @@ function RatingTable({
   const valuesWithCounts = sorted.map((e) => ({ value: getValue(e) }));
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-      <div className="px-5 py-4 border-b border-gray-50">
-        <h2 className="font-semibold text-gray-900">{title}</h2>
+    <div className="bg-surface border border-line rounded-xl overflow-hidden">
+      <div className="px-5 py-4 border-b border-line">
+        <h2 className="text-sm text-muted">{title}</h2>
         {entries.length > 10 && (
-          <button
-            onClick={onViewAll}
-            className="text-xs text-green-600 hover:text-green-700 font-medium"
-          >
+          <button onClick={onViewAll} className="text-xs text-pitch hover:opacity-80 mt-1">
             View all ({entries.length})
           </button>
         )}
@@ -144,21 +156,19 @@ function RatingTable({
           return (
             <div
               key={entry.playerId}
-              className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-3 px-5 py-3 border-b border-line last:border-0 hover:bg-surface-2 transition-colors"
             >
-              <span className="text-sm font-bold text-gray-400 min-w-6 text-center">
-                {getRankDisplay(rank, isTied)}
-              </span>
-              <div className="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
+              <RankBadge rank={rank} isTied={isTied} />
+              <div className="w-7 h-7 rounded-full bg-surface-2 border border-line flex items-center justify-center text-paper text-xs shrink-0">
                 {entry.name.slice(0, 2).toUpperCase()}
               </div>
               <button
                 onClick={() => onPlayerClick(entry.playerId)}
-                className="font-medium text-gray-900 flex-1 text-left hover:text-green-600 transition-colors"
+                className="text-paper flex-1 text-left hover:text-pitch transition-colors"
               >
                 {entry.name}
               </button>
-              <span className={`font-bold text-sm ${getRatingColor(currentValue)}`}>
+              <span className={`font-mono text-sm ${getRatingColor(currentValue)}`}>
                 {currentValue}/10
               </span>
             </div>
@@ -188,12 +198,16 @@ function LeaderboardModal({
   const valuesWithCounts = sorted.map((e) => ({ value: data.getValue(e) }));
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl w-full max-w-md max-h-[80vh] flex flex-col">
-        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
-          <h2 className="font-semibold text-gray-900">{data.title}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg font-bold">
-            ✕
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+      <div className="bg-surface border border-line rounded-xl w-full max-w-md max-h-[80vh] flex flex-col">
+        <div className="px-5 py-4 border-b border-line flex items-center justify-between shrink-0">
+          <h2 className="text-paper">{data.title}</h2>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="text-muted hover:text-paper transition-colors"
+          >
+            <CloseIcon />
           </button>
         </div>
         <div className="overflow-y-auto flex-1">
@@ -205,12 +219,10 @@ function LeaderboardModal({
             return (
               <div
                 key={entry.playerId}
-                className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors"
+                className="flex items-center gap-3 px-5 py-3 border-b border-line last:border-0 hover:bg-surface-2 transition-colors"
               >
-                <span className="text-sm font-bold text-gray-400 min-w-6 text-center">
-                  {getRankDisplay(rank, isTied)}
-                </span>
-                <div className="w-7 h-7 rounded-full bg-green-700 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                <RankBadge rank={rank} isTied={isTied} />
+                <div className="w-7 h-7 rounded-full bg-surface-2 border border-line flex items-center justify-center text-paper text-xs shrink-0">
                   {entry.name.slice(0, 2).toUpperCase()}
                 </div>
                 <button
@@ -218,12 +230,12 @@ function LeaderboardModal({
                     onClose();
                     onPlayerClick(entry.playerId);
                   }}
-                  className="font-medium text-gray-900 flex-1 text-left hover:text-green-600 transition-colors text-sm"
+                  className="text-paper flex-1 text-left hover:text-pitch transition-colors text-sm"
                 >
                   {entry.name}
                 </button>
-                <span className="text-xs text-gray-400 mr-2">{entry.matchesPlayed}mp</span>
-                <span className={`font-bold text-sm ${data.colorFn(currentValue)}`}>
+                <span className="text-xs font-mono text-muted mr-2">{entry.matchesPlayed}mp</span>
+                <span className={`font-mono text-sm ${data.colorFn(currentValue)}`}>
                   {data.formatValue(entry)}
                 </span>
               </div>
@@ -272,40 +284,32 @@ export default function LeaderboardPage() {
         />
       )}
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-end justify-between mb-10 pb-6 border-b border-line">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Leaderboard</h1>
-          <p className="text-sm text-gray-400 mt-1">
-            {playedEntries.length} players with match data
-          </p>
+          <h1 className="font-display text-4xl text-paper">Leaderboard</h1>
+          <p className="text-sm text-muted mt-2">{playedEntries.length} players with match data</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 bg-surface border border-line rounded-lg p-1">
           <button
             onClick={() => setSeasonYear(2026)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              seasonYear === 2026
-                ? 'bg-green-600 text-white'
-                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+              seasonYear === 2026 ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
             }`}
           >
             2026
           </button>
           <button
             onClick={() => setSeasonYear(2025)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              seasonYear === 2025
-                ? 'bg-green-600 text-white'
-                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+              seasonYear === 2025 ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
             }`}
           >
             2025
           </button>
           <button
             onClick={() => setSeasonYear(undefined)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              seasonYear === undefined
-                ? 'bg-green-600 text-white'
-                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+              seasonYear === undefined ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
             }`}
           >
             All time
@@ -313,9 +317,9 @@ export default function LeaderboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
         <LeaderboardTable
-          title="🏆 Points percentage"
+          title="Points percentage"
           subtitle="Min. 14 matches (season) · 28 matches (all time)"
           entries={qualifiedEntries}
           getValue={(e) => e.pointsPercentage}
@@ -324,7 +328,7 @@ export default function LeaderboardPage() {
           emptyMessage="Record more matches to qualify"
           onViewAll={() =>
             setModalData({
-              title: '🏆 Points percentage',
+              title: 'Points percentage',
               entries: qualifiedEntries,
               getValue: (e) => e.pointsPercentage,
               formatValue: (e) => `${e.pointsPercentage}%`,
@@ -334,51 +338,51 @@ export default function LeaderboardPage() {
           onPlayerClick={handlePlayerClick}
         />
         <LeaderboardTable
-          title="⚽ Goals scored"
+          title="Goals scored"
           entries={playedEntries}
           getValue={(e) => e.goals}
           formatValue={(e) => `${e.goals} goals`}
-          colorFn={(v) => (v > 0 ? 'text-green-600' : 'text-gray-400')}
+          colorFn={(v) => (v > 0 ? 'text-pitch' : 'text-muted')}
           emptyMessage="No goals recorded yet"
           onViewAll={() =>
             setModalData({
-              title: '⚽ Goals scored',
+              title: 'Goals scored',
               entries: playedEntries,
               getValue: (e) => e.goals,
               formatValue: (e) => `${e.goals} goals`,
-              colorFn: (v) => (v > 0 ? 'text-green-600' : 'text-gray-400'),
+              colorFn: (v) => (v > 0 ? 'text-pitch' : 'text-muted'),
             })
           }
           onPlayerClick={handlePlayerClick}
         />
         <LeaderboardTable
-          title="🎮 Matches played"
+          title="Matches played"
           entries={playedEntries}
           getValue={(e) => e.matchesPlayed}
           formatValue={(e) => `${e.matchesPlayed} played`}
-          colorFn={() => 'text-blue-600'}
+          colorFn={() => 'text-[#4A90D9]'}
           emptyMessage="No matches recorded yet"
           onViewAll={() =>
             setModalData({
-              title: '🎮 Matches played',
+              title: 'Matches played',
               entries: playedEntries,
               getValue: (e) => e.matchesPlayed,
               formatValue: (e) => `${e.matchesPlayed} played`,
-              colorFn: () => 'text-blue-600',
+              colorFn: () => 'text-[#4A90D9]',
             })
           }
           onPlayerClick={handlePlayerClick}
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <RatingTable
-          title="⚔️ Attack rating"
+          title="Attack rating"
           entries={allEntries}
           getValue={(e) => e.attackRating || 0}
           onViewAll={() =>
             setModalData({
-              title: '⚔️ Attack rating',
+              title: 'Attack rating',
               entries: allEntries,
               getValue: (e) => e.attackRating || 0,
               formatValue: (e) => `${e.attackRating || 0}/10`,
@@ -388,12 +392,12 @@ export default function LeaderboardPage() {
           onPlayerClick={handlePlayerClick}
         />
         <RatingTable
-          title="🛡️ Defence Rating"
+          title="Defence rating"
           entries={allEntries}
           getValue={(e) => e.defenceRating || 0}
           onViewAll={() =>
             setModalData({
-              title: '🛡️ Defence Rating',
+              title: 'Defence rating',
               entries: allEntries,
               getValue: (e) => e.defenceRating || 0,
               formatValue: (e) => `${e.defenceRating || 0}/10`,
@@ -403,12 +407,12 @@ export default function LeaderboardPage() {
           onPlayerClick={handlePlayerClick}
         />
         <RatingTable
-          title="📅 Reliability rating"
+          title="Reliability rating"
           entries={allEntries}
           getValue={(e) => e.reliability || 0}
           onViewAll={() =>
             setModalData({
-              title: '📅 Reliability rating',
+              title: 'Reliability rating',
               entries: allEntries,
               getValue: (e) => e.reliability || 0,
               formatValue: (e) => `${e.reliability || 0}/10`,

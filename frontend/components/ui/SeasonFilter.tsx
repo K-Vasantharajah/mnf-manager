@@ -5,15 +5,13 @@ interface SeasonFilterProps {
 
 export default function SeasonFilter({ selected, onChange }: SeasonFilterProps) {
   return (
-    <div className="flex gap-2">
+    <div className="flex items-center gap-1 bg-surface border border-line rounded-lg p-1">
       {['All', '2026', '2025'].map((season) => (
         <button
           key={season}
           onClick={() => onChange(season)}
-          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-            selected === season
-              ? 'bg-green-600 text-white'
-              : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+          className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+            selected === season ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
           }`}
         >
           {season}

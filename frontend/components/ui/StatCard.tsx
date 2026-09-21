@@ -8,10 +8,10 @@ export default function StatCard({
   sub?: string;
 }) {
   return (
-    <div className="bg-gray-50 rounded-xl p-4">
-      <div className="text-xs text-gray-400 uppercase tracking-wide mb-1">{label}</div>
-      <div className="text-2xl font-black text-gray-900">{value}</div>
-      {sub && <div className="text-xs text-gray-400 mt-1">{sub}</div>}
+    <div className="bg-surface border border-line rounded-xl p-4">
+      <div className="text-xs text-muted mb-2">{label}</div>
+      <div className="text-2xl font-mono text-paper">{value}</div>
+      {sub && <div className="text-xs text-muted mt-1.5">{sub}</div>}
     </div>
   );
 }

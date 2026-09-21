@@ -13,6 +13,42 @@ import LoadingState from '@/components/ui/LoadingState';
 import ErrorState from '@/components/ui/ErrorState';
 import StatCard from '@/components/ui/StatCard';
 
+function BackIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <path
+        d="M8.5 2.5L3 7L8.5 11.5"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <path
+        d="M1 1L13 13M13 1L1 13"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+const resultStyles: Record<string, string> = {
+  WIN: 'bg-pitch/10 text-pitch',
+  DRAW: 'bg-amber/10 text-amber',
+  LOSS: 'bg-signal/10 text-signal',
+};
+
+const inputClass =
+  'w-full bg-surface border border-line rounded-lg px-3 py-2 text-sm text-paper focus:outline-none focus:ring-2 focus:ring-pitch/40 focus:border-pitch transition-colors';
+
 function PlayerMatchHistoryModal({
   playerId,
   seasonYear,
@@ -27,51 +63,51 @@ function PlayerMatchHistoryModal({
   const { data: matches, isLoading } = usePlayerMatches(playerId, seasonYear);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl w-full max-w-md max-h-[80vh] flex flex-col">
-        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between shrink-0">
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+      <div className="bg-surface border border-line rounded-xl w-full max-w-md max-h-[80vh] flex flex-col">
+        <div className="px-5 py-4 border-b border-line flex items-center justify-between shrink-0">
           <div>
-            <h2 className="font-semibold text-gray-900">Season {seasonYear} matches</h2>
-            <p className="text-xs text-gray-400 mt-0.5">{matches?.length || 0} matches</p>
+            <h2 className="text-paper">Season {seasonYear} matches</h2>
+            <p className="text-xs text-muted mt-0.5">{matches?.length || 0} matches</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg font-bold">
-            ✕
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="text-muted hover:text-paper transition-colors"
+          >
+            <CloseIcon />
           </button>
         </div>
         <div className="overflow-y-auto flex-1">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="text-gray-400">Loading...</div>
+              <div className="text-muted text-sm">Loading&hellip;</div>
             </div>
           ) : (
             matches?.map((match) => (
               <div
                 key={match.id}
-                className="flex items-center gap-3 px-5 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 cursor-pointer transition-colors"
+                className="flex items-center gap-3 px-5 py-3 border-b border-line last:border-0 hover:bg-surface-2 cursor-pointer transition-colors"
                 onClick={() => {
                   onClose();
                   onMatchClick(match.id);
                 }}
               >
-                <span className="text-xs text-gray-400 min-w-10">
+                <span className="text-xs text-muted font-mono min-w-10">
                   {match.gameWeek || `S${match.seasonYear}`}
                 </span>
                 <span
-                  className={`text-xs font-bold px-2 py-0.5 rounded-full min-w-10 text-center ${
-                    match.result === 'WIN'
-                      ? 'bg-green-100 text-green-700'
-                      : match.result === 'DRAW'
-                        ? 'bg-amber-100 text-amber-700'
-                        : 'bg-red-100 text-red-500'
+                  className={`text-xs font-mono px-2 py-0.5 rounded min-w-14 text-center ${
+                    resultStyles[match.result] ?? resultStyles.DRAW
                   }`}
                 >
                   {match.result}
                 </span>
-                <span className="text-sm flex-1 text-gray-600">
+                <span className="text-sm flex-1 text-paper/80">
                   {match.captainAName} vs {match.captainBName}
                 </span>
-                <span className="text-sm font-bold text-gray-900">
-                  {match.scoreA} — {match.scoreB}
+                <span className="text-sm font-mono text-paper">
+                  {match.scoreA}&ndash;{match.scoreB}
                 </span>
               </div>
             ))
@@ -134,10 +170,10 @@ export default function PlayerProfilePage() {
 
   const pointPercentageColor =
     profile.careerStats.careerPointsPercentage >= 60
-      ? 'text-green-600'
+      ? 'text-pitch'
       : profile.careerStats.careerPointsPercentage >= 40
-        ? 'text-amber-500'
-        : 'text-red-400';
+        ? 'text-amber'
+        : 'text-signal';
 
   return (
     <div className="max-w-4xl">
@@ -174,26 +210,27 @@ export default function PlayerProfilePage() {
       )}
       <button
         onClick={() => router.push('/players')}
-        className="text-sm text-gray-400 hover:text-gray-600 mb-6 flex items-center gap-1"
+        className="text-sm text-muted hover:text-paper mb-6 flex items-center gap-1.5 transition-colors"
       >
-        ← All players
+        <BackIcon />
+        All players
       </button>
 
       {/* Player header */}
-      <div className="bg-green-900 rounded-xl p-6 mb-6 text-white">
+      <div className="bg-surface border border-line rounded-xl p-6 mb-6">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center text-2xl font-black flex-shrink-0">
+          <div className="w-16 h-16 rounded-full bg-surface-2 border border-line flex items-center justify-center text-2xl font-display text-paper flex-shrink-0">
             {profile.name.slice(0, 2).toUpperCase()}
           </div>
           <div className="flex-1">
-            <h1 className="text-2xl font-black">{profile.name}</h1>
-            <div className="flex items-center gap-3 mt-2">
-              <span className="bg-green-800 text-green-200 text-xs px-2 py-1 rounded-lg">
+            <h1 className="font-display text-2xl text-paper">{profile.name}</h1>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="bg-surface-2 border border-line text-muted text-xs px-2 py-1 rounded-lg">
                 {profile.strongFoot} foot
               </span>
               <span
                 className={`text-xs px-2 py-1 rounded-lg ${
-                  profile.active ? 'bg-green-500 text-white' : 'bg-gray-600 text-gray-300'
+                  profile.active ? 'bg-pitch/15 text-pitch' : 'bg-line text-muted'
                 }`}
               >
                 {profile.active ? 'Active' : 'Inactive'}
@@ -201,18 +238,18 @@ export default function PlayerProfilePage() {
             </div>
           </div>
           <div className="text-right">
-            <div className={`text-4xl font-black ${pointPercentageColor}`}>
+            <div className={`font-display text-4xl ${pointPercentageColor}`}>
               {profile.careerStats.careerPointsPercentage}%
             </div>
-            <div className="text-green-300 text-xs">career pt %</div>
+            <div className="text-muted text-xs mt-1">career pt %</div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
         {/* Career stats */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <h2 className="font-semibold text-gray-900 mb-4">Career stats</h2>
+        <div className="bg-surface border border-line rounded-xl p-5">
+          <h2 className="text-sm text-muted mb-4">Career stats</h2>
           <div className="grid grid-cols-2 gap-3">
             <StatCard label="Matches" value={profile.careerStats.totalMatches} />
             <StatCard
@@ -226,20 +263,16 @@ export default function PlayerProfilePage() {
         </div>
 
         {/* Ratings */}
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="font-semibold text-gray-900">Ratings</h2>
-              <p className="text-xs text-gray-400 mt-0.5">ML derived · updates weekly</p>
-            </div>
-          </div>
+        <div className="bg-surface border border-line rounded-xl p-5">
+          <h2 className="text-sm text-muted">Ratings</h2>
+          <p className="text-xs text-muted mt-0.5 mb-4">ML derived &middot; updates weekly</p>
 
           {profile.overallRating ? (
             <div className="space-y-4">
               {/* Overall */}
-              <div className="bg-green-50 rounded-xl p-4 flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-green-900">Overall</span>
-                <span className="text-2xl font-black text-green-700">
+              <div className="bg-pitch/10 rounded-xl p-4 flex items-center justify-between mb-2">
+                <span className="text-sm text-paper">Overall</span>
+                <span className="text-2xl font-mono text-pitch">
                   {profile.overallRating}/10
                   <DeltaBadge delta={profile.overallDelta} />
                 </span>
@@ -247,8 +280,8 @@ export default function PlayerProfilePage() {
 
               <div>
                 <div className="flex justify-between mb-1">
-                  <span className="text-sm text-gray-600">⚔️ Attack</span>
-                  <span className="text-sm font-bold text-gray-900">
+                  <span className="text-sm text-muted">Attack</span>
+                  <span className="text-sm font-mono text-paper">
                     {profile.attackRating}/10
                     <DeltaBadge delta={profile.attackDelta} />
                   </span>
@@ -258,8 +291,8 @@ export default function PlayerProfilePage() {
 
               <div>
                 <div className="flex justify-between mb-1">
-                  <span className="text-sm text-gray-600">🛡️ Defence</span>
-                  <span className="text-sm font-bold text-gray-900">
+                  <span className="text-sm text-muted">Defence</span>
+                  <span className="text-sm font-mono text-paper">
                     {profile.defenceRating}/10
                     <DeltaBadge delta={profile.defenceDelta} />
                   </span>
@@ -269,8 +302,8 @@ export default function PlayerProfilePage() {
 
               <div>
                 <div className="flex justify-between mb-1">
-                  <span className="text-sm text-gray-600">📅 Reliability</span>
-                  <span className="text-sm font-bold text-gray-900">
+                  <span className="text-sm text-muted">Reliability</span>
+                  <span className="text-sm font-mono text-paper">
                     {profile.reliability}/10
                     <DeltaBadge delta={profile.reliabilityDelta} />
                   </span>
@@ -279,8 +312,8 @@ export default function PlayerProfilePage() {
               </div>
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-400 text-sm">
-              <p className="font-medium">Not enough data</p>
+            <div className="text-center py-8 text-muted text-sm">
+              <p>Not enough data</p>
               <p className="mt-1">Needs 10+ matches for ML rating</p>
             </div>
           )}
@@ -288,13 +321,13 @@ export default function PlayerProfilePage() {
       </div>
 
       {/* Profile edit card */}
-      <div className="bg-white rounded-xl border border-gray-100 p-5 mb-6">
+      <div className="bg-surface border border-line rounded-xl p-5 mb-5">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-gray-900">Profile</h2>
+          <h2 className="text-sm text-muted">Profile</h2>
           {!editingProfile ? (
             <button
               onClick={startEditingProfile}
-              className="text-xs text-green-600 hover:text-green-700 font-medium border border-green-200 px-3 py-1 rounded-lg"
+              className="text-xs text-pitch hover:opacity-80 border border-pitch/30 px-3 py-1 rounded-lg transition-opacity"
             >
               Edit profile
             </button>
@@ -302,16 +335,16 @@ export default function PlayerProfilePage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setEditingProfile(false)}
-                className="text-xs text-gray-500 hover:text-gray-700 px-3 py-1 rounded-lg border border-gray-200"
+                className="text-xs text-muted hover:text-paper px-3 py-1 rounded-lg border border-line transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={saveProfile}
                 disabled={savingProfile}
-                className="text-xs text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-lg disabled:opacity-50"
+                className="text-xs text-ink bg-pitch hover:opacity-90 px-3 py-1 rounded-lg transition-opacity disabled:opacity-30"
               >
-                {savingProfile ? 'Saving...' : 'Save'}
+                {savingProfile ? 'Saving\u2026' : 'Save'}
               </button>
             </div>
           )}
@@ -320,20 +353,18 @@ export default function PlayerProfilePage() {
         {!editingProfile ? (
           <div className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Position</span>
-              <span className="font-medium text-gray-900">
-                {profile.position && profile.position !== 'UNKNOWN' ? profile.position : '—'}
+              <span className="text-muted">Position</span>
+              <span className="text-paper">
+                {profile.position && profile.position !== 'UNKNOWN' ? profile.position : '\u2014'}
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Strong foot</span>
-              <span className="font-medium text-gray-900">{profile.strongFoot}</span>
+              <span className="text-muted">Strong foot</span>
+              <span className="text-paper">{profile.strongFoot}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Status</span>
-              <span
-                className={`font-medium ${profile.active ? 'text-green-600' : 'text-gray-400'}`}
-              >
+              <span className="text-muted">Status</span>
+              <span className={profile.active ? 'text-pitch' : 'text-muted'}>
                 {profile.active ? 'Active' : 'Inactive'}
               </span>
             </div>
@@ -341,40 +372,40 @@ export default function PlayerProfilePage() {
         ) : (
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-gray-600 block mb-1">Name</label>
+              <label className="text-xs text-muted block mb-1.5">Name</label>
               <input
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className={inputClass}
               />
             </div>
             <div>
-              <label className="text-xs text-gray-600 block mb-1">Position</label>
+              <label className="text-xs text-muted block mb-1.5">Position</label>
               <select
                 value={editPosition}
                 onChange={(e) => setEditPosition(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className={inputClass}
               >
                 <option value="UNKNOWN">Unknown</option>
-                <option value="GK">GK — Goalkeeper</option>
-                <option value="CB">CB — Centre Back</option>
-                <option value="LB">LB — Left Back</option>
-                <option value="RB">RB — Right Back</option>
-                <option value="CDM">CDM — Defensive Mid</option>
-                <option value="CM">CM — Central Mid</option>
-                <option value="CAM">CAM — Attacking Mid</option>
-                <option value="LW">LW — Left Wing</option>
-                <option value="RW">RW — Right Wing</option>
-                <option value="ST">ST — Striker</option>
+                <option value="GK">GK &mdash; Goalkeeper</option>
+                <option value="CB">CB &mdash; Centre Back</option>
+                <option value="LB">LB &mdash; Left Back</option>
+                <option value="RB">RB &mdash; Right Back</option>
+                <option value="CDM">CDM &mdash; Defensive Mid</option>
+                <option value="CM">CM &mdash; Central Mid</option>
+                <option value="CAM">CAM &mdash; Attacking Mid</option>
+                <option value="LW">LW &mdash; Left Wing</option>
+                <option value="RW">RW &mdash; Right Wing</option>
+                <option value="ST">ST &mdash; Striker</option>
               </select>
             </div>
             <div>
-              <label className="text-xs text-gray-600 block mb-1">Strong foot</label>
+              <label className="text-xs text-muted block mb-1.5">Strong foot</label>
               <select
                 value={editStrongFoot}
                 onChange={(e) => setEditStrongFoot(e.target.value)}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className={inputClass}
               >
                 <option value="Right">Right</option>
                 <option value="Left">Left</option>
@@ -386,10 +417,10 @@ export default function PlayerProfilePage() {
                 type="checkbox"
                 checked={editActive}
                 onChange={(e) => setEditActive(e.target.checked)}
-                className="accent-green-600"
+                className="accent-pitch"
                 id="active-toggle"
               />
-              <label htmlFor="active-toggle" className="text-sm text-gray-600 cursor-pointer">
+              <label htmlFor="active-toggle" className="text-sm text-muted cursor-pointer">
                 Active player
               </label>
             </div>
@@ -398,59 +429,47 @@ export default function PlayerProfilePage() {
       </div>
 
       {/* Season breakdown */}
-      <div className="bg-white rounded-xl border border-gray-100 p-5">
-        <h2 className="font-semibold text-gray-900 mb-4">Season breakdown</h2>
+      <div className="bg-surface border border-line rounded-xl p-5">
+        <h2 className="text-sm text-muted mb-4">Season breakdown</h2>
         {profile.seasonStats.length === 0 ? (
-          <div className="text-center py-8 text-gray-400 text-sm">No match data yet</div>
+          <div className="text-center py-8 text-muted text-sm">No match data yet</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left py-2 px-3 text-xs text-gray-400 font-medium uppercase">
-                    Season
-                  </th>
-                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">
-                    Played
-                  </th>
-                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">
-                    W
-                  </th>
-                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">
-                    D
-                  </th>
-                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">
-                    L
-                  </th>
-                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">
-                    Goals
-                  </th>
-                  <th className="text-center py-2 px-3 text-xs text-gray-400 font-medium uppercase">
-                    Pt %
-                  </th>
+                <tr className="border-b border-line">
+                  <th className="text-left py-2 px-3 text-xs text-muted font-normal">Season</th>
+                  <th className="text-center py-2 px-3 text-xs text-muted font-normal">Played</th>
+                  <th className="text-center py-2 px-3 text-xs text-muted font-normal">W</th>
+                  <th className="text-center py-2 px-3 text-xs text-muted font-normal">D</th>
+                  <th className="text-center py-2 px-3 text-xs text-muted font-normal">L</th>
+                  <th className="text-center py-2 px-3 text-xs text-muted font-normal">Goals</th>
+                  <th className="text-center py-2 px-3 text-xs text-muted font-normal">Pt %</th>
                 </tr>
               </thead>
               <tbody>
                 {profile.seasonStats.map((s) => (
                   <tr
                     key={s.seasonYear}
-                    className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer"
+                    className="border-b border-line last:border-0 hover:bg-surface-2 cursor-pointer transition-colors"
                     onClick={() => setSelectedSeasonYear(s.seasonYear)}
                   >
-                    <td className="py-3 px-3 font-semibold text-gray-900">{s.seasonYear}</td>
-                    <td className="py-3 px-3 text-center text-gray-600">{s.matchesPlayed}</td>
-                    <td className="py-3 px-3 text-center text-green-600 font-medium">{s.wins}</td>
-                    <td className="py-3 px-3 text-center text-amber-500 font-medium">{s.draws}</td>
-                    <td className="py-3 px-3 text-center text-red-400 font-medium">{s.losses}</td>
-                    <td className="py-3 px-3 text-center text-gray-600">{s.goals}</td>
+                    <td className="py-3 px-3 text-paper">{s.seasonYear}</td>
+                    <td className="py-3 px-3 text-center font-mono text-muted">
+                      {s.matchesPlayed}
+                    </td>
+                    <td className="py-3 px-3 text-center font-mono text-pitch">{s.wins}</td>
+                    <td className="py-3 px-3 text-center font-mono text-amber">{s.draws}</td>
+                    <td className="py-3 px-3 text-center font-mono text-signal">{s.losses}</td>
+                    <td className="py-3 px-3 text-center font-mono text-muted">{s.goals}</td>
                     <td className="py-3 px-3 text-center">
                       <span
-                        className={`font-bold ${
+                        className={`font-mono ${
                           s.pointsPercentage >= 60
-                            ? 'text-green-600'
+                            ? 'text-pitch'
                             : s.pointsPercentage >= 40
-                              ? 'text-amber-500'
-                              : 'text-red-400'
+                              ? 'text-amber'
+                              : 'text-signal'
                         }`}
                       >
                         {s.pointsPercentage}%
