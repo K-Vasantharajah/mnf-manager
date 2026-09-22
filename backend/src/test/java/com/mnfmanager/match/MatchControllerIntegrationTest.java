@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -25,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @Transactional
+@WithMockUser(roles = "MEMBER")
 public class MatchControllerIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
@@ -172,7 +174,28 @@ public class MatchControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void shouldReturn403WhenCreatingMatchWithoutAuth() throws Exception {
+    @WithAnonymousUser
+    void shouldReturn401WhenCreatingMatchWithoutAuth() throws Exception {
+        Map<String, Object> match = Map.of(
+                "matchDate", "2026-08-25",
+                "seasonYear", 2026,
+                "captainAId", captainA.getId(),
+                "captainBId", captainB.getId(),
+                "scoreA", 3,
+                "scoreB", 1,
+                "durationMins", 60,
+                "teamAPlayerIds", List.of(captainA.getId()),
+                "teamBPlayerIds", List.of(captainB.getId()),
+                "goalScorers", List.of());
+
+        mockMvc.perform(post("/api/v1/matches")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(match)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldReturn403WhenMemberCreatesMatch() throws Exception {
         Map<String, Object> match = Map.of(
                 "matchDate", "2026-08-25",
                 "seasonYear", 2026,

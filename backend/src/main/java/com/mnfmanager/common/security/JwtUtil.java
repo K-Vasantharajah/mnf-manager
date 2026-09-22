@@ -33,6 +33,16 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String generateToken(String subject, String role, long expirationMs) {
+        return Jwts.builder()
+                .subject(subject)
+                .claim("role", role)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expirationMs))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
     public String extractEmail(String token) {
         return getClaims(token).getSubject();
     }

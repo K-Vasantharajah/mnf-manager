@@ -47,6 +47,10 @@ ml:
   service:
     url: ${ML_SERVICE_URL:http://localhost:5001}
 
+mnf:
+  access-code-hash: ${MNF_ACCESS_CODE_HASH:}
+  member-token-expiration: 2592000000 # 30 days
+
 logging:
   level:
     com.mnfmanager: DEBUG

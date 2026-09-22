@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Map;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @Transactional
+@WithMockUser(roles = "MEMBER")
 public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
@@ -140,7 +142,8 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    void shouldReturn403WhenCreatingPlayerWithoutAuth() throws Exception {
+    @WithAnonymousUser
+    void shouldReturn401WhenCreatingPlayerWithoutAuth() throws Exception {
         Map<String, Object> newPlayer = Map.of(
                 "name", "Unauthorized Player",
                 "strongFoot", "Right",
@@ -149,11 +152,12 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(post("/api/v1/players")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(newPlayer)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void shouldReturn403WhenUpdatingPlayerWithoutAuth() throws Exception {
+    @WithAnonymousUser
+    void shouldReturn401WhenUpdatingPlayerWithoutAuth() throws Exception {
         Map<String, Object> update = Map.of(
                 "name", "Unauthorized Update",
                 "strongFoot", "Left",
@@ -162,6 +166,26 @@ public class PlayerControllerIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(put("/api/v1/players/{id}", testPlayer.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(update)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithAnonymousUser
+    void shouldReturn401WhenReadingPlayersWithoutAccess() throws Exception {
+        mockMvc.perform(get("/api/v1/players"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldReturn403WhenMemberCreatesPlayer() throws Exception {
+        Map<String, Object> newPlayer = Map.of(
+                "name", "Unauthorized Player",
+                "strongFoot", "Right",
+                "active", true);
+
+        mockMvc.perform(post("/api/v1/players")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newPlayer)))
                 .andExpect(status().isForbidden());
     }
 }

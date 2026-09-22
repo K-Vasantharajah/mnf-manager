@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -29,17 +31,21 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(e -> e.authenticationEntryPoint(
+                        new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(auth -> auth
-                        // Public auth endpoint
+                        // Open: sign-in, access code entry, health check
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        // Public draft endpoints - calculations only, no data modification
-                        .requestMatchers("/api/v1/draft/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/access").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
-                        // Public GET endpoints — anyone can view
-                        .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
-                        // Write operations require ADMIN role
+                        // Draft endpoints return player names, so members only
+                        .requestMatchers("/api/v1/draft/**").hasAnyRole("MEMBER", "ADMIN")
+                        // All real data requires the MNF access code (or admin)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/**").hasAnyRole("MEMBER", "ADMIN")
+                        // Write operations require ADMIN
                         .requestMatchers(HttpMethod.POST, "/api/v1/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
