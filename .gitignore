@@ -41,3 +41,4 @@ backend/src/main/resources/application-secrets.yml
 frontend/.env.local
 db/__pycache__/
 *.pyc
+venv/
