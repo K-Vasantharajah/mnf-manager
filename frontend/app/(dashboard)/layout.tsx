@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { CloseIcon } from '@/components/ui/icons';
+import { useHasAccess } from '@/lib/useHasAccess';
 
 const AuthNav = dynamic(() => import('./AuthNav'), { ssr: false });
 
@@ -24,7 +26,20 @@ function MenuIcon() {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const access = useHasAccess();
+
+  useEffect(() => {
+    if (access === false) {
+      router.replace('/access');
+    }
+  }, [access, router]);
+
+  // Render nothing until we know the visitor has access, so real data never flashes on screen
+  if (!access) {
+    return <div className="min-h-screen bg-ink" />;
+  }
 
   const navItems = [
     { href: '/dashboard', label: 'Dashboard' },
