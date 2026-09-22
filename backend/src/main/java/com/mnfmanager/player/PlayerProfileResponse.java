@@ -24,6 +24,7 @@ public class PlayerProfileResponse {
     private Short defenceDelta;
     private Short reliabilityDelta;
     private Short overallDelta;
+    private boolean ratingsVisible;
 
     private List<SeasonStatsDetail> seasonStats;
     private CareerStats careerStats;

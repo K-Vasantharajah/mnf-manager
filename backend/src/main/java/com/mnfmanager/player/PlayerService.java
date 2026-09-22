@@ -195,6 +195,7 @@ public class PlayerService {
                         .careerPointsPercentage(careerPointsPercentage)
                         .careerGoalsPerGame(careerGoalsPerGame)
                         .build())
+                .ratingsVisible(SecurityUtils.isAdmin())
                 .build();
     }
 

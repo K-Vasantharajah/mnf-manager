@@ -57,8 +57,8 @@ export interface PlayerLeaderboardEntry {
   assists: number;
   pointsPercentage: number;
   goalsPerGame: number;
-  ability: number;
-  reliability: number;
+  ability: number | null;
+  reliability: number | null;
   attackRating: number | null;
   defenceRating: number | null;
   overallRating: number | null;
@@ -137,6 +137,7 @@ export interface PlayerProfile {
     careerPointsPercentage: number;
     careerGoalsPerGame: number;
   };
+  ratingsVisible: boolean; 
 }
 
 export interface CaptainMatchResult {

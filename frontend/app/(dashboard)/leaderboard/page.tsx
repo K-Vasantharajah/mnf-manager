@@ -4,22 +4,10 @@ import { useState } from 'react';
 import { useLeaderboard } from '@/lib/hooks';
 import { PlayerLeaderboardEntry } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import { CloseIcon } from '@/components/ui/icons';
 
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorState from '@/components/ui/ErrorState';
-
-function CloseIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path
-        d="M1 1L13 13M13 1L1 13"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 function getRatingColor(value: number) {
   if (value >= 8) return 'text-pitch';
@@ -272,6 +260,8 @@ export default function LeaderboardPage() {
   const handlePlayerClick = (id: number) => {
     router.push(`/players/${id}`);
   };
+  const ratedEntries = allEntries.filter((e) => e.attackRating != null);
+  const showRatings = ratedEntries.length > 0;
 
   return (
     <div>
@@ -375,53 +365,55 @@ export default function LeaderboardPage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <RatingTable
-          title="Attack rating"
-          entries={allEntries}
-          getValue={(e) => e.attackRating || 0}
-          onViewAll={() =>
-            setModalData({
-              title: 'Attack rating',
-              entries: allEntries,
-              getValue: (e) => e.attackRating || 0,
-              formatValue: (e) => `${e.attackRating || 0}/10`,
-              colorFn: getRatingColor,
-            })
-          }
-          onPlayerClick={handlePlayerClick}
-        />
-        <RatingTable
-          title="Defence rating"
-          entries={allEntries}
-          getValue={(e) => e.defenceRating || 0}
-          onViewAll={() =>
-            setModalData({
-              title: 'Defence rating',
-              entries: allEntries,
-              getValue: (e) => e.defenceRating || 0,
-              formatValue: (e) => `${e.defenceRating || 0}/10`,
-              colorFn: getRatingColor,
-            })
-          }
-          onPlayerClick={handlePlayerClick}
-        />
-        <RatingTable
-          title="Reliability rating"
-          entries={allEntries}
-          getValue={(e) => e.reliability || 0}
-          onViewAll={() =>
-            setModalData({
-              title: 'Reliability rating',
-              entries: allEntries,
-              getValue: (e) => e.reliability || 0,
-              formatValue: (e) => `${e.reliability || 0}/10`,
-              colorFn: getRatingColor,
-            })
-          }
-          onPlayerClick={handlePlayerClick}
-        />
-      </div>
+      {showRatings && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <RatingTable
+            title="Attack rating"
+            entries={ratedEntries}
+            getValue={(e) => e.attackRating ?? 0}
+            onViewAll={() =>
+              setModalData({
+                title: 'Attack rating',
+                entries: ratedEntries,
+                getValue: (e) => e.attackRating ?? 0,
+                formatValue: (e) => `${e.attackRating ?? 0}/10`,
+                colorFn: getRatingColor,
+              })
+            }
+            onPlayerClick={handlePlayerClick}
+          />
+          <RatingTable
+            title="Defence rating"
+            entries={ratedEntries}
+            getValue={(e) => e.defenceRating ?? 0}
+            onViewAll={() =>
+              setModalData({
+                title: 'Defence rating',
+                entries: ratedEntries,
+                getValue: (e) => e.defenceRating ?? 0,
+                formatValue: (e) => `${e.defenceRating ?? 0}/10`,
+                colorFn: getRatingColor,
+              })
+            }
+            onPlayerClick={handlePlayerClick}
+          />
+          <RatingTable
+            title="Reliability rating"
+            entries={ratedEntries}
+            getValue={(e) => e.reliability ?? 0}
+            onViewAll={() =>
+              setModalData({
+                title: 'Reliability rating',
+                entries: ratedEntries,
+                getValue: (e) => e.reliability ?? 0,
+                formatValue: (e) => `${e.reliability ?? 0}/10`,
+                colorFn: getRatingColor,
+              })
+            }
+            onPlayerClick={handlePlayerClick}
+          />
+        </div>
+      )}
     </div>
   );
 }

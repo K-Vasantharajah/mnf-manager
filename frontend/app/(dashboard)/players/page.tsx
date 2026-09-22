@@ -18,9 +18,8 @@ const POSITION_GROUPS = {
   Attack: ['LW', 'RW', 'ST'],
 };
 
-function PlayerCard({ player }: { player: Player }) {
+function PlayerCard({ player, showRatings }: { player: Player; showRatings: boolean }) {
   const initials = player.name.slice(0, 2).toUpperCase();
-
   return (
     <Link href={`/players/${player.id}`}>
       <div
@@ -85,11 +84,11 @@ function PlayerCard({ player }: { player: Player }) {
               <DeltaBadge delta={player.rating.reliabilityDelta} />
             </div>
           </div>
-        ) : (
+        ) : showRatings ? (
           <div className="text-xs text-muted text-center py-2">
             {player.active ? 'Needs 10+ matches for ML rating' : 'No ratings yet'}
           </div>
-        )}
+        ) : null}
       </div>
     </Link>
   );
@@ -111,6 +110,8 @@ export default function PlayersPage() {
     return positions ? positions.includes(p.position || '') : true;
   });
 
+  const showRatings = players?.some((p) => p.rating !== null) ?? false;
+
   return (
     <div>
       <div className="mb-4 pb-6 border-b border-line">
@@ -129,11 +130,13 @@ export default function PlayersPage() {
             Show inactive
           </label>
         </div>
-        <p className="text-xs text-muted mt-3">
-          Ratings are derived from match outcomes using a ridge regression model. They reflect your
-          team&apos;s performance when you&apos;re on the pitch, not individual skill in isolation. Ratings
-          mature over time as more match data is collected.
-        </p>
+        {showRatings && (
+          <p className="text-xs text-muted mt-3">
+            Ratings are derived from match outcomes using a ridge regression model. They reflect
+            your team&apos;s performance when you&apos;re on the pitch, not individual skill in
+            isolation. Ratings mature over time as more match data is collected.
+          </p>
+        )}
       </div>
 
       {/* Position filter */}
@@ -155,7 +158,7 @@ export default function PlayersPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {filteredPlayers.map((player) => (
-          <PlayerCard key={player.id} player={player} />
+          <PlayerCard key={player.id} player={player} showRatings={showRatings} />
         ))}
       </div>
 

@@ -12,6 +12,7 @@ import DeltaBadge from '@/components/ui/DeltaBadge';
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorState from '@/components/ui/ErrorState';
 import StatCard from '@/components/ui/StatCard';
+import { CloseIcon } from '@/components/ui/icons';
 
 function BackIcon() {
   return (
@@ -22,19 +23,6 @@ function BackIcon() {
         strokeWidth="1.4"
         strokeLinecap="round"
         strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path
-        d="M1 1L13 13M13 1L1 13"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
       />
     </svg>
   );
@@ -246,11 +234,15 @@ export default function PlayerProfilePage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+      <div
+        className={`grid grid-cols-1 gap-5 mb-5 ${profile.ratingsVisible ? 'md:grid-cols-2' : ''}`}
+      >
         {/* Career stats */}
         <div className="bg-surface border border-line rounded-xl p-5">
           <h2 className="text-sm text-muted mb-4">Career stats</h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div
+            className={`grid grid-cols-2 gap-3 ${profile.ratingsVisible ? '' : 'md:grid-cols-4'}`}
+          >
             <StatCard label="Matches" value={profile.careerStats.totalMatches} />
             <StatCard
               label="Pt %"
@@ -262,66 +254,69 @@ export default function PlayerProfilePage() {
           </div>
         </div>
 
-        {/* Ratings */}
-        <div className="bg-surface border border-line rounded-xl p-5">
-          <h2 className="text-sm text-muted">Ratings</h2>
-          <p className="text-xs text-muted mt-0.5 mb-4">ML derived &middot; updates weekly</p>
+        {/* Ratings — admin only */}
+        {profile.ratingsVisible && (
+          <div className="bg-surface border border-line rounded-xl p-5">
+            <h2 className="text-sm text-muted">Ratings</h2>
+            <p className="text-xs text-muted mt-0.5 mb-4">ML derived &middot; updates weekly</p>
 
-          {profile.overallRating ? (
-            <div className="space-y-4">
-              {/* Overall */}
-              <div className="bg-pitch/10 rounded-xl p-4 flex items-center justify-between mb-2">
-                <span className="text-sm text-paper">Overall</span>
-                <span className="text-2xl font-mono text-pitch">
-                  {profile.overallRating}/10
-                  <DeltaBadge delta={profile.overallDelta} />
-                </span>
-              </div>
-
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm text-muted">Attack</span>
-                  <span className="text-sm font-mono text-paper">
-                    {profile.attackRating}/10
-                    <DeltaBadge delta={profile.attackDelta} />
+            {profile.overallRating ? (
+              <div className="space-y-4">
+                {/* Overall */}
+                <div className="bg-pitch/10 rounded-xl p-4 flex items-center justify-between mb-2">
+                  <span className="text-sm text-paper">Overall</span>
+                  <span className="text-2xl font-mono text-pitch">
+                    {profile.overallRating}/10
+                    <DeltaBadge delta={profile.overallDelta} />
                   </span>
                 </div>
-                <RatingBar value={profile.attackRating || 0} color="bg-red-400" />
-              </div>
 
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm text-muted">Defence</span>
-                  <span className="text-sm font-mono text-paper">
-                    {profile.defenceRating}/10
-                    <DeltaBadge delta={profile.defenceDelta} />
-                  </span>
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-sm text-muted">Attack</span>
+                    <span className="text-sm font-mono text-paper">
+                      {profile.attackRating}/10
+                      <DeltaBadge delta={profile.attackDelta} />
+                    </span>
+                  </div>
+                  <RatingBar value={profile.attackRating || 0} color="bg-red-400" />
                 </div>
-                <RatingBar value={profile.defenceRating || 0} color="bg-blue-500" />
-              </div>
 
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-sm text-muted">Reliability</span>
-                  <span className="text-sm font-mono text-paper">
-                    {profile.reliability}/10
-                    <DeltaBadge delta={profile.reliabilityDelta} />
-                  </span>
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-sm text-muted">Defence</span>
+                    <span className="text-sm font-mono text-paper">
+                      {profile.defenceRating}/10
+                      <DeltaBadge delta={profile.defenceDelta} />
+                    </span>
+                  </div>
+                  <RatingBar value={profile.defenceRating || 0} color="bg-blue-500" />
                 </div>
-                <RatingBar value={profile.reliability || 0} color="bg-green-500" />
+
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-sm text-muted">Reliability</span>
+                    <span className="text-sm font-mono text-paper">
+                      {profile.reliability}/10
+                      <DeltaBadge delta={profile.reliabilityDelta} />
+                    </span>
+                  </div>
+                  <RatingBar value={profile.reliability || 0} color="bg-green-500" />
+                </div>
+
+                <p className="text-xs text-muted pt-2 border-t border-line">
+                  Ratings reflect team performance when you&apos;re on the pitch, not individual
+                  skill in isolation. They mature over time as more match data is collected.
+                </p>
               </div>
-              <p className="text-xs text-muted pt-2 border-t border-line">
-                Ratings reflect team performance when you&apos;re on the pitch, not individual skill in
-                isolation. They mature over time as more match data is collected.
-              </p>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-muted text-sm">
-              <p>Not enough data</p>
-              <p className="mt-1">Needs 10+ matches for ML rating</p>
-            </div>
-          )}
-        </div>
+            ) : (
+              <div className="text-center py-8 text-muted text-sm">
+                <p>Not enough data</p>
+                <p className="mt-1">Needs 10+ matches for ML rating</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Profile edit card */}
