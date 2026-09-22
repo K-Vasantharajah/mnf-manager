@@ -11,24 +11,32 @@ export default function AuthNav() {
   return (
     <div className="flex items-center gap-3">
       {user ? (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {user.picture && (
-            <Image
-              src={user.picture}
-              alt={user.name}
-              width={30}
-              height={30}
-              className="rounded-full ring-1 ring-line"
-              referrerPolicy="no-referrer"
-            />
+            <div className="relative shrink-0">
+              <Image
+                src={user.picture}
+                alt={user.name}
+                width={30}
+                height={30}
+                className="rounded-full ring-1 ring-line"
+                referrerPolicy="no-referrer"
+              />
+              {isAdmin && (
+                <span
+                  aria-hidden="true"
+                  className="sm:hidden absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber ring-2 ring-ink"
+                />
+              )}
+            </div>
           )}
-          <div className="text-right">
+          <div className="text-right hidden sm:block">
             <div className="text-xs text-paper">{user.name}</div>
             {isAdmin && <div className="text-xs text-amber mt-0.5">Admin</div>}
           </div>
           <button
             onClick={logout}
-            className="text-xs text-muted hover:text-paper border border-line px-3 py-1.5 rounded-lg transition-colors"
+            className="text-xs text-muted hover:text-paper border border-line px-2.5 sm:px-3 py-1.5 rounded-lg transition-colors shrink-0"
           >
             Sign out
           </button>
