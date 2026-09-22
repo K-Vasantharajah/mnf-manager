@@ -47,7 +47,7 @@ export default function AccessPage() {
         >
           <div>
             <h1 className="text-paper">Enter the MNF access code</h1>
-            <p className="text-xs text-muted mt-1">It&apos;s pinned in the group chat.</p>
+            <p className="text-xs text-muted mt-1">See WhatsApp group description.</p>
           </div>
 
           <input
