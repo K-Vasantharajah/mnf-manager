@@ -113,20 +113,27 @@ export default function PlayersPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4 pb-6 border-b border-line">
-        <div>
-          <h1 className="font-display text-3xl text-paper">Players</h1>
-          <p className="text-sm text-muted mt-2">{filteredPlayers.length} players</p>
+      <div className="mb-4 pb-6 border-b border-line">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-display text-3xl text-paper">Players</h1>
+            <p className="text-sm text-muted mt-2">{filteredPlayers.length} players</p>
+          </div>
+          <label className="flex items-center gap-2 text-sm text-muted cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showInactive}
+              onChange={(e) => setShowInactive(e.target.checked)}
+              className="accent-pitch"
+            />
+            Show inactive
+          </label>
         </div>
-        <label className="flex items-center gap-2 text-sm text-muted cursor-pointer">
-          <input
-            type="checkbox"
-            checked={showInactive}
-            onChange={(e) => setShowInactive(e.target.checked)}
-            className="accent-pitch"
-          />
-          Show inactive
-        </label>
+        <p className="text-xs text-muted mt-3">
+          Ratings are derived from match outcomes using a ridge regression model. They reflect your
+          team&apos;s performance when you&apos;re on the pitch, not individual skill in isolation. Ratings
+          mature over time as more match data is collected.
+        </p>
       </div>
 
       {/* Position filter */}

@@ -310,6 +310,10 @@ export default function PlayerProfilePage() {
                 </div>
                 <RatingBar value={profile.reliability || 0} color="bg-green-500" />
               </div>
+              <p className="text-xs text-muted pt-2 border-t border-line">
+                Ratings reflect team performance when you&apos;re on the pitch, not individual skill in
+                isolation. They mature over time as more match data is collected.
+              </p>
             </div>
           ) : (
             <div className="text-center py-8 text-muted text-sm">
