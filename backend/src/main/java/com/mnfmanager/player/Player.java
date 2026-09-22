@@ -16,6 +16,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.mnfmanager.common.security.AdminOnlySerializer;
 
 @Entity
 @Table(name = "players")
@@ -50,6 +52,7 @@ public class Player {
     @Builder.Default
     private Set<PlayerPosition> positions = new HashSet<>();
 
+    @JsonSerialize(using = AdminOnlySerializer.class)
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private PlayerRating rating;
 

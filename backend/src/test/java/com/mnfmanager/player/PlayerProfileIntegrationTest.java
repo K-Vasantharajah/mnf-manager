@@ -4,6 +4,7 @@ import com.mnfmanager.BaseIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -77,6 +78,7 @@ public class PlayerProfileIntegrationTest extends BaseIntegrationTest {
         assertThat(profile.getActive()).isTrue();
     }
 
+    @WithMockUser(roles = "ADMIN")
     @Test
     void shouldReturnCorrectRatings() {
         PlayerProfileResponse profile = playerService.getPlayerProfile(player.getId());

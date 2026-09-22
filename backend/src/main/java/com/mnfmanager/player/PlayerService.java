@@ -1,6 +1,7 @@
 package com.mnfmanager.player;
 
 import com.mnfmanager.common.exception.ResourceNotFoundException;
+import com.mnfmanager.common.security.SecurityUtils;
 import com.mnfmanager.match.Match;
 import com.mnfmanager.match.MatchPlayer;
 import com.mnfmanager.match.MatchRepository;
@@ -87,6 +88,7 @@ public class PlayerService {
     }
 
     private PlayerLeaderboardEntry buildLeaderboardEntry(Player player, Integer seasonYear) {
+        PlayerRating rating = SecurityUtils.isAdmin() ? player.getRating() : null;
         var stats = player.getSeasonStats().stream()
                 .filter(s -> seasonYear == null || s.getSeasonYear() == seasonYear.shortValue())
                 .toList();
@@ -113,11 +115,11 @@ public class PlayerService {
                 .assists(assists)
                 .pointsPercentage(pointsPercentage)
                 .goalsPerGame(goalsPerGame)
-                .ability(player.getRating() != null ? player.getRating().getAbility() : null)
-                .reliability(player.getRating() != null ? player.getRating().getReliability() : null)
-                .goalThreat(player.getRating() != null ? player.getRating().getGoalThreat() : null)
-                .attackRating(player.getRating() != null ? player.getRating().getAttackRating() : null)
-                .defenceRating(player.getRating() != null ? player.getRating().getDefenceRating() : null)
+                .ability(rating != null ? rating.getAbility() : null)
+                .reliability(rating != null ? rating.getReliability() : null)
+                .goalThreat(rating != null ? rating.getGoalThreat() : null)
+                .attackRating(rating != null ? rating.getAttackRating() : null)
+                .defenceRating(rating != null ? rating.getDefenceRating() : null)
                 .seasonYear(seasonYear)
                 .build();
     }
@@ -125,6 +127,8 @@ public class PlayerService {
     public PlayerProfileResponse getPlayerProfile(Long id) {
         Player player = playerRepository.findByIdWithFullDetails(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Player", id));
+
+        PlayerRating rating = SecurityUtils.isAdmin() ? player.getRating() : null;
 
         List<PlayerProfileResponse.SeasonStatsDetail> seasonStats = player.getSeasonStats()
                 .stream()
@@ -170,16 +174,16 @@ public class PlayerService {
                 .strongFoot(player.getStrongFoot())
                 .active(player.getActive())
                 .position(player.getPosition())
-                .ability(player.getRating() != null ? player.getRating().getAbility() : null)
-                .reliability(player.getRating() != null ? player.getRating().getReliability() : null)
-                .goalThreat(player.getRating() != null ? player.getRating().getGoalThreat() : null)
-                .attackRating(player.getRating() != null ? player.getRating().getAttackRating() : null)
-                .defenceRating(player.getRating() != null ? player.getRating().getDefenceRating() : null)
-                .overallRating(player.getRating() != null ? player.getRating().getOverallRating() : null)
-                .attackDelta(player.getRating() != null ? player.getRating().getAttackDelta() : null)
-                .defenceDelta(player.getRating() != null ? player.getRating().getDefenceDelta() : null)
-                .reliabilityDelta(player.getRating() != null ? player.getRating().getReliabilityDelta() : null)
-                .overallDelta(player.getRating() != null ? player.getRating().getOverallDelta() : null)
+                .ability(rating != null ? rating.getAbility() : null)
+                .reliability(rating != null ? rating.getReliability() : null)
+                .goalThreat(rating != null ? rating.getGoalThreat() : null)
+                .attackRating(rating != null ? rating.getAttackRating() : null)
+                .defenceRating(rating != null ? rating.getDefenceRating() : null)
+                .overallRating(rating != null ? rating.getOverallRating() : null)
+                .attackDelta(rating != null ? rating.getAttackDelta() : null)
+                .defenceDelta(rating != null ? rating.getDefenceDelta() : null)
+                .reliabilityDelta(rating != null ? rating.getReliabilityDelta() : null)
+                .overallDelta(rating != null ? rating.getOverallDelta() : null)
                 .seasonStats(seasonStats)
                 .careerStats(PlayerProfileResponse.CareerStats.builder()
                         .totalMatches(totalMatches)
