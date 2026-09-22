@@ -28,3 +28,7 @@ export function clearAllTokens() {
 export function hasAccess(): boolean {
   return Boolean(getAdminToken() || getAccessToken());
 }
+
+export function clearAdminToken() {
+  localStorage.removeItem(ADMIN_KEY);
+}

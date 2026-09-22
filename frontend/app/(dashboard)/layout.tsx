@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { CloseIcon } from '@/components/ui/icons';
 import { useHasAccess } from '@/lib/useHasAccess';
+import Footer from '@/components/ui/Footer';
 
 const AuthNav = dynamic(() => import('./AuthNav'), { ssr: false });
 
@@ -51,7 +51,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ];
 
   return (
-    <div className="min-h-screen bg-ink">
+    <div className="min-h-screen bg-ink flex flex-col">
       <nav className="border-b border-line">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-[72px]">
@@ -114,7 +114,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         )}
       </nav>
-      <main className="max-w-7xl mx-auto px-4 py-6 md:py-10">{children}</main>
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 md:py-10">{children}</main>
+      <Footer />
     </div>
   );
 }
