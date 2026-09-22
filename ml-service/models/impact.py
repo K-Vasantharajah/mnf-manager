@@ -18,7 +18,7 @@ from data.loader import load_match_compositions_with_scores, load_all_players
 _impact_cache = None
 
 # Regularisation strength for ridge regression — higher = more shrinkage toward zero,
-# prevents overfitting on small datasets. Tuned for ~30 matches.
+# prevents overfitting on small datasets. Tuned for ~57 matches.
 RIDGE_ALPHA = 50.0
 
 
@@ -41,7 +41,7 @@ def build_design_matrix():
     return X, outcomes["goals_for"], outcomes["goals_against"], appearances
 
 
-def fit_impact_model():
+def fit_impact_model(force_refresh: bool = False):
     """Fit ridge regression impact model and return per-player attack/defence coefficients."""
     global _impact_cache
     if _impact_cache is not None and not force_refresh:
