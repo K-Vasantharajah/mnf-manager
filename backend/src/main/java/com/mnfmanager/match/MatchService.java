@@ -32,7 +32,9 @@ public class MatchService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    private static final int CURRENT_YEAR = LocalDate.now().getYear();
+    private static int currentYear() {
+        return LocalDate.now().getYear();
+    }
 
     // ─── Public query methods ────────────────────────────────────────────────
 
@@ -146,14 +148,17 @@ public class MatchService {
         Match match = matchRepository.findByIdWithFullDetails(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Match", id));
 
-        if (match.getSeasonYear() < CURRENT_YEAR) {
+        if (match.getSeasonYear() < currentYear()) {
             throw new IllegalStateException("Cannot edit matches from previous seasons");
         }
 
         Player captainA = findPlayerById(request.getCaptainAId());
         Player captainB = findPlayerById(request.getCaptainBId());
 
-        // Reverse stats FIRST using the OLD match state
+        // Reverse the old stats before applying any changes, while the entity
+        // still holds the previous team lists and score. flush/clear forces those
+        // writes to the database and detaches the stale entities, so the update
+        // below re-reads fresh state rather than working from the persistence cache.
         reversePlayerSeasonStats(match);
         entityManager.flush();
         entityManager.clear();
@@ -161,7 +166,6 @@ public class MatchService {
         boolean isDraw = request.getScoreA().equals(request.getScoreB());
         Player winner = isDraw ? null : request.getScoreA() > request.getScoreB() ? captainA : captainB;
 
-        // Preserve existing game week if none provided
         if (request.getGameWeek() == null || request.getGameWeek().isBlank()) {
             request.setGameWeek(match.getGameWeek() != null ? match.getGameWeek()
                     : calculateNextGameWeek(request.getSeasonYear()));
@@ -239,7 +243,7 @@ public class MatchService {
                     .toList();
 
             List<Match> captainedCurrentSeason = captainedMatches.stream()
-                    .filter(m -> m.getSeasonYear() == CURRENT_YEAR)
+                    .filter(m -> m.getSeasonYear() == currentYear())
                     .toList();
 
             int allTimeMax = calculateLongestStreak(captainedMatches, captainId);
@@ -323,14 +327,18 @@ public class MatchService {
     }
 
     private String resolveCurrentWinningCaptain(List<Match> allMatches) {
-        Match mostRecentMatch = allMatches.stream().findFirst().orElse(null);
+        Match mostRecentMatch = allMatches.stream()
+                .max((a, b) -> Long.compare(a.getId(), b.getId()))
+                .orElse(null);
         if (mostRecentMatch == null)
             return "None";
         if (mostRecentMatch.getIsDraw()) {
             return mostRecentMatch.getCaptainA().getName()
                     + " vs " + mostRecentMatch.getCaptainB().getName() + " (Draw - replay)";
         }
-        return mostRecentMatch.getWinner().getName();
+        return mostRecentMatch.getWinner() != null
+                ? mostRecentMatch.getWinner().getName()
+                : "None";
     }
 
     private String resolveCaptainName(List<Match> matches, Long captainId) {
@@ -409,7 +417,10 @@ public class MatchService {
     }
 
     private void reversePlayerSeasonStats(Match match) {
-        log.info("Reversing season stats for match id: {}", match.getId());
+        if (Boolean.TRUE.equals(match.getIsExhibition())) {
+            log.info("Skipping season stats reversal for exhibition match id: {}", match.getId());
+            return;
+        }
 
         match.getMatchPlayers().forEach(mp -> {
             Player player = playerRepository.findByIdWithFullDetails(mp.getPlayer().getId())
@@ -441,6 +452,8 @@ public class MatchService {
         });
 
         match.getGoalScorers().forEach(gs -> {
+            if (Boolean.TRUE.equals(gs.getIsOwnGoal()))
+                return;
             Player scorer = playerRepository.findByIdWithFullDetails(gs.getPlayer().getId())
                     .orElse(null);
             if (scorer == null)
