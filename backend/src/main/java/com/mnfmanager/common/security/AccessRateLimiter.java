@@ -8,8 +8,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Simple in-memory limiter for access-code attempts: at most MAX_ATTEMPTS
- * per IP within WINDOW_MS. Good enough for a single backend replica.
+ * In-memory limiter for access-code attempts. Counts are per-replica, so this
+ * only holds while the backend runs a single replica; scaling out would
+ * multiply the effective limit.
  */
 @Component
 public class AccessRateLimiter {

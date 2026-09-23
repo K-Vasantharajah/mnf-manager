@@ -8,8 +8,10 @@ import java.io.IOException;
 
 /**
  * Serialises a field normally for admins and as null for everyone else.
- * Controls only the JSON output, never the entity, so nothing is written
- * back to the database.
+ *
+ * Deliberately a serializer rather than nulling the field on the entity:
+ * Player.rating uses orphanRemoval, so setting it to null inside a
+ * transaction would delete the rating row.
  */
 public class AdminOnlySerializer extends JsonSerializer<Object> {
 

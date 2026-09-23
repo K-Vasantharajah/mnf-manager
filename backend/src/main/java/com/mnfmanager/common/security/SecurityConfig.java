@@ -34,15 +34,14 @@ public class SecurityConfig {
                 .exceptionHandling(e -> e.authenticationEntryPoint(
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(auth -> auth
-                        // Open: sign-in, access code entry, health check
+                        // Rules are evaluated in order; the first match wins, so the draft
+                        // rule must stay above the POST rule below.
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/access").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
-                        // Draft endpoints return player names, so members only
+                        // Calculations only, but responses include player names
                         .requestMatchers("/api/v1/draft/**").hasAnyRole("MEMBER", "ADMIN")
-                        // All real data requires the MNF access code (or admin)
                         .requestMatchers(HttpMethod.GET, "/api/v1/**").hasAnyRole("MEMBER", "ADMIN")
-                        // Write operations require ADMIN
                         .requestMatchers(HttpMethod.POST, "/api/v1/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/**").hasRole("ADMIN")
