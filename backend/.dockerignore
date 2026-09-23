@@ -1,0 +1,3 @@
+src/main/resources/application-secrets.yml
+target/
+.mvn/wrapper/maven-wrapper.jar
