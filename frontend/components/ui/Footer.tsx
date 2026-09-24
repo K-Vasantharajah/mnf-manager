@@ -9,6 +9,9 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted">
         <span>MNF Manager &middot; a hobby project for Monday Night Football</span>
         <div className="flex items-center gap-5">
+          <Link href="/story" className={linkClass}>
+            Our story
+          </Link>
           <Link href="/privacy" className={linkClass}>
             Privacy
           </Link>
