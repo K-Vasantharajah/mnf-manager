@@ -200,8 +200,9 @@ public class PlayerService {
     }
 
     public List<PlayerMatchResponse> getPlayerMatches(Long id, Integer seasonYear) {
-        Player player = playerRepository.findByIdWithFullDetails(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Player", id));
+        if (!playerRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Player", id);
+        }
 
         List<Match> matches = seasonYear != null
                 ? matchRepository.findBySeasonWithDetails((short) seasonYear.shortValue())
@@ -210,6 +211,7 @@ public class PlayerService {
         return matches.stream()
                 .filter(m -> m.getMatchPlayers().stream()
                         .anyMatch(mp -> mp.getPlayer().getId().equals(id)))
+                .sorted((a, b) -> Long.compare(b.getId(), a.getId()))
                 .map(m -> {
                     MatchPlayer mp = m.getMatchPlayers().stream()
                             .filter(p -> p.getPlayer().getId().equals(id))
