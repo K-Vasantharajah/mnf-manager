@@ -74,6 +74,7 @@ jobs:
         run: npm run build
         env:
           NEXT_PUBLIC_API_URL: https://mnf-backend.victoriouscoast-eac64c77.uksouth.azurecontainerapps.io
+          NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
 
   changes:
     name: Detect changed services
@@ -137,7 +138,9 @@ jobs:
         if: needs.changes.outputs.frontend == 'true'
         run: |
           IMAGE=$REGISTRY/mnf-frontend:${{ github.sha }}
-          docker build --build-arg NEXT_PUBLIC_API_URL=$BACKEND_URL \
+          docker build \
+            --build-arg NEXT_PUBLIC_API_URL=$BACKEND_URL \
+            --build-arg NEXT_PUBLIC_GOOGLE_CLIENT_ID="${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}" \
             -t $IMAGE frontend
           docker push $IMAGE
           az containerapp update --name mnf-frontend \
