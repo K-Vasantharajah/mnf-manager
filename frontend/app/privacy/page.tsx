@@ -1,19 +1,11 @@
 import Link from 'next/link';
 import Footer from '@/components/ui/Footer';
+import Section from '@/components/ui/Section';
 import { CONTACT_EMAIL } from '@/lib/site';
 
 export const metadata = {
   title: 'Privacy · MNF Manager',
 };
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="space-y-2">
-      <h2 className="text-paper">{title}</h2>
-      <div className="text-sm text-muted space-y-2 leading-relaxed">{children}</div>
-    </section>
-  );
-}
 
 export default function PrivacyPage() {
   return (
@@ -24,13 +16,14 @@ export default function PrivacyPage() {
         </Link>
 
         <h1 className="font-display text-3xl text-paper mt-6">Privacy</h1>
-        <p className="text-xs text-muted mt-2">Last updated 22 September 2026</p>
+        <p className="text-xs text-muted mt-2">Last updated 23 September 2026</p>
 
         <div className="mt-10 space-y-8">
           <Section title="Who runs MNF Manager">
             <p>
-              MNF Manager is a non-commercial hobby project run by Kobi for the Monday Night
-              Football group. It exists so the group can organise and enjoy its weekly games.
+              MNF Manager is a non-commercial hobby project built and run by Kobi for the Monday
+              Night Football group. A small number of group members have admin access to keep match
+              records up to date.
             </p>
           </Section>
 
@@ -61,8 +54,9 @@ export default function PrivacyPage() {
 
           <Section title="Who can see it">
             <p>
-              Only MNF members with the group&apos;s access code, and the group&apos;s admins. The
-              data is not public, and the site asks search engines not to index it.
+              Only MNF members with the group&apos;s access code, and the group&apos;s admins, who
+              can also correct player and match records. The data is not public, and the site asks
+              search engines not to index it.
             </p>
           </Section>
 
