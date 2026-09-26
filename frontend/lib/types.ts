@@ -137,7 +137,7 @@ export interface PlayerProfile {
     careerPointsPercentage: number;
     careerGoalsPerGame: number;
   };
-  ratingsVisible: boolean; 
+  ratingsVisible: boolean;
 }
 
 export interface CaptainMatchResult {
@@ -175,4 +175,17 @@ export interface PlayerMatchEntry {
   winnerName: string | null;
   playerTeam: string;
   result: 'WIN' | 'DRAW' | 'LOSS';
+}
+
+export interface Streak {
+  captainName: string;
+  length: number;
+  matchIds: number[];
+}
+
+export interface DashboardStats {
+  currentWinningCaptain: string;
+  currentStreak: Streak;
+  longestCurrentSeasonStreak: Streak;
+  longestAllTimeStreak: Streak;
 }
