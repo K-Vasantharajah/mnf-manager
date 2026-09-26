@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/dashboard")
@@ -17,7 +16,7 @@ public class DashboardController {
     private final MatchService matchService;
 
     @GetMapping("/stats")
-    public ResponseEntity<Map<String, Object>> getDashboardStats() {
+    public ResponseEntity<DashboardStatsResponse> getDashboardStats() {
         return ResponseEntity.ok(matchService.getCaptainDashboardStats());
     }
 }

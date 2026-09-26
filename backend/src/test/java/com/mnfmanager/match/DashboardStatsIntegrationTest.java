@@ -1,6 +1,7 @@
 package com.mnfmanager.match;
 
 import com.mnfmanager.BaseIntegrationTest;
+import com.mnfmanager.dashboard.DashboardStatsResponse;
 import com.mnfmanager.player.Player;
 import com.mnfmanager.player.PlayerRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,7 +41,7 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
                 .build());
     }
 
-    private void createMatch(Player captainA, Player captainB,
+    private Match createMatch(Player captainA, Player captainB,
             short scoreA, short scoreB, int year) {
         CreateMatchRequest request = new CreateMatchRequest();
         request.setMatchDate(LocalDate.of(year, 8, 25));
@@ -54,26 +54,25 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
         request.setTeamAPlayerIds(List.of(captainA.getId()));
         request.setTeamBPlayerIds(List.of(captainB.getId()));
         request.setGoalScorers(List.of());
-        matchService.createMatch(request);
+        return matchService.createMatch(request);
     }
 
     @Test
     void shouldReturnCurrentWinningCaptain() {
         createMatch(captainA, captainB, (short) 3, (short) 1, 2026);
 
-        Map<String, Object> stats = matchService.getCaptainDashboardStats();
+        DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
 
-        assertThat(stats.get("currentWinningCaptain")).isEqualTo("Dashboard Captain A");
+        assertThat(stats.getCurrentWinningCaptain()).isEqualTo("Dashboard Captain A");
     }
 
     @Test
     void shouldReturnDrawAsCurrentWinningCaptain() {
         createMatch(captainA, captainB, (short) 2, (short) 2, 2026);
 
-        Map<String, Object> stats = matchService.getCaptainDashboardStats();
+        DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
 
-        assertThat(stats.get("currentWinningCaptain").toString())
-                .contains("Draw - replay");
+        assertThat(stats.getCurrentWinningCaptain()).contains("Draw - replay");
     }
 
     @Test
@@ -83,10 +82,11 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
         createMatch(captainA, captainB, (short) 2, (short) 1, 2026);
         createMatch(captainA, captainB, (short) 4, (short) 0, 2026);
 
-        Map<String, Object> stats = matchService.getCaptainDashboardStats();
+        DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
 
-        assertThat(stats.get("currentStreakCaptain")).isEqualTo("Dashboard Captain A");
-        assertThat((int) stats.get("currentStreak")).isEqualTo(3);
+        assertThat(stats.getCurrentStreak().getCaptainName()).isEqualTo("Dashboard Captain A");
+        assertThat(stats.getCurrentStreak().getLength()).isEqualTo(3);
+        assertThat(stats.getCurrentStreak().getMatchIds()).hasSize(3);
     }
 
     @Test
@@ -96,10 +96,10 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
         createMatch(captainA, captainB, (short) 2, (short) 1, 2026);
         createMatch(captainA, captainB, (short) 0, (short) 3, 2026);
 
-        Map<String, Object> stats = matchService.getCaptainDashboardStats();
+        DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
 
-        assertThat(stats.get("currentStreakCaptain")).isEqualTo("Dashboard Captain B");
-        assertThat((int) stats.get("currentStreak")).isEqualTo(1);
+        assertThat(stats.getCurrentStreak().getCaptainName()).isEqualTo("Dashboard Captain B");
+        assertThat(stats.getCurrentStreak().getLength()).isEqualTo(1);
     }
 
     @Test
@@ -110,18 +110,31 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
         createMatch(captainA, captainB, (short) 4, (short) 0, 2026);
         createMatch(captainA, captainB, (short) 0, (short) 3, 2026);
 
-        Map<String, Object> stats = matchService.getCaptainDashboardStats();
+        DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
 
-        assertThat(stats.get("longestCurrentSeasonStreakCaptain"))
+        assertThat(stats.getLongestCurrentSeasonStreak().getCaptainName())
                 .isEqualTo("Dashboard Captain A");
-        assertThat((int) stats.get("longestCurrentSeasonStreak")).isEqualTo(3);
+        assertThat(stats.getLongestCurrentSeasonStreak().getLength()).isEqualTo(3);
     }
 
     @Test
     void shouldReturnEmptyStatsWithNoMatches() {
-        Map<String, Object> stats = matchService.getCaptainDashboardStats();
+        DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
 
-        assertThat(stats.get("currentWinningCaptain")).isEqualTo("None");
-        assertThat((int) stats.get("currentStreak")).isEqualTo(0);
+        assertThat(stats.getCurrentWinningCaptain()).isEqualTo("None");
+        assertThat(stats.getCurrentStreak().getLength()).isZero();
+        assertThat(stats.getCurrentStreak().getMatchIds()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnMatchIdsForCurrentStreak() {
+        createMatch(captainA, captainB, (short) 0, (short) 3, 2026); // A loses
+        Match second = createMatch(captainA, captainB, (short) 3, (short) 1, 2026);
+        Match third = createMatch(captainA, captainB, (short) 2, (short) 0, 2026);
+
+        DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
+
+        assertThat(stats.getCurrentStreak().getMatchIds())
+                .containsExactly(second.getId(), third.getId());
     }
 }
