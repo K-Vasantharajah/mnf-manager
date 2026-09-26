@@ -57,6 +57,23 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
         return matchService.createMatch(request);
     }
 
+    private Match createExhibitionMatch(Player captainA, Player captainB,
+            short scoreA, short scoreB, int year) {
+        CreateMatchRequest request = new CreateMatchRequest();
+        request.setMatchDate(LocalDate.of(year, 8, 25));
+        request.setSeasonYear((short) year);
+        request.setIsExhibition(true);
+        request.setCaptainAId(captainA.getId());
+        request.setCaptainBId(captainB.getId());
+        request.setScoreA(scoreA);
+        request.setScoreB(scoreB);
+        request.setDurationMins((short) 60);
+        request.setTeamAPlayerIds(List.of(captainA.getId()));
+        request.setTeamBPlayerIds(List.of(captainB.getId()));
+        request.setGoalScorers(List.of());
+        return matchService.createMatch(request);
+    }
+
     @Test
     void shouldReturnCurrentWinningCaptain() {
         createMatch(captainA, captainB, (short) 3, (short) 1, 2026);
@@ -136,5 +153,17 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
 
         assertThat(stats.getCurrentStreak().getMatchIds())
                 .containsExactly(second.getId(), third.getId());
+    }
+
+    @Test
+    void shouldExcludeExhibitionMatchesFromStreaks() {
+        createMatch(captainA, captainB, (short) 3, (short) 1, 2026);
+        createExhibitionMatch(captainA, captainB, (short) 0, (short) 5, 2026);
+        createMatch(captainA, captainB, (short) 2, (short) 0, 2026);
+
+        DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
+
+        assertThat(stats.getCurrentStreak().getCaptainName()).isEqualTo("Dashboard Captain A");
+        assertThat(stats.getCurrentStreak().getLength()).isEqualTo(2);
     }
 }

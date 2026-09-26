@@ -197,9 +197,12 @@ public class MatchService {
     // ─── Dashboard and captain stats ────────────────────────────────────────
 
     public List<CaptainStatsResponse> getCaptainStats(Integer seasonYear) {
-        List<Match> matches = seasonYear != null
+        List<Match> matches = (seasonYear != null
                 ? matchRepository.findBySeasonWithDetails((short) seasonYear.shortValue())
-                : matchRepository.findAllByOrderByMatchDateDesc();
+                : matchRepository.findAllByOrderByMatchDateDesc())
+                .stream()
+                .filter(m -> !Boolean.TRUE.equals(m.getIsExhibition()))
+                .toList();
 
         Map<Long, List<Match>> matchesByCaptain = new HashMap<>();
         matches.forEach(m -> {
@@ -238,6 +241,7 @@ public class MatchService {
             String captainName = resolveCaptainName(allMatchesSorted, captainId);
 
             List<Match> captainedMatches = allMatchesSorted.stream()
+                    .filter(m -> !Boolean.TRUE.equals(m.getIsExhibition()))
                     .filter(m -> m.getCaptainA().getId().equals(captainId)
                             || m.getCaptainB().getId().equals(captainId))
                     .toList();
@@ -335,6 +339,7 @@ public class MatchService {
 
     private String resolveCurrentWinningCaptain(List<Match> allMatches) {
         Match mostRecentMatch = allMatches.stream()
+                .filter(m -> !Boolean.TRUE.equals(m.getIsExhibition()))
                 .max((a, b) -> Long.compare(a.getId(), b.getId()))
                 .orElse(null);
         if (mostRecentMatch == null)

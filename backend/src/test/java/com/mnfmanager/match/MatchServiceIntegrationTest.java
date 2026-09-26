@@ -260,6 +260,46 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    void shouldExcludeExhibitionMatchesFromCaptainStats() {
+        CreateMatchRequest competitive = new CreateMatchRequest();
+        competitive.setMatchDate(LocalDate.of(2026, 8, 25));
+        competitive.setSeasonYear((short) 2026);
+        competitive.setCaptainAId(captainA.getId());
+        competitive.setCaptainBId(captainB.getId());
+        competitive.setScoreA((short) 3);
+        competitive.setScoreB((short) 1);
+        competitive.setTeamAPlayerIds(List.of(captainA.getId()));
+        competitive.setTeamBPlayerIds(List.of(captainB.getId()));
+        competitive.setGoalScorers(List.of());
+
+        CreateMatchRequest exhibition = new CreateMatchRequest();
+        exhibition.setMatchDate(LocalDate.of(2026, 9, 1));
+        exhibition.setSeasonYear((short) 2026);
+        exhibition.setIsExhibition(true);
+        exhibition.setCaptainAId(captainA.getId());
+        exhibition.setCaptainBId(captainB.getId());
+        exhibition.setScoreA((short) 0);
+        exhibition.setScoreB((short) 5);
+        exhibition.setTeamAPlayerIds(List.of(captainA.getId()));
+        exhibition.setTeamBPlayerIds(List.of(captainB.getId()));
+        exhibition.setGoalScorers(List.of());
+
+        matchService.createMatch(competitive);
+        matchService.createMatch(exhibition);
+
+        CaptainStatsResponse captainAStats = matchService.getCaptainStats(2026).stream()
+                .filter(s -> s.getPlayerId().equals(captainA.getId()))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(captainAStats.getMatchesCaptained()).isEqualTo(1);
+        assertThat(captainAStats.getWins()).isEqualTo(1);
+        assertThat(captainAStats.getLosses()).isZero();
+        assertThat(captainAStats.getMatchHistory()).hasSize(1);
+        assertThat(captainAStats.getPointsPercentage()).isEqualTo(100.0);
+    }
+
+    @Test
     void shouldNotCountOwnGoalInPlayerStats() {
         CreateMatchRequest request = new CreateMatchRequest();
         request.setMatchDate(LocalDate.of(2026, 8, 25));
