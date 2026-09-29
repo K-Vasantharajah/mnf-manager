@@ -109,7 +109,7 @@ export default function PlayerProfilePage() {
         : 'text-signal';
 
   return (
-    <div className="max-w-4xl">
+    <div>
       {selectedSeasonYear && !selectedMatchId && (
         <PlayerMatchHistoryModal
           playerId={playerId}
@@ -199,6 +199,7 @@ export default function PlayerProfilePage() {
           </div>
         </div>
 
+        {/* Ratings — admin only */}
         {profile.ratingsVisible && (
           <div className="bg-surface border border-line rounded-xl p-5">
             <h2 className="text-sm text-muted">Ratings</h2>
