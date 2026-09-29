@@ -2,33 +2,7 @@
 
 import { useMatchDetail } from '@/lib/hooks';
 import LoadingState from '@/components/ui/LoadingState';
-
-function BackIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path
-        d="M8.5 2.5L3 7L8.5 11.5"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path
-        d="M1 1L13 13M13 1L1 13"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
+import { BackIcon, CloseIcon } from '@/components/ui/icons';
 
 function CaptainBadge() {
   return (

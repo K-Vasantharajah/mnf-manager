@@ -5,6 +5,7 @@ import { useLeaderboard } from '@/lib/hooks';
 import { PlayerLeaderboardEntry } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { CloseIcon } from '@/components/ui/icons';
+import SegmentedControl from '@/components/ui/SegmentedControl';
 
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorState from '@/components/ui/ErrorState';
@@ -279,32 +280,15 @@ export default function LeaderboardPage() {
           <h1 className="font-display text-4xl text-paper">Leaderboard</h1>
           <p className="text-sm text-muted mt-2">{playedEntries.length} players with match data</p>
         </div>
-        <div className="flex items-center gap-1 bg-surface border border-line rounded-lg p-1">
-          <button
-            onClick={() => setSeasonYear(2026)}
-            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-              seasonYear === 2026 ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
-            }`}
-          >
-            2026
-          </button>
-          <button
-            onClick={() => setSeasonYear(2025)}
-            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-              seasonYear === 2025 ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
-            }`}
-          >
-            2025
-          </button>
-          <button
-            onClick={() => setSeasonYear(undefined)}
-            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-              seasonYear === undefined ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
-            }`}
-          >
-            All time
-          </button>
-        </div>
+        <SegmentedControl
+          options={[
+            { label: '2026', value: 2026 },
+            { label: '2025', value: 2025 },
+            { label: 'All time', value: undefined },
+          ]}
+          value={seasonYear}
+          onChange={setSeasonYear}
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">

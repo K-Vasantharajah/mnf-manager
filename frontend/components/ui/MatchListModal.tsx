@@ -1,6 +1,7 @@
 'use client';
 
 import { CloseIcon } from '@/components/ui/icons';
+import { resultStyles } from '@/components/ui/resultStyles';
 
 export interface MatchListRow {
   matchId: number;
@@ -12,22 +13,18 @@ export interface MatchListRow {
   rightScore: number;
 }
 
-const resultStyles: Record<string, string> = {
-  WIN: 'bg-pitch/10 text-pitch',
-  DRAW: 'bg-amber/10 text-amber',
-  LOSS: 'bg-signal/10 text-signal',
-};
-
 export default function MatchListModal({
   title,
   subtitle,
   rows,
+  loading,
   onClose,
   onMatchClick,
 }: {
   title: string;
   subtitle?: string;
   rows: MatchListRow[];
+  loading?: boolean;
   onClose: () => void;
   onMatchClick: (matchId: number) => void;
 }) {
@@ -48,33 +45,39 @@ export default function MatchListModal({
           </button>
         </div>
         <div className="overflow-y-auto flex-1">
-          {rows.map((row) => (
-            <div
-              key={row.matchId}
-              className="flex items-center gap-3 px-5 py-3 border-b border-line last:border-0 hover:bg-surface-2 cursor-pointer transition-colors"
-              onClick={() => {
-                onClose();
-                onMatchClick(row.matchId);
-              }}
-            >
-              <span className="text-xs text-muted font-mono min-w-10">{row.label}</span>
-              {row.result && (
-                <span
-                  className={`text-xs font-mono px-2 py-0.5 rounded min-w-14 text-center ${
-                    resultStyles[row.result]
-                  }`}
-                >
-                  {row.result}
-                </span>
-              )}
-              <span className="text-sm flex-1 text-paper/80">
-                {row.leftName ? `${row.leftName} vs ${row.rightName}` : `vs ${row.rightName}`}
-              </span>
-              <span className="text-sm font-mono text-paper">
-                {row.leftScore}&ndash;{row.rightScore}
-              </span>
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-muted text-sm">Loading&hellip;</div>
             </div>
-          ))}
+          ) : (
+            rows.map((row) => (
+              <div
+                key={row.matchId}
+                className="flex items-center gap-3 px-5 py-3 border-b border-line last:border-0 hover:bg-surface-2 cursor-pointer transition-colors"
+                onClick={() => {
+                  onClose();
+                  onMatchClick(row.matchId);
+                }}
+              >
+                <span className="text-xs text-muted font-mono min-w-10">{row.label}</span>
+                {row.result && (
+                  <span
+                    className={`text-xs font-mono px-2 py-0.5 rounded min-w-14 text-center ${
+                      resultStyles[row.result]
+                    }`}
+                  >
+                    {row.result}
+                  </span>
+                )}
+                <span className="text-sm flex-1 text-paper/80">
+                  {row.leftName ? `${row.leftName} vs ${row.rightName}` : `vs ${row.rightName}`}
+                </span>
+                <span className="text-sm font-mono text-paper">
+                  {row.leftScore}&ndash;{row.rightScore}
+                </span>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

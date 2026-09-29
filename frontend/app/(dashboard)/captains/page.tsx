@@ -5,86 +5,21 @@ import { useCaptainStats } from '@/lib/hooks';
 import { CaptainStats } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import MatchDetailModal from '../matches/MatchDetailModal';
+import MatchListModal, { MatchListRow } from '@/components/ui/MatchListModal';
+import SegmentedControl from '@/components/ui/SegmentedControl';
 
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorState from '@/components/ui/ErrorState';
 
-function CloseIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path
-        d="M1 1L13 13M13 1L1 13"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-const resultStyles: Record<string, string> = {
-  WIN: 'bg-pitch/10 text-pitch',
-  DRAW: 'bg-muted/15 text-muted',
-  LOSS: 'bg-signal/10 text-signal',
-};
-
-function MatchHistoryModal({
-  captain,
-  onClose,
-  onMatchClick,
-}: {
-  captain: CaptainStats;
-  onClose: () => void;
-  onMatchClick: (matchId: number) => void;
-}) {
-  return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="bg-surface border border-line rounded-xl w-full max-w-md max-h-[80vh] flex flex-col">
-        <div className="px-5 py-4 border-b border-line flex items-center justify-between shrink-0">
-          <div>
-            <h2 className="font-medium text-paper">{captain.name}&apos;s match history</h2>
-            <p className="text-xs text-muted mt-0.5">
-              {captain.matchesCaptained} matches as captain
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            className="text-muted hover:text-paper transition-colors"
-          >
-            <CloseIcon />
-          </button>
-        </div>
-        <div className="overflow-y-auto flex-1">
-          {captain.matchHistory.map((match, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-3 px-5 py-3 border-b border-line last:border-0 hover:bg-surface-2 cursor-pointer transition-colors"
-              onClick={() => {
-                onClose();
-                onMatchClick(match.matchId);
-              }}
-            >
-              <span className="text-xs text-muted font-mono min-w-10">
-                {match.gameWeek || `S${match.seasonYear}`}
-              </span>
-              <span
-                className={`text-xs font-mono px-2 py-0.5 rounded min-w-14 text-center ${
-                  resultStyles[match.result] ?? resultStyles.DRAW
-                }`}
-              >
-                {match.result}
-              </span>
-              <span className="text-sm flex-1 text-paper/80">vs {match.opponentName}</span>
-              <span className="text-sm font-mono text-paper">
-                {match.scoreFor}&ndash;{match.scoreAgainst}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+function captainMatchRows(captain: CaptainStats): MatchListRow[] {
+  return captain.matchHistory.map((m) => ({
+    matchId: m.matchId,
+    label: m.gameWeek || `S${m.seasonYear}`,
+    result: m.result,
+    rightName: m.opponentName,
+    leftScore: m.scoreFor,
+    rightScore: m.scoreAgainst,
+  }));
 }
 
 export default function CaptainsPage() {
@@ -125,8 +60,10 @@ export default function CaptainsPage() {
       )}
 
       {selectedCaptain && (
-        <MatchHistoryModal
-          captain={selectedCaptain}
+        <MatchListModal
+          title={`${selectedCaptain.name}'s match history`}
+          subtitle={`${selectedCaptain.matchesCaptained} matches as captain`}
+          rows={captainMatchRows(selectedCaptain)}
           onClose={() => setSelectedCaptain(null)}
           onMatchClick={(matchId) => {
             setPreviousCaptain(selectedCaptain);
@@ -141,32 +78,15 @@ export default function CaptainsPage() {
           <h1 className="font-display text-4xl text-paper">Captains</h1>
           <p className="text-sm text-muted mt-2">{captains?.length} captains this season</p>
         </div>
-        <div className="flex items-center gap-1 bg-surface border border-line rounded-lg p-1">
-          <button
-            onClick={() => setSeasonYear(2026)}
-            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-              seasonYear === 2026 ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
-            }`}
-          >
-            2026
-          </button>
-          <button
-            onClick={() => setSeasonYear(2025)}
-            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-              seasonYear === 2025 ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
-            }`}
-          >
-            2025
-          </button>
-          <button
-            onClick={() => setSeasonYear(undefined)}
-            className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-              seasonYear === undefined ? 'bg-surface-2 text-paper' : 'text-muted hover:text-paper'
-            }`}
-          >
-            All time
-          </button>
-        </div>
+        <SegmentedControl
+          options={[
+            { label: '2026', value: 2026 },
+            { label: '2025', value: 2025 },
+            { label: 'All time', value: undefined },
+          ]}
+          value={seasonYear}
+          onChange={setSeasonYear}
+        />
       </div>
 
       {captains?.length === 0 ? (

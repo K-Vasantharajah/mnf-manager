@@ -7,35 +7,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 
 import MatchDetailModal from '../../matches/MatchDetailModal';
+import MatchListModal, { MatchListRow } from '@/components/ui/MatchListModal';
 import RatingBar from '@/components/ui/RatingBar';
 import DeltaBadge from '@/components/ui/DeltaBadge';
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorState from '@/components/ui/ErrorState';
 import StatCard from '@/components/ui/StatCard';
-import { CloseIcon } from '@/components/ui/icons';
-
-function BackIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path
-        d="M8.5 2.5L3 7L8.5 11.5"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-const resultStyles: Record<string, string> = {
-  WIN: 'bg-pitch/10 text-pitch',
-  DRAW: 'bg-amber/10 text-amber',
-  LOSS: 'bg-signal/10 text-signal',
-};
-
-const inputClass =
-  'w-full bg-surface border border-line rounded-lg px-3 py-2 text-sm text-paper focus:outline-none focus:ring-2 focus:ring-pitch/40 focus:border-pitch transition-colors';
+import { BackIcon } from '@/components/ui/icons';
+import { inputClass } from '@/components/ui/formStyles';
 
 function PlayerMatchHistoryModal({
   playerId,
@@ -50,59 +29,25 @@ function PlayerMatchHistoryModal({
 }) {
   const { data: matches, isLoading } = usePlayerMatches(playerId, seasonYear);
 
+  const rows: MatchListRow[] = (matches ?? []).map((m) => ({
+    matchId: m.id,
+    label: m.gameWeek || `S${m.seasonYear}`,
+    result: m.result,
+    leftName: m.captainAName,
+    rightName: m.captainBName,
+    leftScore: m.scoreA,
+    rightScore: m.scoreB,
+  }));
+
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-      <div className="bg-surface border border-line rounded-xl w-full max-w-md max-h-[80vh] flex flex-col">
-        <div className="px-5 py-4 border-b border-line flex items-center justify-between shrink-0">
-          <div>
-            <h2 className="text-paper">Season {seasonYear} matches</h2>
-            <p className="text-xs text-muted mt-0.5">{matches?.length || 0} matches</p>
-          </div>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            className="text-muted hover:text-paper transition-colors"
-          >
-            <CloseIcon />
-          </button>
-        </div>
-        <div className="overflow-y-auto flex-1">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="text-muted text-sm">Loading&hellip;</div>
-            </div>
-          ) : (
-            matches?.map((match) => (
-              <div
-                key={match.id}
-                className="flex items-center gap-3 px-5 py-3 border-b border-line last:border-0 hover:bg-surface-2 cursor-pointer transition-colors"
-                onClick={() => {
-                  onClose();
-                  onMatchClick(match.id);
-                }}
-              >
-                <span className="text-xs text-muted font-mono min-w-10">
-                  {match.gameWeek || `S${match.seasonYear}`}
-                </span>
-                <span
-                  className={`text-xs font-mono px-2 py-0.5 rounded min-w-14 text-center ${
-                    resultStyles[match.result] ?? resultStyles.DRAW
-                  }`}
-                >
-                  {match.result}
-                </span>
-                <span className="text-sm flex-1 text-paper/80">
-                  {match.captainAName} vs {match.captainBName}
-                </span>
-                <span className="text-sm font-mono text-paper">
-                  {match.scoreA}&ndash;{match.scoreB}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
+    <MatchListModal
+      title={`Season ${seasonYear} matches`}
+      subtitle={`${matches?.length || 0} matches`}
+      rows={rows}
+      loading={isLoading}
+      onClose={onClose}
+      onMatchClick={onMatchClick}
+    />
   );
 }
 
@@ -254,7 +199,6 @@ export default function PlayerProfilePage() {
           </div>
         </div>
 
-        {/* Ratings — admin only */}
         {profile.ratingsVisible && (
           <div className="bg-surface border border-line rounded-xl p-5">
             <h2 className="text-sm text-muted">Ratings</h2>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAllPlayers } from '@/lib/hooks';
 import { Player } from '@/lib/types';
 import api from '@/lib/api';
+import { UndoIcon } from '@/components/ui/icons';
 
 type Phase = 'squad' | 'captains' | 'draft' | 'complete';
 
@@ -35,26 +36,6 @@ interface CaptainRecommendation {
   position: string | null;
   times_captained_this_season: number;
   last_match_id_captained: number;
-}
-
-function UndoIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path
-        d="M3 5H10.5C12.433 5 14 6.567 14 8.5C14 10.433 12.433 12 10.5 12H6"
-        stroke="currentColor"
-        strokeWidth="1.3"
-        strokeLinecap="round"
-      />
-      <path
-        d="M5.5 2.5L3 5L5.5 7.5"
-        stroke="currentColor"
-        strokeWidth="1.3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
 }
 
 export default function DraftPage() {
@@ -156,9 +137,7 @@ export default function DraftPage() {
       return;
     }
 
-    // Last 3 players rule — Team A picks 2, Team B gets last one by default
     if (remainingIds.length === 1) {
-      // Auto-assign last player to Team B
       const lastPlayer = squadPlayers.find((p) => remainingIds.includes(p.id));
       if (lastPlayer) {
         const finalPicks = [
@@ -180,13 +159,11 @@ export default function DraftPage() {
       return;
     }
 
-    // Determine next turn
     let nextTurn: 'A' | 'B';
     if (remainingIds.length === 2 && team === 'B') {
-      // Team A gets both remaining picks
       nextTurn = 'A';
     } else if (remainingIds.length === 2 && team === 'A') {
-      nextTurn = 'A'; // Team A still picks
+      nextTurn = 'A';
     } else {
       nextTurn = team === 'A' ? 'B' : 'A';
     }
@@ -201,7 +178,6 @@ export default function DraftPage() {
     const newPicks = picks.slice(0, -1);
     setPicks(newPicks);
 
-    // The turn to restore is the team of the pick we just removed
     const lastPick = picks[picks.length - 1];
     const prevTurn = lastPick.team;
     setCurrentTurn(prevTurn);
