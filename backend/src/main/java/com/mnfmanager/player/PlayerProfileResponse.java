@@ -14,9 +14,7 @@ public class PlayerProfileResponse {
     private String strongFoot;
     private Boolean active;
     private String position;
-    private Short ability;
     private Short reliability;
-    private Short goalThreat;
     private Short attackRating;
     private Short defenceRating;
     private Short overallRating;

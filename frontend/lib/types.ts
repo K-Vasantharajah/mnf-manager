@@ -1,8 +1,6 @@
 export interface PlayerRating {
   id: number;
-  ability: number;
   reliability: number;
-  goalThreat: number;
   attackRating: number | null;
   defenceRating: number | null;
   overallRating: number | null;
@@ -57,12 +55,6 @@ export interface PlayerLeaderboardEntry {
   assists: number;
   pointsPercentage: number;
   goalsPerGame: number;
-  ability: number | null;
-  reliability: number | null;
-  attackRating: number | null;
-  defenceRating: number | null;
-  overallRating: number | null;
-  goalThreat: number;
   seasonYear: number | null;
 }
 
@@ -116,9 +108,7 @@ export interface PlayerProfile {
   strongFoot: string;
   active: boolean;
   position: string | null;
-  ability: number | null;
   reliability: number | null;
-  goalThreat: number | null;
   attackRating: number | null;
   defenceRating: number | null;
   overallRating: number | null;

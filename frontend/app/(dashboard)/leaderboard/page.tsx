@@ -10,12 +10,6 @@ import SegmentedControl from '@/components/ui/SegmentedControl';
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorState from '@/components/ui/ErrorState';
 
-function getRatingColor(value: number) {
-  if (value >= 8) return 'text-pitch';
-  if (value >= 6) return 'text-amber';
-  return 'text-signal';
-}
-
 function getPointsPercentageColor(value: number) {
   if (value >= 70) return 'text-pitch';
   if (value >= 40) return 'text-amber';
@@ -106,64 +100,6 @@ function LeaderboardTable({
           })}
         </div>
       )}
-    </div>
-  );
-}
-
-function RatingTable({
-  title,
-  entries,
-  getValue,
-  onViewAll,
-  onPlayerClick,
-}: {
-  title: string;
-  entries: PlayerLeaderboardEntry[];
-  getValue: (e: PlayerLeaderboardEntry) => number;
-  onViewAll: () => void;
-  onPlayerClick: (id: number) => void;
-}) {
-  const sorted = [...entries].sort((a, b) => getValue(b) - getValue(a));
-  const valuesWithCounts = sorted.map((e) => ({ value: getValue(e) }));
-
-  return (
-    <div className="bg-surface border border-line rounded-xl overflow-hidden">
-      <div className="px-5 py-4 border-b border-line">
-        <h2 className="text-sm text-muted">{title}</h2>
-        {entries.length > 10 && (
-          <button onClick={onViewAll} className="text-xs text-pitch hover:opacity-80 mt-1">
-            View all ({entries.length})
-          </button>
-        )}
-      </div>
-      <div>
-        {sorted.slice(0, 10).map((entry) => {
-          const currentValue = getValue(entry);
-          const rank = valuesWithCounts.filter((e) => e.value > currentValue).length + 1;
-          const isTied = valuesWithCounts.filter((e) => e.value === currentValue).length > 1;
-
-          return (
-            <div
-              key={entry.playerId}
-              className="flex items-center gap-3 px-5 py-3 border-b border-line last:border-0 hover:bg-surface-2 transition-colors"
-            >
-              <RankBadge rank={rank} isTied={isTied} />
-              <div className="w-7 h-7 rounded-full bg-surface-2 border border-line flex items-center justify-center text-paper text-xs shrink-0">
-                {entry.name.slice(0, 2).toUpperCase()}
-              </div>
-              <button
-                onClick={() => onPlayerClick(entry.playerId)}
-                className="text-paper flex-1 text-left hover:text-pitch transition-colors"
-              >
-                {entry.name}
-              </button>
-              <span className={`font-mono text-sm ${getRatingColor(currentValue)}`}>
-                {currentValue}/10
-              </span>
-            </div>
-          );
-        })}
-      </div>
     </div>
   );
 }
@@ -261,8 +197,6 @@ export default function LeaderboardPage() {
   const handlePlayerClick = (id: number) => {
     router.push(`/players/${id}`);
   };
-  const ratedEntries = allEntries.filter((e) => e.attackRating != null);
-  const showRatings = ratedEntries.length > 0;
 
   return (
     <div>
@@ -348,56 +282,6 @@ export default function LeaderboardPage() {
           onPlayerClick={handlePlayerClick}
         />
       </div>
-
-      {showRatings && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <RatingTable
-            title="Attack rating"
-            entries={ratedEntries}
-            getValue={(e) => e.attackRating ?? 0}
-            onViewAll={() =>
-              setModalData({
-                title: 'Attack rating',
-                entries: ratedEntries,
-                getValue: (e) => e.attackRating ?? 0,
-                formatValue: (e) => `${e.attackRating ?? 0}/10`,
-                colorFn: getRatingColor,
-              })
-            }
-            onPlayerClick={handlePlayerClick}
-          />
-          <RatingTable
-            title="Defence rating"
-            entries={ratedEntries}
-            getValue={(e) => e.defenceRating ?? 0}
-            onViewAll={() =>
-              setModalData({
-                title: 'Defence rating',
-                entries: ratedEntries,
-                getValue: (e) => e.defenceRating ?? 0,
-                formatValue: (e) => `${e.defenceRating ?? 0}/10`,
-                colorFn: getRatingColor,
-              })
-            }
-            onPlayerClick={handlePlayerClick}
-          />
-          <RatingTable
-            title="Reliability rating"
-            entries={ratedEntries}
-            getValue={(e) => e.reliability ?? 0}
-            onViewAll={() =>
-              setModalData({
-                title: 'Reliability rating',
-                entries: ratedEntries,
-                getValue: (e) => e.reliability ?? 0,
-                formatValue: (e) => `${e.reliability ?? 0}/10`,
-                colorFn: getRatingColor,
-              })
-            }
-            onPlayerClick={handlePlayerClick}
-          />
-        </div>
-      )}
     </div>
   );
 }

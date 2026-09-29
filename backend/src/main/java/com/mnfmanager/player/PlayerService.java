@@ -88,7 +88,6 @@ public class PlayerService {
     }
 
     private PlayerLeaderboardEntry buildLeaderboardEntry(Player player, Integer seasonYear) {
-        PlayerRating rating = SecurityUtils.isAdmin() ? player.getRating() : null;
         var stats = player.getSeasonStats().stream()
                 .filter(s -> seasonYear == null || s.getSeasonYear() == seasonYear.shortValue())
                 .toList();
@@ -115,11 +114,6 @@ public class PlayerService {
                 .assists(assists)
                 .pointsPercentage(pointsPercentage)
                 .goalsPerGame(goalsPerGame)
-                .ability(rating != null ? rating.getAbility() : null)
-                .reliability(rating != null ? rating.getReliability() : null)
-                .goalThreat(rating != null ? rating.getGoalThreat() : null)
-                .attackRating(rating != null ? rating.getAttackRating() : null)
-                .defenceRating(rating != null ? rating.getDefenceRating() : null)
                 .seasonYear(seasonYear)
                 .build();
     }
@@ -174,9 +168,7 @@ public class PlayerService {
                 .strongFoot(player.getStrongFoot())
                 .active(player.getActive())
                 .position(player.getPosition())
-                .ability(rating != null ? rating.getAbility() : null)
                 .reliability(rating != null ? rating.getReliability() : null)
-                .goalThreat(rating != null ? rating.getGoalThreat() : null)
                 .attackRating(rating != null ? rating.getAttackRating() : null)
                 .defenceRating(rating != null ? rating.getDefenceRating() : null)
                 .overallRating(rating != null ? rating.getOverallRating() : null)

@@ -33,13 +33,7 @@ public class PlayerRating {
     private Player player;
 
     @Column
-    private Short ability;
-
-    @Column
     private Short reliability;
-
-    @Column(name = "goal_threat")
-    private Short goalThreat;
 
     @Column(name = "attack_rating")
     private Short attackRating;

@@ -20,10 +20,5 @@ public class PlayerLeaderboardEntry {
     private Integer assists;
     private Double pointsPercentage;
     private Double goalsPerGame;
-    private Short ability;
-    private Short reliability;
-    private Short goalThreat;
-    private Short attackRating;
-    private Short defenceRating;
     private Integer seasonYear;
 }
