@@ -22,9 +22,15 @@ _impact_cache = None
 RIDGE_ALPHA = 50.0
 
 
-def build_design_matrix():
-    """Build binary player presence matrix and outcome vectors for ridge regression."""
+def build_design_matrix(match_ids: set[int] | None = None):
+    """Build binary player presence matrix and outcome vectors.
+
+    match_ids limits the fit to a subset of matches, which the evaluation
+    harness uses to train on earlier weeks and test on later ones.
+    """
     comps = load_match_compositions_with_scores()
+    if match_ids is not None:
+        comps = comps[comps["match_id"].isin(match_ids)].copy()
     comps["team_instance"] = comps["match_id"].astype(str) + "_" + comps["team"]
 
     X = pd.crosstab(comps["team_instance"], comps["player_id"])
@@ -41,13 +47,13 @@ def build_design_matrix():
     return X, outcomes["goals_for"], outcomes["goals_against"], appearances
 
 
-def fit_impact_model(force_refresh: bool = False):
-    """Fit ridge regression impact model and return per-player attack/defence coefficients."""
+def fit_impact_model(force_refresh: bool = False, match_ids: set[int] | None = None):
     global _impact_cache
-    if _impact_cache is not None and not force_refresh:
+    # Never cache a subset fit — the cache is for the full model only
+    if match_ids is None and _impact_cache is not None and not force_refresh:
         return _impact_cache
 
-    X, goals_for, goals_against, appearances = build_design_matrix()
+    X, goals_for, goals_against, appearances = build_design_matrix(match_ids)
 
     # Attack model: predict goals FOR — only credits players whose team scored
     attack_model = Ridge(alpha=RIDGE_ALPHA, fit_intercept=True)
@@ -76,7 +82,9 @@ def fit_impact_model(force_refresh: bool = False):
         how="left",
     ).drop(columns=["id"])
 
-    _impact_cache = impact.sort_values("total_impact", ascending=False).reset_index(
-        drop=True
-    )
-    return _impact_cache
+    result = impact.sort_values("total_impact", ascending=False).reset_index(drop=True)
+
+    if match_ids is None:
+        _impact_cache = result
+
+    return result
