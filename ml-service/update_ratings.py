@@ -23,6 +23,27 @@ DB_URL = os.getenv(
 )
 
 
+def players_in_latest_match(conn) -> set[int]:
+    """Player ids from the most recent competitive match.
+
+    Deltas are only meaningful for players who were there. Percentiles are
+    relative, so an absent player's rating can move when other people's
+    results change, and showing them a delta for a match they missed reads
+    as a mistake.
+    """
+    result = conn.execute(text("""
+            SELECT mp.player_id
+            FROM match_players mp
+            WHERE mp.match_id = (
+                SELECT id FROM matches
+                WHERE is_exhibition = false
+                ORDER BY id DESC
+                LIMIT 1
+            )
+        """))
+    return {row[0] for row in result}
+
+
 def update_ratings():
     log.info("Starting ratings recalculation...")
 
@@ -32,7 +53,6 @@ def update_ratings():
     engine = create_engine(DB_URL)
 
     with engine.begin() as conn:
-        # Store previous ratings before clearing
         previous = pd.read_sql(
             text(
                 "SELECT player_id, attack_rating, defence_rating, overall_rating, reliability FROM player_ratings"
@@ -41,8 +61,9 @@ def update_ratings():
         )
         prev_dict = previous.set_index("player_id").to_dict(orient="index")
 
-        # Clear and reinsert
         conn.execute(text("DELETE FROM player_ratings"))
+
+        played_latest = players_in_latest_match(conn)
 
         for _, row in df.iterrows():
             pid = int(row["player_id"])
@@ -52,11 +73,16 @@ def update_ratings():
             new_reliability = int(row["reliability_rating"])
 
             prev = prev_dict.get(pid, {})
-            attack_delta = new_attack - (prev.get("attack_rating") or new_attack)
-            defence_delta = new_defence - (prev.get("defence_rating") or new_defence)
-            overall_delta = new_overall - (prev.get("overall_rating") or new_overall)
-            prev_reliability = prev.get("reliability") or new_reliability
-            reliability_delta = new_reliability - prev_reliability
+
+            if pid in played_latest:
+                attack_delta = new_attack - (prev.get("attack_rating") or new_attack)
+                defence_delta = new_defence - (prev.get("defence_rating") or new_defence)
+                overall_delta = new_overall - (prev.get("overall_rating") or new_overall)
+                prev_reliability = prev.get("reliability") or new_reliability
+                reliability_delta = new_reliability - prev_reliability
+            else:
+                # Didn't play, so there's nothing to report
+                attack_delta = defence_delta = overall_delta = reliability_delta = 0
 
             conn.execute(
                 text("""
