@@ -48,10 +48,12 @@ export default function StoryPage() {
 
           <Section title="About the ratings">
             <p>
-              The ratings are calculated from the matches we record — who played, who they played
-              with, and how those games ended.
+              The ratings come from what we record: how often your team wins, goals, clean sheets
+              and goals conceded. Everyone is compared against others in their position, so a centre
+              back isn&apos;t judged on goals the way a striker is, and recent matches count for
+              more than old ones.
             </p>
-            <p>They measure impact on results, not ability.</p>
+            <p>They measure what the stat sheet shows, not ability.</p>
             <p>
               They also can&apos;t see that it&apos;s Monday: a full day&apos;s work behind you, a
               family at home, and somehow you&apos;re expected to find a through ball.
@@ -59,7 +61,7 @@ export default function StoryPage() {
             <p>
               Everything is relative to this group and nothing else. Whoever sits at the top is top
               at MNF, and whoever sits at the bottom is bottom at MNF. Put any of us on a pitch with
-              a professional and we&apos;d all be a 1.
+              a professional and we&apos;d all be at the bottom.
             </p>
             <p>
               So take the ratings as a talking point rather than a verdict. A bit of needle is what

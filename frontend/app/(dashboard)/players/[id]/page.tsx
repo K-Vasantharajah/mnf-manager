@@ -211,7 +211,7 @@ export default function PlayerProfilePage() {
                 <div className="bg-pitch/10 rounded-xl p-4 flex items-center justify-between mb-2">
                   <span className="text-sm text-paper">Overall</span>
                   <span className="text-2xl font-mono text-pitch">
-                    {profile.overallRating}/10
+                    {profile.overallRating}
                     <DeltaBadge delta={profile.overallDelta} />
                   </span>
                 </div>
@@ -220,7 +220,7 @@ export default function PlayerProfilePage() {
                   <div className="flex justify-between mb-1">
                     <span className="text-sm text-muted">Attack</span>
                     <span className="text-sm font-mono text-paper">
-                      {profile.attackRating}/10
+                      {profile.attackRating}
                       <DeltaBadge delta={profile.attackDelta} />
                     </span>
                   </div>
@@ -231,7 +231,7 @@ export default function PlayerProfilePage() {
                   <div className="flex justify-between mb-1">
                     <span className="text-sm text-muted">Defence</span>
                     <span className="text-sm font-mono text-paper">
-                      {profile.defenceRating}/10
+                      {profile.defenceRating}
                       <DeltaBadge delta={profile.defenceDelta} />
                     </span>
                   </div>
@@ -242,7 +242,7 @@ export default function PlayerProfilePage() {
                   <div className="flex justify-between mb-1">
                     <span className="text-sm text-muted">Reliability</span>
                     <span className="text-sm font-mono text-paper">
-                      {profile.reliability}/10
+                      {profile.reliability}
                       <DeltaBadge delta={profile.reliabilityDelta} />
                     </span>
                   </div>
@@ -250,8 +250,9 @@ export default function PlayerProfilePage() {
                 </div>
 
                 <p className="text-xs text-muted pt-2 border-t border-line">
-                  Ratings reflect team performance when you&apos;re on the pitch, not individual
-                  skill in isolation. They mature over time as more match data is collected.
+                  Ratings compare you against others in your position group, using points
+                  percentage, goals, clean sheets and goals conceded. Recent matches count for more.
+                  They reflect recorded outcomes rather than individual skill.
                 </p>
               </div>
             ) : (

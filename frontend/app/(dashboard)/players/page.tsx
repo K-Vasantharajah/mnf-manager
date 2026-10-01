@@ -69,24 +69,24 @@ function PlayerCard({ player, showRatings }: { player: Player; showRatings: bool
         {player.rating?.overallRating ? (
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted w-20">Attack</span>
+              <span className="text-xs text-muted w-20 shrink-0">Attack</span>
               <RatingBar value={player.rating.attackRating || 0} color="bg-red-400" />
               <DeltaBadge delta={player.rating.attackDelta} />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted w-20">Defence</span>
+              <span className="text-xs text-muted w-20 shrink-0">Defence</span>
               <RatingBar value={player.rating.defenceRating || 0} color="bg-blue-500" />
               <DeltaBadge delta={player.rating.defenceDelta} />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted w-20">Reliability</span>
+              <span className="text-xs text-muted w-20 shrink-0">Reliability</span>
               <RatingBar value={player.rating.reliability || 0} color="bg-green-500" />
               <DeltaBadge delta={player.rating.reliabilityDelta} />
             </div>
           </div>
         ) : showRatings ? (
           <div className="text-xs text-muted text-center py-2">
-            {player.active ? 'Needs 10+ matches for ML rating' : 'No ratings yet'}
+            {player.active ? 'Needs 20+ matches for ML rating' : 'No ratings yet'}
           </div>
         ) : null}
       </div>
@@ -132,9 +132,10 @@ export default function PlayersPage() {
         </div>
         {showRatings && (
           <p className="text-xs text-muted mt-3">
-            Ratings are derived from match outcomes using a ridge regression model. They reflect
-            your team&apos;s performance when you&apos;re on the pitch, not individual skill in
-            isolation. Ratings mature over time as more match data is collected.
+            Ratings compare each player against others in their position group, using points
+            percentage, goals, clean sheets and goals conceded. Recent matches count for more. They
+            reflect recorded outcomes rather than individual skill, and need 20+ appearances before
+            they appear.
           </p>
         )}
       </div>
