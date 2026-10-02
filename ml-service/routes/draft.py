@@ -1,6 +1,6 @@
 """
-Draft routes — captain preference recommendations, match outcome prediction,
-and captain rotation suggestions for the draft simulator.
+Draft routes — captain draft history and captain rotation suggestions for the
+draft simulator.
 """
 
 from flask import Blueprint, jsonify, request

@@ -33,13 +33,19 @@ buildNumber.properties
 .DS_Store
 Thumbs.db
 
-# Data files
-data/
+# Data files: root-level exports only. Never commit real player data.
+/data/
 *.xlsx
-*.csvml-service/venv/
+*.csv
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Secrets
 backend/src/main/resources/application-secrets.yml
 frontend/.env.local
-db/__pycache__/
-*.pyc
-venv/
+
+# Local database dump (moved out of the repo, kept as a guard)
 /db/

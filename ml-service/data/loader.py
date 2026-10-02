@@ -113,44 +113,37 @@ def load_defensive_stats():
         return pd.read_sql(text(query), conn)
 
 
-def load_captain_cooccurrence():
-    """
-    For each captain, calculate how often each player appears on their team.
-    Returns co-occurrence rates: appearances_together / matches_captained
+def load_captain_cooccurrence(captain_id: int) -> pd.DataFrame:
+    """For one captain, how often each player ended up on their team.
+
+    captaincies_with_player: times this captain captained while the player
+    played and could be picked (i.e. wasn't the opposing captain).
+    picked_for_captain: of those, times the player was on the captain's team.
+
+    Counting only pickable matches keeps attendance out of the rate.
     """
     engine = get_engine()
     query = """
-        SELECT 
-            ca.id as captain_id,
-            ca.name as captain_name,
-            p.id as player_id,
-            p.name as player_name,
-            COUNT(*) as appearances_together,
-            COUNT(*) * 100.0 / total.total_matches as cooccurrence_rate
-        FROM matches m
-        JOIN players ca ON ca.id = m.captain_a_id OR ca.id = m.captain_b_id
-        JOIN match_players mp ON mp.match_id = m.id
-        JOIN players p ON p.id = mp.player_id
-        JOIN (
-            SELECT 
-                c.id as captain_id,
-                COUNT(*) as total_matches
-            FROM matches m2
-            JOIN players c ON c.id = m2.captain_a_id OR c.id = m2.captain_b_id
-            WHERE m2.is_exhibition = false
-            GROUP BY c.id
-        ) total ON total.captain_id = ca.id
-        WHERE m.is_exhibition = false
-        AND mp.player_id != ca.id
-        AND (
-            (m.captain_a_id = ca.id AND mp.team = 'A') OR
-            (m.captain_b_id = ca.id AND mp.team = 'B')
+        WITH captaincies AS (
+            SELECT id AS match_id, captain_a_id AS captain_id,
+                   captain_b_id AS other_captain_id, 'A' AS team
+            FROM matches WHERE is_exhibition = false
+            UNION ALL
+            SELECT id, captain_b_id, captain_a_id, 'B'
+            FROM matches WHERE is_exhibition = false
         )
-        GROUP BY ca.id, ca.name, p.id, p.name, total.total_matches
-        ORDER BY ca.name, cooccurrence_rate DESC
+        SELECT
+            mp.player_id,
+            COUNT(*) AS captaincies_with_player,
+            COUNT(*) FILTER (WHERE mp.team = c.team) AS picked_for_captain
+        FROM captaincies c
+        JOIN match_players mp ON mp.match_id = c.match_id
+        WHERE c.captain_id = :captain_id
+          AND mp.player_id NOT IN (c.captain_id, c.other_captain_id)
+        GROUP BY mp.player_id
     """
     with engine.connect() as conn:
-        return pd.read_sql(text(query), conn)
+        return pd.read_sql(text(query), conn, params={"captain_id": captain_id})
 
 
 def load_captain_history():
