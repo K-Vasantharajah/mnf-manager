@@ -5,6 +5,7 @@ import { useAllPlayers } from '@/lib/hooks';
 import { Player } from '@/lib/types';
 import api from '@/lib/api';
 import { UndoIcon } from '@/components/ui/icons';
+import OnTheNight, { type Fact } from '@/components/draft/OnTheNight';
 
 type Phase = 'squad' | 'captains' | 'draft' | 'complete';
 
@@ -184,6 +185,7 @@ export default function DraftPage() {
   const [preferences, setPreferences] = useState<Preference[]>([]);
   const [loadingPrefs, setLoadingPrefs] = useState(false);
   const [captainRecommendations, setCaptainRecommendations] = useState<CaptainRecommendation[]>([]);
+  const [facts, setFacts] = useState<Fact[]>([]);
   const activePlayers = (allPlayers || []).filter((p) => p.active);
 
   const squadPlayers = activePlayers.filter((p) => squadIds.includes(p.id));
@@ -324,7 +326,31 @@ export default function DraftPage() {
     setPicks([]);
     setCurrentTurn('B');
     setPreferences([]);
+    setFacts([]);
   }
+
+  const squadChosen = phase !== 'squad';
+
+  useEffect(() => {
+    if (!squadChosen || squadIds.length === 0) return;
+
+    // Ignore responses that arrive after the squad or captains have changed again
+    let cancelled = false;
+    const captainIds = [captainAId, captainBId].filter((id): id is number => id !== null);
+
+    api
+      .post('/api/v1/draft/milestones', { playerIds: squadIds, captainIds })
+      .then(({ data }) => {
+        if (!cancelled) setFacts(data || []);
+      })
+      .catch(() => {
+        if (!cancelled) setFacts([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [squadChosen, squadIds, captainAId, captainBId]);
 
   const currentCaptainName = currentTurn === 'A' ? captainA?.name : captainB?.name;
 
@@ -500,6 +526,12 @@ export default function DraftPage() {
             </div>
           </div>
 
+          {facts.length > 0 && (
+            <div className="mb-6">
+              <OnTheNight facts={facts} players={playerById} />
+            </div>
+          )}
+
           <div className="flex justify-end">
             <button
               onClick={startDraft}
@@ -625,6 +657,8 @@ export default function DraftPage() {
                 )}
               </div>
             )}
+
+            <OnTheNight facts={facts} players={playerById} />
 
             {/* All available players */}
             {phase === 'draft' && availablePlayers.length > 0 && (
