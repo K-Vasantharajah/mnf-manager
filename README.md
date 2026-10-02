@@ -208,21 +208,21 @@ Tests cover:
 
 ### Matches
 
-| Method | Endpoint                          | Description                              |
-| ------ | --------------------------------- | ---------------------------------------- |
-| GET    | `/api/v1/matches`                 | Get all matches                          |
-| POST   | `/api/v1/matches`                 | Record a new match (admin)               |
-| PUT    | `/api/v1/matches/{id}`            | Update a match (admin)                   |
-| GET    | `/api/v1/matches/{id}/detail`     | Full match detail with teams and scorers |
-| GET    | `/api/v1/matches/stats/dashboard` | Captain streak and dashboard stats       |
+| Method | Endpoint                      | Description                              |
+| ------ | ----------------------------- | ---------------------------------------- |
+| GET    | `/api/v1/matches`             | Get all matches                          |
+| POST   | `/api/v1/matches`             | Record a new match (admin)               |
+| PUT    | `/api/v1/matches/{id}`        | Update a match (admin)                   |
+| GET    | `/api/v1/matches/{id}/detail` | Full match detail with teams and scorers |
+| GET    | `/api/v1/dashboard/stats`     | Captain streak and dashboard stats       |
 
-### ML Service
+### Draft
 
-| Method | Endpoint                                | Description                   |
-| ------ | --------------------------------------- | ----------------------------- |
-| POST   | `/api/v1/draft/preferences/{captainId}` | Captain pick preferences      |
-| POST   | `/api/v1/draft/predict`                 | Match outcome prediction      |
-| POST   | `/api/v1/draft/captain-recommendations` | Captain rotation suggestions  |
+| Method | Endpoint                                | Description                                                  |
+| ------ | --------------------------------------- | ------------------------------------------------------------ |
+| POST   | `/api/v1/draft/preferences/{captainId}` | How often each available player has been on a captain's team |
+| POST   | `/api/v1/draft/captain-recommendations` | Captain rotation suggestions                                 |
+| POST   | `/api/v1/draft/milestones`              | Milestones, streaks and together-records for tonight's squad |
 
 ### Auth
 
