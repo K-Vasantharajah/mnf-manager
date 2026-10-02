@@ -18,8 +18,9 @@ interface DraftPick {
 interface Preference {
   player_id: number;
   player_name: string;
-  appearances_together: number;
-  cooccurrence_rate: number;
+  picked_for_captain: number;
+  captaincies_with_player: number;
+  together_rate: number | null;
 }
 
 interface CaptainRecommendation {
@@ -152,7 +153,7 @@ function BalancePanel({
           <span className="text-pitch">{a.avgRating!.toFixed(1)}</span>
           <span className="text-muted text-center">
             Avg rating
-            {unrated > 0 && <span className="block opacity-70">{unrated} unrated</span>}
+            {unrated > 0 && <span className="block opacity-70">{unrated} not yet rated</span>}
           </span>
           <span className="text-[#4A90D9]">{b.avgRating!.toFixed(1)}</span>
         </div>
@@ -564,7 +565,7 @@ export default function DraftPage() {
               complete={phase === 'complete'}
             />
 
-            {/* Recommended picks */}
+            {/* Draft history with the current captain */}
             {phase === 'draft' && (
               <div className="bg-surface border border-line rounded-xl overflow-hidden">
                 <div
@@ -574,13 +575,19 @@ export default function DraftPage() {
                       : 'bg-[#4A90D9]/10 border-[#4A90D9]/30'
                   }`}
                 >
-                  <h3 className="text-sm text-paper">
-                    {currentCaptainName}&apos;s recommended picks
-                  </h3>
-                  <p className="text-xs text-muted mt-0.5">Based on historical preferences</p>
+                  <h3 className="text-sm text-paper">Often on {currentCaptainName}&apos;s team</h3>
+                  <p className="text-xs text-muted mt-0.5">
+                    Times picked when {currentCaptainName} captained and they played
+                  </p>
                 </div>
+
                 {loadingPrefs ? (
                   <div className="p-4 text-center text-muted text-sm">Loading&hellip;</div>
+                ) : preferences.every((pref) => pref.together_rate === null) ? (
+                  <div className="p-4 text-sm text-muted">
+                    Not enough history yet: {currentCaptainName} hasn&apos;t captained often enough
+                    with this squad to show who usually ends up on their team.
+                  </div>
                 ) : (
                   <div className="divide-y divide-line">
                     {preferences.slice(0, 8).map((pref) => {
@@ -596,20 +603,20 @@ export default function DraftPage() {
                           <div className="flex-1">
                             <div className="text-sm text-paper">{pref.player_name}</div>
                             <div className="text-xs text-muted">
-                              {player.position} &middot; {pref.cooccurrence_rate.toFixed(0)}%
-                              co-occurrence
+                              {player.position}
+                              {pref.captaincies_with_player > 0 && (
+                                <>
+                                  {' '}
+                                  &middot; {pref.picked_for_captain} of{' '}
+                                  {pref.captaincies_with_player}
+                                </>
+                              )}
                             </div>
                           </div>
-                          <span
-                            className={`text-xs font-mono px-2 py-0.5 rounded-full ${
-                              pref.cooccurrence_rate >= 60
-                                ? 'bg-pitch/15 text-pitch'
-                                : pref.cooccurrence_rate >= 30
-                                  ? 'bg-amber/15 text-amber'
-                                  : 'bg-line text-muted'
-                            }`}
-                          >
-                            {pref.cooccurrence_rate.toFixed(0)}%
+                          <span className="text-xs font-mono text-muted">
+                            {pref.together_rate !== null
+                              ? `${pref.together_rate.toFixed(0)}%`
+                              : '\u2014'}
                           </span>
                         </button>
                       );
