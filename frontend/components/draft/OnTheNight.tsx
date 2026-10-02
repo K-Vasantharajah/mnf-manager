@@ -22,7 +22,7 @@ export interface Fact {
   remaining: number | null;
 }
 
-const VISIBLE_BY_DEFAULT = 8;
+const VISIBLE_BY_DEFAULT = 6;
 
 function ordinal(n: number): string {
   const lastTwo = n % 100;
@@ -95,11 +95,11 @@ export default function OnTheNight({
         <h3 className="text-sm text-paper">On the night</h3>
         <p className="text-xs text-muted mt-0.5">Milestones and runs for tonight&apos;s squad</p>
       </div>
-      <ul className="divide-y divide-line">
+      <ul className="flex flex-wrap gap-2 px-5 py-4">
         {visible.map(({ fact, text }) => (
           <li
             key={`${fact.type}-${fact.playerId}-${fact.partnerId ?? ''}`}
-            className="px-4 py-2.5 text-sm text-paper/80"
+            className="px-3 py-1.5 rounded-lg bg-surface-2 border border-line text-sm text-paper/80"
           >
             {text}
           </li>
