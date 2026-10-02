@@ -45,9 +45,6 @@ DATABASE_URL='postgresql://user:password@host:5432/mnfmanager?sslmode=require' p
 | GET    | `/api/ratings/player/{id}`           | ML-derived rating for a specific player     |
 | POST   | `/api/draft/preferences/{captainId}` | Captain pick preferences from co-occurrence |
 | POST   | `/api/draft/captain-recommendations` | Captain rotation suggestions                |
-| GET    | `/api/chemistry/`                    | All pairwise chemistry scores               |
-| GET    | `/api/chemistry/player/{id}`         | Chemistry scores for a specific player      |
-| POST   | `/api/chemistry/team`                | Team chemistry score                        |
 
 ## How ratings are calculated
 

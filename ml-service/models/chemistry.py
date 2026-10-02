@@ -1,27 +1,15 @@
 """
-Chemistry analysis — identifies player pairs who consistently
-win or lose together.
+  Pairwise chemistry calculation, kept for the evaluation harness.
 
-For each pair of players who have played on the same team,
-we calculate:
-- matches_together: how many times they played on the same team
-- wins_together: how many of those matches they won
-- win_rate_together: wins / matches as a percentage
-- chemistry_score: win_rate vs each player's individual win_rate
-  positive = they perform better together than apart
-  negative = they perform worse together than apart
-"""
+  The chemistry feature was removed after a permutation test
+  (evaluation/chemistry_null.py) found pair scores indistinguishable from chance.
+  """
 
 import pandas as pd
-import numpy as np
-from data.loader import load_team_compositions, load_all_players
 from itertools import combinations
 
 # Minimum matches two players must have played together to be included
 MIN_MATCHES_TOGETHER = 5
-
-_chemistry_cache = None
-
 
 def chemistry_from(
     comps: pd.DataFrame, min_matches: int = MIN_MATCHES_TOGETHER
@@ -85,77 +73,3 @@ def chemistry_from(
     return chemistry
 
 
-def calculate_chemistry(force_refresh: bool = False):
-    """
-    Calculate pairwise chemistry scores for all player combinations.
-    Returns DataFrame sorted by chemistry score descending.
-    """
-    global _chemistry_cache
-    if _chemistry_cache is not None and not force_refresh:
-        return _chemistry_cache
-
-    chemistry = chemistry_from(load_team_compositions())
-    if chemistry.empty:
-        return chemistry
-
-    players_dict = load_all_players().set_index("id")["name"].to_dict()
-    chemistry["player_a_name"] = chemistry["player_a"].map(players_dict)
-    chemistry["player_b_name"] = chemistry["player_b"].map(players_dict)
-
-    _chemistry_cache = (
-        chemistry[
-            [
-                "player_a",
-                "player_a_name",
-                "player_b",
-                "player_b_name",
-                "matches_together",
-                "wins_together",
-                "draws_together",
-                "win_rate_together",
-                "expected_win_rate",
-                "chemistry_score",
-            ]
-        ]
-        .sort_values("chemistry_score", ascending=False)
-        .reset_index(drop=True)
-    )
-    return _chemistry_cache
-
-
-def get_player_chemistry(player_id: int, min_matches: int = MIN_MATCHES_TOGETHER):
-    """Get chemistry scores for a specific player with all teammates."""
-    chemistry = calculate_chemistry()
-    if chemistry.empty:
-        return []
-
-    player_chem = chemistry[
-        (chemistry["player_a"] == player_id) | (chemistry["player_b"] == player_id)
-    ].copy()
-
-    # Normalise so the player is always in player_a column
-    player_chem["partner_id"] = np.where(
-        player_chem["player_a"] == player_id,
-        player_chem["player_b"],
-        player_chem["player_a"],
-    )
-    player_chem["partner_name"] = np.where(
-        player_chem["player_a"] == player_id,
-        player_chem["player_b_name"],
-        player_chem["player_a_name"],
-    )
-
-    return (
-        player_chem[
-            [
-                "partner_id",
-                "partner_name",
-                "matches_together",
-                "wins_together",
-                "win_rate_together",
-                "chemistry_score",
-            ]
-        ]
-        .sort_values("chemistry_score", ascending=False)
-        .to_dict(orient="records")
-    )
