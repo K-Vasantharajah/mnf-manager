@@ -390,6 +390,13 @@ export default function DraftPage() {
         )}
       </div>
 
+      {phase !== 'squad' && facts.length > 0 && (
+        <div className="mb-6">
+          <OnTheNight facts={facts} players={playerById} />
+        </div>
+      )}
+
+
       {/* Phase 1 — Squad selection */}
       {phase === 'squad' && (
         <div>
@@ -526,12 +533,6 @@ export default function DraftPage() {
             </div>
           </div>
 
-          {facts.length > 0 && (
-            <div className="mb-6">
-              <OnTheNight facts={facts} players={playerById} />
-            </div>
-          )}
-
           <div className="flex justify-end">
             <button
               onClick={startDraft}
@@ -541,12 +542,6 @@ export default function DraftPage() {
               Start draft
             </button>
           </div>
-        </div>
-      )}
-
-      {phase !== 'squad' && facts.length > 0 && (
-        <div className="mb-6">
-          <OnTheNight facts={facts} players={playerById} />
         </div>
       )}
 
