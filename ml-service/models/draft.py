@@ -1,5 +1,5 @@
 """
-Draft simulator — predicts captain pick preferences and match outcome.
+Draft simulator — predicts captain pick preferences and recommends captains for the draft simulator.
 
 Captain preferences are inferred from historical team co-occurrence:
 a player appearing on a captain's team in 80% of matches is a near-certain
@@ -10,10 +10,7 @@ to estimate the score differential between two teams.
 """
 
 import pandas as pd
-import numpy as np
 from data.loader import load_captain_cooccurrence, load_all_players
-from models.impact import fit_impact_model
-
 
 def get_captain_preferences(captain_id: int, available_player_ids: list) -> list:
     """
@@ -52,50 +49,3 @@ def get_captain_preferences(captain_id: int, available_player_ids: list) -> list
     return available[
         ["player_id", "player_name", "appearances_together", "cooccurrence_rate"]
     ].to_dict(orient="records")
-
-
-def predict_match_outcome(team_a_ids: list, team_b_ids: list) -> dict:
-    """
-    Given two team compositions, predict the likely score and win probability.
-
-    Uses the fitted ridge regression coefficients to estimate each team's
-    attacking and defensive strength, then calculates expected goals.
-    """
-    impact = fit_impact_model()
-    impact_dict = impact.set_index("player_id")[
-        ["attack_impact", "defence_impact"]
-    ].to_dict(orient="index")
-
-    def team_strength(player_ids):
-        attack = np.mean(
-            [impact_dict.get(pid, {}).get("attack_impact", 0.0) for pid in player_ids]
-        )
-        defence = np.mean(
-            [impact_dict.get(pid, {}).get("defence_impact", 0.0) for pid in player_ids]
-        )
-        return attack, defence
-
-    a_attack, a_defence = team_strength(team_a_ids)
-    b_attack, b_defence = team_strength(team_b_ids)
-
-    # Expected goals: team attack vs opponent defence
-    # Baseline is average MNF score (~3 goals per team per match)
-    baseline = 3.0
-    a_expected = max(0, baseline + a_attack - b_defence)
-    b_expected = max(0, baseline + b_attack - a_defence)
-
-    score_diff = a_expected - b_expected
-
-    # Sigmoid steepness — higher = more decisive predictions
-    win_prob_a = 1 / (1 + np.exp(-score_diff * 1.5))
-
-    return {
-        "teamAExpectedGoals": round(a_expected, 1),
-        "teamBExpectedGoals": round(b_expected, 1),
-        "teamAWinProbability": round(win_prob_a * 100, 1),
-        "teamBWinProbability": round((1 - win_prob_a) * 100, 1),
-        # Threshold below which we call it a draw (within 0.2 expected goals)
-        "predictedResult": (
-            "A" if score_diff > 0.2 else "B" if score_diff < -0.2 else "DRAW"
-        ),
-    }

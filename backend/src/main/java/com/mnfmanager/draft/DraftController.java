@@ -36,20 +36,6 @@ public class DraftController {
         return ResponseEntity.ok(response.getBody());
     }
 
-    @PostMapping("/predict")
-    public ResponseEntity<Map> predictMatch(
-            @RequestBody Map<String, List<Long>> body) {
-        log.info("Predicting match outcome");
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, List<Long>>> request = new HttpEntity<>(body, headers);
-        ResponseEntity<Map> response = restTemplate.postForEntity(
-                mlServiceUrl + "/api/draft/predict",
-                request,
-                Map.class);
-        return ResponseEntity.ok(response.getBody());
-    }
-
     @PostMapping("/captain-recommendations")
     public ResponseEntity<Map> getCaptainRecommendations(
             @RequestBody Map<String, List<Long>> body) {

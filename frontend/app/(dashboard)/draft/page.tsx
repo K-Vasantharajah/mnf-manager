@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { useAllPlayers } from '@/lib/hooks';
 import { Player } from '@/lib/types';
 import api from '@/lib/api';
@@ -22,20 +22,153 @@ interface Preference {
   cooccurrence_rate: number;
 }
 
-interface Prediction {
-  teamAExpectedGoals: number;
-  teamBExpectedGoals: number;
-  teamAWinProbability: number;
-  teamBWinProbability: number;
-  predictedResult: string;
-}
-
 interface CaptainRecommendation {
   player_id: number;
   name: string;
   position: string | null;
   times_captained_this_season: number;
   last_match_id_captained: number;
+}
+
+type Group = 'DEF' | 'MID' | 'ATT';
+
+const GROUPS: Group[] = ['DEF', 'MID', 'ATT'];
+
+const GROUP_LABELS: Record<Group, string> = {
+  DEF: 'Defence',
+  MID: 'Midfield',
+  ATT: 'Attack',
+};
+
+const POSITION_GROUPS: Record<string, Group> = {
+  GK: 'DEF',
+  CB: 'DEF',
+  LB: 'DEF',
+  RB: 'DEF',
+  CDM: 'MID',
+  CM: 'MID',
+  CAM: 'MID',
+  LW: 'ATT',
+  RW: 'ATT',
+  ST: 'ATT',
+};
+
+interface TeamSummary {
+  counts: Record<Group, number>;
+  unknown: number;
+  size: number;
+  rated: number;
+  avgRating: number | null;
+}
+
+function overallRating(player: Player): number | null {
+  return player.rating?.overallRating ?? null;
+}
+
+function summariseTeam(players: Player[]): TeamSummary {
+  const counts: Record<Group, number> = { DEF: 0, MID: 0, ATT: 0 };
+  let unknown = 0;
+  const ratings: number[] = [];
+
+  for (const player of players) {
+    const group = player.position ? POSITION_GROUPS[player.position] : undefined;
+    if (group) counts[group] += 1;
+    else unknown += 1;
+
+    const rating = overallRating(player);
+    if (rating !== null) ratings.push(rating);
+  }
+
+  return {
+    counts,
+    unknown,
+    size: players.length,
+    rated: ratings.length,
+    avgRating: ratings.length ? ratings.reduce((sum, r) => sum + r, 0) / ratings.length : null,
+  };
+}
+
+function coverageWarnings(
+  a: TeamSummary,
+  b: TeamSummary,
+  nameA: string | undefined,
+  nameB: string | undefined
+): string[] {
+  const warnings: string[] = [];
+  if (a.counts.DEF === 0) warnings.push(`${nameA ?? 'Team A'} has no defenders`);
+  if (b.counts.DEF === 0) warnings.push(`${nameB ?? 'Team B'} has no defenders`);
+  for (const group of GROUPS) {
+    if (Math.abs(a.counts[group] - b.counts[group]) >= 3) {
+      warnings.push(`${GROUP_LABELS[group]} uneven: ${a.counts[group]} vs ${b.counts[group]}`);
+    }
+  }
+  return warnings;
+}
+
+function BalancePanel({
+  teamA,
+  teamB,
+  nameA,
+  nameB,
+  complete,
+}: {
+  teamA: Player[];
+  teamB: Player[];
+  nameA?: string;
+  nameB?: string;
+  complete: boolean;
+}) {
+  const a = summariseTeam(teamA);
+  const b = summariseTeam(teamB);
+  const warnings = complete ? coverageWarnings(a, b, nameA, nameB) : [];
+  const showRatings = a.avgRating !== null && b.avgRating !== null;
+  const unrated = a.size - a.rated + (b.size - b.rated);
+
+  return (
+    <div className="bg-surface border border-line rounded-xl p-4">
+      <h3 className="text-sm text-muted mb-3">Team balance</h3>
+      <div className="grid grid-cols-[1fr_auto_1fr] gap-x-3 gap-y-1.5 items-center">
+        <span className="text-xs text-pitch truncate">{nameA}</span>
+        <span />
+        <span className="text-xs text-[#4A90D9] text-right truncate">{nameB}</span>
+        {GROUPS.map((group) => (
+          <Fragment key={group}>
+            <span className="text-sm font-mono text-paper">{a.counts[group]}</span>
+            <span className="text-xs text-muted text-center">{GROUP_LABELS[group]}</span>
+            <span className="text-sm font-mono text-paper text-right">{b.counts[group]}</span>
+          </Fragment>
+        ))}
+        {(a.unknown > 0 || b.unknown > 0) && (
+          <>
+            <span className="text-sm font-mono text-muted">{a.unknown}</span>
+            <span className="text-xs text-muted text-center">No position</span>
+            <span className="text-sm font-mono text-muted text-right">{b.unknown}</span>
+          </>
+        )}
+      </div>
+
+      {showRatings && (
+        <div className="mt-3 pt-3 border-t border-line flex justify-between items-center text-xs font-mono">
+          <span className="text-pitch">{a.avgRating!.toFixed(1)}</span>
+          <span className="text-muted text-center">
+            Avg rating
+            {unrated > 0 && <span className="block opacity-70">{unrated} unrated</span>}
+          </span>
+          <span className="text-[#4A90D9]">{b.avgRating!.toFixed(1)}</span>
+        </div>
+      )}
+
+      {warnings.length > 0 && (
+        <ul className="mt-3 space-y-1">
+          {warnings.map((warning) => (
+            <li key={warning} className="text-xs text-amber">
+              {warning}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 export default function DraftPage() {
@@ -46,20 +179,26 @@ export default function DraftPage() {
   const [captainAId, setCaptainAId] = useState<number | null>(null);
   const [captainBId, setCaptainBId] = useState<number | null>(null);
   const [picks, setPicks] = useState<DraftPick[]>([]);
-  const [currentTurn, setCurrentTurn] = useState<'A' | 'B'>('B'); // B picks first (challenger)
+  const [currentTurn, setCurrentTurn] = useState<'A' | 'B'>('B');
   const [preferences, setPreferences] = useState<Preference[]>([]);
-  const [prediction, setPrediction] = useState<Prediction | null>(null);
   const [loadingPrefs, setLoadingPrefs] = useState(false);
   const [captainRecommendations, setCaptainRecommendations] = useState<CaptainRecommendation[]>([]);
   const activePlayers = (allPlayers || []).filter((p) => p.active);
-  const [teamAChemistry, setTeamAChemistry] = useState<number | null>(null);
-  const [teamBChemistry, setTeamBChemistry] = useState<number | null>(null);
 
   const squadPlayers = activePlayers.filter((p) => squadIds.includes(p.id));
   const captainA = activePlayers.find((p) => p.id === captainAId);
   const captainB = activePlayers.find((p) => p.id === captainBId);
 
   const teamA = picks.filter((p) => p.team === 'A');
+
+  const playerById = new Map(activePlayers.map((p) => [p.id, p]));
+  const teamPlayers = (team: 'A' | 'B', captainId: number | null): Player[] =>
+    [
+      ...(captainId ? [captainId] : []),
+      ...picks.filter((p) => p.team === team).map((p) => p.playerId),
+    ]
+      .map((id) => playerById.get(id))
+      .filter((p): p is Player => p !== undefined);
 
   const pickedIds = new Set([
     ...picks.map((p) => p.playerId),
@@ -120,18 +259,6 @@ export default function DraftPage() {
       )
       .map((p) => p.id);
 
-    const teamAIds = [
-      captainAId!,
-      ...newPicks.filter((p) => p.team === 'A').map((p) => p.playerId),
-    ];
-    const teamBIds = [
-      captainBId!,
-      ...newPicks.filter((p) => p.team === 'B').map((p) => p.playerId),
-    ];
-
-    await updatePrediction(teamAIds, teamBIds);
-    await updateTeamChemistry(teamAIds, teamBIds);
-
     if (remainingIds.length === 0 || newPicks.length >= 16) {
       setPhase('complete');
       return;
@@ -140,7 +267,7 @@ export default function DraftPage() {
     if (remainingIds.length === 1) {
       const lastPlayer = squadPlayers.find((p) => remainingIds.includes(p.id));
       if (lastPlayer) {
-        const finalPicks = [
+        setPicks([
           ...newPicks,
           {
             playerId: lastPlayer.id,
@@ -148,13 +275,8 @@ export default function DraftPage() {
             team: 'B' as const,
             position: lastPlayer.position,
           },
-        ];
-        setPicks(finalPicks);
+        ]);
         setPhase('complete');
-        await updatePrediction(
-          [captainAId!, ...finalPicks.filter((p) => p.team === 'A').map((p) => p.playerId)],
-          [captainBId!, ...finalPicks.filter((p) => p.team === 'B').map((p) => p.playerId)]
-        );
       }
       return;
     }
@@ -181,6 +303,7 @@ export default function DraftPage() {
     const lastPick = picks[picks.length - 1];
     const prevTurn = lastPick.team;
     setCurrentTurn(prevTurn);
+    if (phase === 'complete') setPhase('draft');
 
     const prevCaptainId = prevTurn === 'A' ? captainAId! : captainBId!;
     const remainingIds = squadPlayers
@@ -190,53 +313,6 @@ export default function DraftPage() {
       .map((p) => p.id);
 
     await loadPreferences(prevCaptainId, remainingIds);
-
-    if (newPicks.length > 0) {
-      await updatePrediction(
-        [captainAId!, ...newPicks.filter((p) => p.team === 'A').map((p) => p.playerId)],
-        [captainBId!, ...newPicks.filter((p) => p.team === 'B').map((p) => p.playerId)]
-      );
-      await updateTeamChemistry(
-        [captainAId!, ...newPicks.filter((p) => p.team === 'A').map((p) => p.playerId)],
-        [captainBId!, ...newPicks.filter((p) => p.team === 'B').map((p) => p.playerId)]
-      );
-    } else {
-      setPrediction(null);
-    }
-
-    if (phase === 'complete') setPhase('draft');
-  }
-
-  async function updatePrediction(teamAIds: number[], teamBIds: number[]) {
-    if (teamAIds.length === 0 || teamBIds.length === 0) return;
-    try {
-      const { data } = await api.post('/api/v1/draft/predict', {
-        teamAIds,
-        teamBIds,
-      });
-      setPrediction(data.prediction);
-    } catch {
-      // prediction optional
-    }
-  }
-
-  async function updateTeamChemistry(teamAIds: number[], teamBIds: number[]) {
-    try {
-      if (teamAIds.length >= 2) {
-        const { data: dataA } = await api.post('/api/v1/draft/chemistry/team', {
-          playerIds: teamAIds,
-        });
-        setTeamAChemistry(dataA.teamChemistryScore);
-      }
-      if (teamBIds.length >= 2) {
-        const { data: dataB } = await api.post('/api/v1/draft/chemistry/team', {
-          playerIds: teamBIds,
-        });
-        setTeamBChemistry(dataB.teamChemistryScore);
-      }
-    } catch {
-      // chemistry optional
-    }
   }
 
   function reset() {
@@ -247,9 +323,6 @@ export default function DraftPage() {
     setPicks([]);
     setCurrentTurn('B');
     setPreferences([]);
-    setPrediction(null);
-    setTeamAChemistry(null);
-    setTeamBChemistry(null);
   }
 
   const currentCaptainName = currentTurn === 'A' ? captainA?.name : captainB?.name;
@@ -455,20 +528,6 @@ export default function DraftPage() {
           <div className="bg-surface border border-line rounded-xl overflow-hidden">
             <div className="px-5 py-3 border-b border-pitch/30 bg-pitch/10">
               <h2 className="text-paper">{captainA?.name}</h2>
-              {teamAChemistry !== null && (
-                <div
-                  className={`text-xs px-2 py-1 rounded-lg text-center font-mono mt-2 ${
-                    teamAChemistry > 10
-                      ? 'bg-pitch/15 text-pitch'
-                      : teamAChemistry > 0
-                        ? 'bg-amber/15 text-amber'
-                        : 'bg-signal/15 text-signal'
-                  }`}
-                >
-                  Chemistry: {teamAChemistry > 0 ? '+' : ''}
-                  {teamAChemistry}
-                </div>
-              )}
               <p className="text-muted text-xs mt-1">Team A &middot; picks second</p>
             </div>
             <div className="p-4 space-y-1">
@@ -495,37 +554,15 @@ export default function DraftPage() {
             </div>
           </div>
 
-          {/* Middle — available players and prediction */}
+          {/* Middle — balance and available players */}
           <div className="space-y-4">
-            {/* Win probability */}
-            {prediction && (
-              <div className="bg-surface border border-line rounded-xl p-4">
-                <h3 className="text-sm text-muted mb-3">Win probability</h3>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs text-muted w-16 text-right truncate">
-                    {captainA?.name}
-                  </span>
-                  <div className="flex-1 bg-line rounded-full h-3 overflow-hidden flex">
-                    <div
-                      className="bg-pitch h-3 transition-all duration-500"
-                      style={{ width: `${prediction.teamAWinProbability}%` }}
-                    />
-                    <div
-                      className="bg-[#4A90D9] h-3 transition-all duration-500"
-                      style={{ width: `${prediction.teamBWinProbability}%` }}
-                    />
-                  </div>
-                  <span className="text-xs text-muted w-16 truncate">{captainB?.name}</span>
-                </div>
-                <div className="flex justify-between text-xs font-mono">
-                  <span className="text-pitch">{prediction.teamAWinProbability}%</span>
-                  <span className="text-muted text-center">
-                    {prediction.teamAExpectedGoals}&ndash;{prediction.teamBExpectedGoals}
-                  </span>
-                  <span className="text-[#4A90D9]">{prediction.teamBWinProbability}%</span>
-                </div>
-              </div>
-            )}
+            <BalancePanel
+              teamA={teamPlayers('A', captainAId)}
+              teamB={teamPlayers('B', captainBId)}
+              nameA={captainA?.name}
+              nameB={captainB?.name}
+              complete={phase === 'complete'}
+            />
 
             {/* Recommended picks */}
             {phase === 'draft' && (
@@ -607,9 +644,6 @@ export default function DraftPage() {
             {phase === 'complete' && (
               <div className="bg-pitch/10 rounded-xl border border-pitch/30 p-4 text-center">
                 <p className="text-paper">Draft complete</p>
-                <p className="text-xs font-mono text-muted mt-1">
-                  Predicted: {prediction?.teamAExpectedGoals}&ndash;{prediction?.teamBExpectedGoals}
-                </p>
               </div>
             )}
           </div>
@@ -618,20 +652,6 @@ export default function DraftPage() {
           <div className="bg-surface border border-line rounded-xl overflow-hidden">
             <div className="px-5 py-3 border-b border-[#4A90D9]/30 bg-[#4A90D9]/10">
               <h2 className="text-paper">{captainB?.name}</h2>
-              {teamBChemistry !== null && (
-                <div
-                  className={`text-xs px-2 py-1 rounded-lg text-center font-mono mt-2 ${
-                    teamBChemistry > 10
-                      ? 'bg-pitch/15 text-pitch'
-                      : teamBChemistry > 0
-                        ? 'bg-amber/15 text-amber'
-                        : 'bg-signal/15 text-signal'
-                  }`}
-                >
-                  Chemistry: {teamBChemistry > 0 ? '+' : ''}
-                  {teamBChemistry}
-                </div>
-              )}
               <p className="text-muted text-xs mt-1">Team B &middot; picks first</p>
             </div>
             <div className="p-4 space-y-1">
