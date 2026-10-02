@@ -2,8 +2,14 @@
 Print the ratings table under different parameter settings, so the effect of
 each lever can be seen rather than guessed at.
 
+This shows how the table moves, not whether it got better. Whether a setting
+improves the ratings is a question for the evaluation harness:
+
     python -m evaluation.tune
+    python -m evaluation.run
 """
+
+import os
 
 import pandas as pd
 
@@ -17,18 +23,23 @@ COLUMNS = [
     "appearances",
     "goals_per_game",
     "conceded_per_game",
+    "clean_sheet_rate",
     "points_percentage",
     "attack_rating",
     "defence_rating",
     "overall_rating",
 ]
 
-# Players worth watching, because the arguments are about them
-WATCH = ["Jag", "Aqib", "Sahi", "Syed", "Akshay", "Ibrahim", "Finlay", "Kobi", "Arif"]
+# Players to highlight in the summary, comma-separated, e.g. WATCH="Name1,Name2"
+WATCH = [n.strip() for n in os.getenv("WATCH", "").split(",") if n.strip()]
 
 
 def with_settings(**overrides) -> pd.DataFrame:
-    """Recalculate ratings with temporary parameter overrides."""
+    """Recalculate ratings with temporary parameter overrides.
+
+    Restores the original settings and clears the ratings cache afterwards,
+    so nothing calculated under overridden settings outlives the call.
+    """
     original = {key: getattr(R, key) for key in overrides}
     try:
         for key, value in overrides.items():
@@ -37,6 +48,25 @@ def with_settings(**overrides) -> pd.DataFrame:
     finally:
         for key, value in original.items():
             setattr(R, key, value)
+        R._ratings_cache = None
+
+
+def points_weighted(points: float) -> dict:
+    """Component weights with points set to `points` in every position group.
+
+    The other components keep their relative proportions and share what's left,
+    so only the balance between team results and individual stats changes.
+    """
+    adjusted = {}
+    for group, weights in R.COMPONENT_WEIGHTS.items():
+        others = {c: w for c, w in weights.items() if c != "points"}
+        others_total = sum(others.values())
+        scale = (1 - points) / others_total if others_total else 0
+        adjusted[group] = {
+            "points": points,
+            **{c: w * scale for c, w in others.items()},
+        }
+    return adjusted
 
 
 def summarise(label: str, df: pd.DataFrame) -> None:
@@ -44,54 +74,61 @@ def summarise(label: str, df: pd.DataFrame) -> None:
     counts = df["overall_rating"].value_counts().sort_index()
     distribution = "  ".join(f"{rating}:{count}" for rating, count in counts.items())
 
-    watched = df[df["name"].isin(WATCH)][["name", "overall_rating"]]
-    watched = "  ".join(
-        f"{row['name']} {row['overall_rating']}" for _, row in watched.iterrows()
-    )
-
     print(f"\n{label}")
-    print(f"  spread {spread}   distribution  {distribution}")
-    print(f"  {watched}")
+    print(f"  {len(df)} rated   spread {spread}   distribution  {distribution}")
+
+    if WATCH:
+        watched = df[df["name"].isin(WATCH)][["name", "overall_rating"]]
+        print(
+            "  "
+            + "  ".join(
+                f"{row['name']} {row['overall_rating']}"
+                for _, row in watched.iterrows()
+            )
+        )
 
 
 def main() -> None:
     print("Current settings:")
     print(
-        f"  SHRINKAGE_WEIGHT={R.SHRINKAGE_WEIGHT}  "
+        f"  MIN_APPEARANCES={R.MIN_APPEARANCES}  "
+        f"SHRINKAGE_WEIGHT={R.SHRINKAGE_WEIGHT}  "
         f"RECENCY_HALF_LIFE={R.RECENCY_HALF_LIFE}  "
-        f"GOALS_WEIGHT={R.GOALS_WEIGHT}  POINTS_WEIGHT={R.POINTS_WEIGHT}"
+        f"STALENESS_HALF_LIFE={R.STALENESS_HALF_LIFE}"
     )
+    for group, weights in R.COMPONENT_WEIGHTS.items():
+        print(f"  {group}: " + "  ".join(f"{c}={w:.2f}" for c, w in weights.items()))
 
-    summarise("baseline (current settings)", with_settings())
+    current = with_settings()
+    summarise("current settings", current)
 
-    for weight in (5.0, 10.0, 15.0):
+    for weight in (5.0, 10.0, 25.0):
         summarise(f"SHRINKAGE_WEIGHT={weight}", with_settings(SHRINKAGE_WEIGHT=weight))
 
-    for half_life in (40.0, 60.0):
+    for half_life in (20.0, 60.0):
         summarise(
             f"RECENCY_HALF_LIFE={half_life}", with_settings(RECENCY_HALF_LIFE=half_life)
         )
 
-    for goals, points in ((0.4, 0.6), (0.3, 0.7)):
+    for half_life in (30.0, 120.0):
         summarise(
-            f"GOALS_WEIGHT={goals} POINTS_WEIGHT={points}",
-            with_settings(
-                GOALS_WEIGHT=goals, CONCEDED_WEIGHT=goals, POINTS_WEIGHT=points
-            ),
+            f"STALENESS_HALF_LIFE={half_life}",
+            with_settings(STALENESS_HALF_LIFE=half_life),
         )
 
-    # A combination worth trying: less shrinkage, longer memory, points-led
-    combined = with_settings(
-        SHRINKAGE_WEIGHT=15.0,
-        RECENCY_HALF_LIFE=40.0,
-        GOALS_WEIGHT=0.4,
-        CONCEDED_WEIGHT=0.4,
-        POINTS_WEIGHT=0.6,
-    )
-    summarise("combined: shrinkage 10, half-life 40, points-led", combined)
+    for points in (0.35, 0.65):
+        summarise(
+            f"points weight {points} (other components rescaled)",
+            with_settings(COMPONENT_WEIGHTS=points_weighted(points)),
+        )
 
-    print("\nFull table under the combined settings:\n")
-    print(combined[COLUMNS].round(2).to_string())
+    for threshold in (10, 30):
+        summarise(
+            f"MIN_APPEARANCES={threshold}", with_settings(MIN_APPEARANCES=threshold)
+        )
+
+    print("\nFull table under current settings:\n")
+    print(current[COLUMNS].round(2).to_string())
 
 
 if __name__ == "__main__":
