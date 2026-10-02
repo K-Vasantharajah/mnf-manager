@@ -49,26 +49,4 @@ public class DraftController {
                 Map.class);
         return ResponseEntity.ok(response.getBody());
     }
-
-    @GetMapping("/chemistry/player/{playerId}")
-    public ResponseEntity<Map> getPlayerChemistry(@PathVariable Long playerId) {
-        log.info("Getting chemistry for player: {}", playerId);
-        ResponseEntity<Map> response = restTemplate.getForEntity(
-                mlServiceUrl + "/api/chemistry/player/" + playerId,
-                Map.class);
-        return ResponseEntity.ok(response.getBody());
-    }
-
-    @PostMapping("/chemistry/team")
-    public ResponseEntity<Map> getTeamChemistry(@RequestBody Map<String, List<Long>> body) {
-        log.info("Getting team chemistry");
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<Map<String, List<Long>>> request = new HttpEntity<>(body, headers);
-        ResponseEntity<Map> response = restTemplate.postForEntity(
-                mlServiceUrl + "/api/chemistry/team",
-                request,
-                Map.class);
-        return ResponseEntity.ok(response.getBody());
-    }
 }

@@ -223,9 +223,6 @@ Tests cover:
 | POST   | `/api/v1/draft/preferences/{captainId}` | Captain pick preferences      |
 | POST   | `/api/v1/draft/predict`                 | Match outcome prediction      |
 | POST   | `/api/v1/draft/captain-recommendations` | Captain rotation suggestions  |
-| GET    | `/api/v1/draft/chemistry`               | All pairwise chemistry scores |
-| GET    | `/api/v1/draft/chemistry/player/{id}`   | Player chemistry scores       |
-| POST   | `/api/v1/draft/chemistry/team`          | Team chemistry score          |
 
 ### Auth
 
