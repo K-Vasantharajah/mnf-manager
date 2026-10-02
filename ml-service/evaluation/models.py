@@ -19,6 +19,8 @@ from sqlalchemy import text
 
 from data.loader import get_engine, load_all_players
 from models.impact import fit_impact_model
+from evaluation.dataset import lineup_for, load_lineups, load_matches
+from models import ratings as R
 
 # Average goals per team per match at MNF, used as the prediction baseline.
 BASELINE_GOALS = 3.0
@@ -124,14 +126,17 @@ def _load_player_match_stats(match_ids: frozenset[int]) -> pd.DataFrame:
 
 
 class PositionPercentileModel(RatingModel):
-    """Arif's approach: rank each player against others in their position group.
+    """Early prototype of the position-percentile ratings, kept as a reference point.
 
-    Attack comes from goals per game, defence from goals conceded per game,
-    both as percentiles within the player's position group. Points percentage
-    contributes to both, since it reflects overall team success.
+    Ranks each player against others in their position group. Attack comes
+    from goals per game, defence from goals conceded per game, and points
+    percentage contributes to both, with a fixed 60/40 split.
+
+    Not the production model: no clean sheets, recency weighting, shrinkage or
+    minimum appearances. See ProductionModel for what's live.
     """
 
-    name = "position percentile"
+    name = "percentile prototype"
 
     GROUPS = {
         "GK": "DEF",
@@ -200,6 +205,52 @@ class PositionPercentileModel(RatingModel):
         return self._stats[["player_id", "attack", "defence"]]
 
 
+class ProductionModel(RatingModel):
+    name = "production (ratings.py)"
+    _matches = None
+    _lineups = None
+
+    @classmethod
+    def _data(cls):
+        if cls._matches is None:
+            cls._matches = load_matches()
+            cls._lineups = load_lineups()
+        return cls._matches, cls._lineups
+
+    def fit(self, match_ids):
+        df = R.calculate_derived_ratings(match_ids=match_ids)
+        self._df = df
+        self._overall = df.set_index("player_id")["overall_rating"].to_dict()
+        self._k = self._calibrate(match_ids)
+
+    def _team(self, ids):
+        return np.mean([self._overall.get(p, R.RATING_CENTRE) for p in ids])
+
+    def _calibrate(self, match_ids):
+        matches, lineups = self._data()
+        xs, ys = [], []
+        for _, m in matches[matches["match_id"].isin(match_ids)].iterrows():
+            a, b = lineup_for(lineups, m["match_id"])
+            xs.append(self._team(a) - self._team(b))
+            ys.append(m["score_a"] - m["score_b"])
+        xs, ys = np.array(xs), np.array(ys)
+        denom = (xs**2).sum()
+        return float((xs * ys).sum() / denom) if denom > 0 else 0.0
+
+    def predict(self, team_a, team_b):
+        diff = self._k * (self._team(team_a) - self._team(team_b))
+        return max(0.0, BASELINE_GOALS + diff / 2), max(0.0, BASELINE_GOALS - diff / 2)
+
+    def ratings(self):
+        return self._df.rename(
+            columns={
+                "attack_rating": "attack",
+                "defence_rating": "defence",
+                "overall_rating": "overall",
+            }
+        )[["player_id", "attack", "defence", "overall"]]
+
+
 class ChallengerModel(RatingModel):
     """Predicts the challenging captain's team wins.
 
@@ -227,4 +278,10 @@ class ChallengerModel(RatingModel):
         return pd.DataFrame(columns=["player_id", "attack", "defence"])
 
 
-CANDIDATES = [BaselineModel, ChallengerModel, ImpactModel, PositionPercentileModel]
+CANDIDATES = [
+    BaselineModel,
+    ChallengerModel,
+    ImpactModel,
+    PositionPercentileModel,
+    ProductionModel,
+]
