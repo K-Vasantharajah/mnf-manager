@@ -4,7 +4,7 @@ and captain rotation suggestions for the draft simulator.
 """
 
 from flask import Blueprint, jsonify, request
-from models.draft import get_captain_preferences, predict_match_outcome
+from models.draft import get_captain_preferences
 from data.loader import load_captain_history, load_all_players
 
 draft_bp = Blueprint("draft", __name__)
@@ -46,38 +46,6 @@ def captain_preferences(captain_id):
         return jsonify(
             {"status": "success", "captainId": captain_id, "preferences": preferences}
         )
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@draft_bp.route("/predict", methods=["POST"])
-def predict():
-    """
-    Predict match outcome given two team compositions.
-
-    Body: { "teamAIds": [1, 2, ...], "teamBIds": [3, 4, ...] }
-    """
-    try:
-        data = request.get_json()
-        team_a = data.get("teamAIds", [])
-        team_b = data.get("teamBIds", [])
-
-        if not isinstance(team_a, list) or not isinstance(team_b, list):
-            return (
-                jsonify(
-                    {
-                        "status": "error",
-                        "message": "teamAIds and teamBIds must be lists",
-                    }
-                ),
-                400,
-            )
-
-        if not team_a or not team_b:
-            return jsonify({"status": "error", "message": "Both teams required"}), 400
-
-        prediction = predict_match_outcome(team_a, team_b)
-        return jsonify({"status": "success", "prediction": prediction})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 

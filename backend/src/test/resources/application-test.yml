@@ -5,7 +5,11 @@ spring:
     password: mnf_local_password
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      # Flyway owns the schema; Hibernate must not create or drop tables
+      ddl-auto: none
+  flyway:
+    # Tests clean and rebuild the schema each run (see CleanMigrateStrategy)
+    clean-disabled: false
   sql:
     init:
       mode: never
