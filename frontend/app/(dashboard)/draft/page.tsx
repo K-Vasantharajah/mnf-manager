@@ -544,6 +544,12 @@ export default function DraftPage() {
         </div>
       )}
 
+      {phase !== 'squad' && facts.length > 0 && (
+        <div className="mb-6">
+          <OnTheNight facts={facts} players={playerById} />
+        </div>
+      )}
+
       {/* Phase 3 — Draft */}
       {phase === 'draft' && picks.length > 0 && (
         <button
@@ -657,8 +663,6 @@ export default function DraftPage() {
                 )}
               </div>
             )}
-
-            <OnTheNight facts={facts} players={playerById} />
 
             {/* All available players */}
             {phase === 'draft' && availablePlayers.length > 0 && (
