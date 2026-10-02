@@ -206,15 +206,25 @@ def component_score(row: pd.Series, components: tuple[str, ...]) -> float:
     return sum(weights[c] * row[f"{c}_pct"] for c in components) / total
 
 
-def calculate_derived_ratings(force_refresh: bool = False):
-    """One row per rateable player: attack, defence, overall and reliability."""
+def calculate_derived_ratings(force_refresh: bool = False, match_ids=None):
+    """One row per rateable player: attack, defence, overall and reliability.
+
+    match_ids limits the calculation to a subset of matches, for the evaluation
+    harness. Subset fits are never cached.
+    """
     global _ratings_cache
-    if _ratings_cache is not None and not force_refresh:
+    if match_ids is None and _ratings_cache is not None and not force_refresh:
         return _ratings_cache
 
-    totals = weighted_totals(load_player_appearances())
+    appearances = load_player_appearances()
+    if match_ids is not None:
+        appearances = appearances[appearances["match_id"].isin(match_ids)]
+        total_matches = appearances["match_id"].nunique()
+    else:
+        total_matches = load_match_count()
+
+    totals = weighted_totals(appearances)
     players = load_all_players()
-    total_matches = load_match_count()
 
     df = totals.merge(
         players[["id", "name", "position", "active"]],
@@ -263,7 +273,7 @@ def calculate_derived_ratings(force_refresh: bool = False):
         .astype(int)
     )
 
-    _ratings_cache = (
+    result = (
         df[
             [
                 "player_id",
@@ -287,4 +297,7 @@ def calculate_derived_ratings(force_refresh: bool = False):
         .reset_index(drop=True)
     )
 
-    return _ratings_cache
+    if match_ids is None:
+        _ratings_cache = result
+
+    return result

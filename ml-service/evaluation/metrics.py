@@ -15,6 +15,17 @@ import numpy as np
 import pandas as pd
 
 
+def _overall(ratings: pd.DataFrame) -> pd.Series:
+    """A model's own overall rating if it has one, otherwise attack + defence.
+
+    Production blends attack and defence by position, so summing them would
+    rank players differently from the table people actually see.
+    """
+    if "overall" in ratings.columns:
+        return ratings["overall"]
+    return ratings["attack"] + ratings["defence"]
+
+
 def goal_error(
     predictions: list[tuple[float, float]], actuals: list[tuple[int, int]]
 ) -> dict:
@@ -46,25 +57,41 @@ def to_result(expected_a: float, expected_b: float, draw_margin: float = 0.2) ->
 
 
 def rank_stability(
-    model_class, match_ids: frozenset[int], n_samples: int = 30, seed: int = 42
+    model_class,
+    match_ids: frozenset[int],
+    eligible: set[int] | None = None,
+    n_samples: int = 30,
+    fraction: float = 0.8,
+    seed: int = 42,
 ) -> pd.DataFrame:
-    """Refit on bootstrap resamples and measure how much each player's rank moves.
+    """Refit on random subsamples of matches and measure how much each rank moves.
 
-    A player whose rank swings widely across resamples is not confidently
+    Each sample drops a random (1 - fraction) of matches without replacement.
+    A true bootstrap would need duplicated matches, which neither a match-id
+    set nor a recency-weighted model can represent sensibly.
+
+    `eligible` restricts ranking to a fixed set of players, so models that rate
+    different numbers of people are compared over the same field. Without it,
+    a model that rates more players shows larger rank swings for that reason alone.
+
+    A player whose rank swings widely across samples is not confidently
     estimated, however precise their displayed rating looks.
     """
     rng = np.random.default_rng(seed)
     ids = sorted(match_ids)
+    size = int(len(ids) * fraction)
     ranks: dict[int, list[int]] = {}
 
     for _ in range(n_samples):
-        sample = frozenset(rng.choice(ids, size=len(ids), replace=True).tolist())
+        sample = frozenset(rng.choice(ids, size=size, replace=False).tolist())
         model = model_class()
         model.fit(sample)
         r = model.ratings()
         if r.empty:
             continue
-        r = r.assign(overall=r["attack"] + r["defence"])
+        if eligible is not None:
+            r = r[r["player_id"].isin(eligible)]
+        r = r.assign(overall=_overall(r))
         r = r.sort_values("overall", ascending=False).reset_index(drop=True)
         for position, player_id in enumerate(r["player_id"], start=1):
             ranks.setdefault(int(player_id), []).append(position)
@@ -83,6 +110,17 @@ def rank_stability(
     return pd.DataFrame(rows).sort_values("median_rank").reset_index(drop=True)
 
 
+def stability_summary(stability: pd.DataFrame) -> dict:
+    """One-line summary of a stability table, for comparing models side by side."""
+    if stability.empty:
+        return {"players": 0, "median_rank_sd": None, "max_rank_range": None}
+    return {
+        "players": len(stability),
+        "median_rank_sd": round(float(stability["rank_sd"].median()), 1),
+        "max_rank_range": int(stability["rank_range"].max()),
+    }
+
+
 def teammate_correlation(
     model, lineups: pd.DataFrame, match_ids: frozenset[int]
 ) -> dict:
@@ -95,8 +133,11 @@ def teammate_correlation(
     if ratings.empty:
         return {"teammate_correlation": None}
 
-    overall = ratings.assign(overall=ratings["attack"] + ratings["defence"])
-    lookup = overall.set_index("player_id")["overall"].to_dict()
+    lookup = (
+        ratings.assign(overall=_overall(ratings))
+        .set_index("player_id")["overall"]
+        .to_dict()
+    )
 
     relevant = lineups[lineups["match_id"].isin(match_ids)]
     own, mates = [], []
