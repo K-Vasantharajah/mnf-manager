@@ -53,5 +53,7 @@ mnf:
 
 logging:
   level:
-    com.mnfmanager: DEBUG
+    # INFO in production; for local debugging, run with
+    # LOGGING_LEVEL_COM_MNFMANAGER=DEBUG ./mvnw spring-boot:run
+    com.mnfmanager: INFO
     org.springframework.security: INFO
