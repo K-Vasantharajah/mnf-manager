@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
 Batch job to recalculate and update player ratings in the database.
-Run this after each match night to keep ratings fresh.
 
-Usage:
-    python update_ratings.py
+Runs daily as an Azure Container Apps Job and exits early unless a competitive
+match has been recorded since the last update. Run by hand with:
 
-On Azure this will be run as a scheduled Function App nightly.
+    DATABASE_URL='...' python update_ratings.py          # only if there's a new match
+    DATABASE_URL='...' python update_ratings.py --force  # recalculate regardless
 """
 
 import pandas as pd
@@ -14,6 +14,7 @@ from sqlalchemy import create_engine, text
 from models.ratings import calculate_derived_ratings
 import logging
 import os
+import sys
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -44,13 +45,39 @@ def players_in_latest_match(conn) -> set[int]:
     return {row[0] for row in result}
 
 
-def update_ratings():
+def new_match_since_last_update(conn) -> bool:
+    """Whether a competitive match has been recorded since ratings last ran.
+
+    Running twice for the same match night would compare ratings against
+    themselves and reset every delta to zero, so the scheduled job skips
+    when there's nothing new.
+    """
+    latest_match = conn.execute(
+        text("SELECT MAX(created_at) FROM matches WHERE is_exhibition = false")
+    ).scalar()
+    last_update = conn.execute(
+        text("SELECT MAX(rated_at) FROM player_ratings")
+    ).scalar()
+
+    if latest_match is None:
+        return False
+    if last_update is None:
+        return True
+    return latest_match > last_update
+
+
+def update_ratings(force: bool = False):
+    engine = create_engine(DB_URL)
+
+    with engine.connect() as conn:
+        if not force and not new_match_since_last_update(conn):
+            log.info("No new competitive match since the last update; nothing to do")
+            return 0
+
     log.info("Starting ratings recalculation...")
 
     df = calculate_derived_ratings()
     log.info(f"Calculated ratings for {len(df)} players")
-
-    engine = create_engine(DB_URL)
 
     with engine.begin() as conn:
         previous = pd.read_sql(
@@ -76,8 +103,12 @@ def update_ratings():
 
             if pid in played_latest:
                 attack_delta = new_attack - (prev.get("attack_rating") or new_attack)
-                defence_delta = new_defence - (prev.get("defence_rating") or new_defence)
-                overall_delta = new_overall - (prev.get("overall_rating") or new_overall)
+                defence_delta = new_defence - (
+                    prev.get("defence_rating") or new_defence
+                )
+                overall_delta = new_overall - (
+                    prev.get("overall_rating") or new_overall
+                )
                 prev_reliability = prev.get("reliability") or new_reliability
                 reliability_delta = new_reliability - prev_reliability
             else:
@@ -116,4 +147,6 @@ def update_ratings():
 
 
 if __name__ == "__main__":
-    update_ratings()
+    # --force reruns even with no new match, e.g. after correcting a result.
+    # Deltas then compare against the previous run, as usual.
+    update_ratings(force="--force" in sys.argv)
