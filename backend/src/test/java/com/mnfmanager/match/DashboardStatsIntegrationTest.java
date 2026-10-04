@@ -1,5 +1,7 @@
 package com.mnfmanager.match;
 
+import com.mnfmanager.TestSeasons;
+
 import com.mnfmanager.BaseIntegrationTest;
 import com.mnfmanager.dashboard.DashboardStatsResponse;
 import com.mnfmanager.player.Player;
@@ -76,7 +78,7 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldReturnCurrentWinningCaptain() {
-        createMatch(captainA, captainB, (short) 3, (short) 1, 2026);
+        createMatch(captainA, captainB, (short) 3, (short) 1, TestSeasons.CURRENT);
 
         DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
 
@@ -85,7 +87,7 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldReturnDrawAsCurrentWinningCaptain() {
-        createMatch(captainA, captainB, (short) 2, (short) 2, 2026);
+        createMatch(captainA, captainB, (short) 2, (short) 2, TestSeasons.CURRENT);
 
         DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
 
@@ -95,9 +97,9 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldCalculateCurrentStreak() {
         // Captain A wins 3 in a row
-        createMatch(captainA, captainB, (short) 3, (short) 1, 2026);
-        createMatch(captainA, captainB, (short) 2, (short) 1, 2026);
-        createMatch(captainA, captainB, (short) 4, (short) 0, 2026);
+        createMatch(captainA, captainB, (short) 3, (short) 1, TestSeasons.CURRENT);
+        createMatch(captainA, captainB, (short) 2, (short) 1, TestSeasons.CURRENT);
+        createMatch(captainA, captainB, (short) 4, (short) 0, TestSeasons.CURRENT);
 
         DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
 
@@ -109,9 +111,9 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldResetStreakOnLoss() {
         // Captain A wins 2, then loses
-        createMatch(captainA, captainB, (short) 3, (short) 1, 2026);
-        createMatch(captainA, captainB, (short) 2, (short) 1, 2026);
-        createMatch(captainA, captainB, (short) 0, (short) 3, 2026);
+        createMatch(captainA, captainB, (short) 3, (short) 1, TestSeasons.CURRENT);
+        createMatch(captainA, captainB, (short) 2, (short) 1, TestSeasons.CURRENT);
+        createMatch(captainA, captainB, (short) 0, (short) 3, TestSeasons.CURRENT);
 
         DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
 
@@ -122,10 +124,10 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldCalculateLongestSeasonStreak() {
         // Captain A wins 3 in a row then loses
-        createMatch(captainA, captainB, (short) 3, (short) 1, 2026);
-        createMatch(captainA, captainB, (short) 2, (short) 1, 2026);
-        createMatch(captainA, captainB, (short) 4, (short) 0, 2026);
-        createMatch(captainA, captainB, (short) 0, (short) 3, 2026);
+        createMatch(captainA, captainB, (short) 3, (short) 1, TestSeasons.CURRENT);
+        createMatch(captainA, captainB, (short) 2, (short) 1, TestSeasons.CURRENT);
+        createMatch(captainA, captainB, (short) 4, (short) 0, TestSeasons.CURRENT);
+        createMatch(captainA, captainB, (short) 0, (short) 3, TestSeasons.CURRENT);
 
         DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
 
@@ -145,9 +147,9 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldReturnMatchIdsForCurrentStreak() {
-        createMatch(captainA, captainB, (short) 0, (short) 3, 2026); // A loses
-        Match second = createMatch(captainA, captainB, (short) 3, (short) 1, 2026);
-        Match third = createMatch(captainA, captainB, (short) 2, (short) 0, 2026);
+        createMatch(captainA, captainB, (short) 0, (short) 3, TestSeasons.CURRENT); // A loses
+        Match second = createMatch(captainA, captainB, (short) 3, (short) 1, TestSeasons.CURRENT);
+        Match third = createMatch(captainA, captainB, (short) 2, (short) 0, TestSeasons.CURRENT);
 
         DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
 
@@ -157,9 +159,9 @@ public class DashboardStatsIntegrationTest extends BaseIntegrationTest {
 
     @Test
     void shouldExcludeExhibitionMatchesFromStreaks() {
-        createMatch(captainA, captainB, (short) 3, (short) 1, 2026);
-        createExhibitionMatch(captainA, captainB, (short) 0, (short) 5, 2026);
-        createMatch(captainA, captainB, (short) 2, (short) 0, 2026);
+        createMatch(captainA, captainB, (short) 3, (short) 1, TestSeasons.CURRENT);
+        createExhibitionMatch(captainA, captainB, (short) 0, (short) 5, TestSeasons.CURRENT);
+        createMatch(captainA, captainB, (short) 2, (short) 0, TestSeasons.CURRENT);
 
         DashboardStatsResponse stats = matchService.getCaptainDashboardStats();
 

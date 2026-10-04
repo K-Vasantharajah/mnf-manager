@@ -1,5 +1,7 @@
 package com.mnfmanager.match;
 
+import com.mnfmanager.TestSeasons;
+
 import com.mnfmanager.BaseIntegrationTest;
 import com.mnfmanager.player.Player;
 import com.mnfmanager.player.PlayerRepository;
@@ -64,8 +66,8 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldCreateMatchWithTeamsAndGoalScorers() {
         CreateMatchRequest request = new CreateMatchRequest();
-        request.setMatchDate(LocalDate.of(2026, 8, 25));
-        request.setSeasonYear((short) 2026);
+        request.setMatchDate(LocalDate.of(TestSeasons.CURRENT, 8, 25));
+        request.setSeasonYear((short) TestSeasons.CURRENT);
         request.setCaptainAId(captainA.getId());
         request.setCaptainBId(captainB.getId());
         request.setScoreA((short) 3);
@@ -94,8 +96,8 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldRecordDrawCorrectly() {
         CreateMatchRequest request = new CreateMatchRequest();
-        request.setMatchDate(LocalDate.of(2026, 8, 25));
-        request.setSeasonYear((short) 2026);
+        request.setMatchDate(LocalDate.of(TestSeasons.CURRENT, 8, 25));
+        request.setSeasonYear((short) TestSeasons.CURRENT);
         request.setCaptainAId(captainA.getId());
         request.setCaptainBId(captainB.getId());
         request.setScoreA((short) 2);
@@ -114,8 +116,8 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldUpdatePlayerSeasonStatsOnMatchCreation() {
         CreateMatchRequest request = new CreateMatchRequest();
-        request.setMatchDate(LocalDate.of(2026, 8, 25));
-        request.setSeasonYear((short) 2026);
+        request.setMatchDate(LocalDate.of(TestSeasons.CURRENT, 8, 25));
+        request.setSeasonYear((short) TestSeasons.CURRENT);
         request.setCaptainAId(captainA.getId());
         request.setCaptainBId(captainB.getId());
         request.setScoreA((short) 4);
@@ -136,7 +138,7 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
         assertThat(updatedPlayer1.getSeasonStats()).isNotEmpty();
 
         var stats = updatedPlayer1.getSeasonStats().stream()
-                .filter(s -> s.getSeasonYear() == 2026)
+                .filter(s -> s.getSeasonYear() == TestSeasons.CURRENT)
                 .findFirst()
                 .orElseThrow();
 
@@ -149,8 +151,8 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldGetMatchesBySeason() {
         CreateMatchRequest request2026 = new CreateMatchRequest();
-        request2026.setMatchDate(LocalDate.of(2026, 8, 25));
-        request2026.setSeasonYear((short) 2026);
+        request2026.setMatchDate(LocalDate.of(TestSeasons.CURRENT, 8, 25));
+        request2026.setSeasonYear((short) TestSeasons.CURRENT);
         request2026.setCaptainAId(captainA.getId());
         request2026.setCaptainBId(captainB.getId());
         request2026.setScoreA((short) 3);
@@ -160,8 +162,8 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
         request2026.setGoalScorers(List.of());
 
         CreateMatchRequest request2025 = new CreateMatchRequest();
-        request2025.setMatchDate(LocalDate.of(2025, 8, 25));
-        request2025.setSeasonYear((short) 2025);
+        request2025.setMatchDate(LocalDate.of(TestSeasons.PREVIOUS, 8, 25));
+        request2025.setSeasonYear((short) TestSeasons.PREVIOUS);
         request2025.setCaptainAId(captainA.getId());
         request2025.setCaptainBId(captainB.getId());
         request2025.setScoreA((short) 2);
@@ -173,20 +175,20 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
         matchService.createMatch(request2026);
         matchService.createMatch(request2025);
 
-        List<Match> matches2026 = matchService.getMatchesBySeason((short) 2026);
-        List<Match> matches2025 = matchService.getMatchesBySeason((short) 2025);
+        List<Match> matches2026 = matchService.getMatchesBySeason((short) TestSeasons.CURRENT);
+        List<Match> matches2025 = matchService.getMatchesBySeason((short) TestSeasons.PREVIOUS);
 
         assertThat(matches2026).hasSize(1);
         assertThat(matches2025).hasSize(1);
-        assertThat(matches2026.get(0).getSeasonYear()).isEqualTo((short) 2026);
-        assertThat(matches2025.get(0).getSeasonYear()).isEqualTo((short) 2025);
+        assertThat(matches2026.get(0).getSeasonYear()).isEqualTo((short) TestSeasons.CURRENT);
+        assertThat(matches2025.get(0).getSeasonYear()).isEqualTo((short) TestSeasons.PREVIOUS);
     }
 
     @Test
     void shouldRecordMultipleGoalScorers() {
         CreateMatchRequest request = new CreateMatchRequest();
-        request.setMatchDate(LocalDate.of(2026, 8, 25));
-        request.setSeasonYear((short) 2026);
+        request.setMatchDate(LocalDate.of(TestSeasons.CURRENT, 8, 25));
+        request.setSeasonYear((short) TestSeasons.CURRENT);
         request.setCaptainAId(captainA.getId());
         request.setCaptainBId(captainB.getId());
         request.setScoreA((short) 5);
@@ -220,10 +222,10 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
         Player updatedPlayer3 = playerRepository.findByIdWithFullDetails(player3.getId()).orElseThrow();
 
         var stats1 = updatedPlayer1.getSeasonStats().stream()
-                .filter(s -> s.getSeasonYear() == 2026)
+                .filter(s -> s.getSeasonYear() == TestSeasons.CURRENT)
                 .findFirst().orElseThrow();
         var stats3 = updatedPlayer3.getSeasonStats().stream()
-                .filter(s -> s.getSeasonYear() == 2026)
+                .filter(s -> s.getSeasonYear() == TestSeasons.CURRENT)
                 .findFirst().orElseThrow();
 
         assertThat(stats1.getGoals()).isEqualTo((short) 2);
@@ -233,8 +235,8 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldReturnCaptainStatsWithMatchHistory() {
         CreateMatchRequest request = new CreateMatchRequest();
-        request.setMatchDate(LocalDate.of(2026, 8, 25));
-        request.setSeasonYear((short) 2026);
+        request.setMatchDate(LocalDate.of(TestSeasons.CURRENT, 8, 25));
+        request.setSeasonYear((short) TestSeasons.CURRENT);
         request.setCaptainAId(captainA.getId());
         request.setCaptainBId(captainB.getId());
         request.setScoreA((short) 3);
@@ -245,7 +247,7 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
 
         matchService.createMatch(request);
 
-        List<com.mnfmanager.match.CaptainStatsResponse> stats = matchService.getCaptainStats(2026);
+        List<com.mnfmanager.match.CaptainStatsResponse> stats = matchService.getCaptainStats(TestSeasons.CURRENT);
 
         com.mnfmanager.match.CaptainStatsResponse captainAStats = stats.stream()
                 .filter(s -> s.getPlayerId().equals(captainA.getId()))
@@ -262,8 +264,8 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldExcludeExhibitionMatchesFromCaptainStats() {
         CreateMatchRequest competitive = new CreateMatchRequest();
-        competitive.setMatchDate(LocalDate.of(2026, 8, 25));
-        competitive.setSeasonYear((short) 2026);
+        competitive.setMatchDate(LocalDate.of(TestSeasons.CURRENT, 8, 25));
+        competitive.setSeasonYear((short) TestSeasons.CURRENT);
         competitive.setCaptainAId(captainA.getId());
         competitive.setCaptainBId(captainB.getId());
         competitive.setScoreA((short) 3);
@@ -273,8 +275,8 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
         competitive.setGoalScorers(List.of());
 
         CreateMatchRequest exhibition = new CreateMatchRequest();
-        exhibition.setMatchDate(LocalDate.of(2026, 9, 1));
-        exhibition.setSeasonYear((short) 2026);
+        exhibition.setMatchDate(LocalDate.of(TestSeasons.CURRENT, 9, 1));
+        exhibition.setSeasonYear((short) TestSeasons.CURRENT);
         exhibition.setIsExhibition(true);
         exhibition.setCaptainAId(captainA.getId());
         exhibition.setCaptainBId(captainB.getId());
@@ -287,7 +289,7 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
         matchService.createMatch(competitive);
         matchService.createMatch(exhibition);
 
-        CaptainStatsResponse captainAStats = matchService.getCaptainStats(2026).stream()
+        CaptainStatsResponse captainAStats = matchService.getCaptainStats(TestSeasons.CURRENT).stream()
                 .filter(s -> s.getPlayerId().equals(captainA.getId()))
                 .findFirst()
                 .orElseThrow();
@@ -302,8 +304,8 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldNotCountOwnGoalInPlayerStats() {
         CreateMatchRequest request = new CreateMatchRequest();
-        request.setMatchDate(LocalDate.of(2026, 8, 25));
-        request.setSeasonYear((short) 2026);
+        request.setMatchDate(LocalDate.of(TestSeasons.CURRENT, 8, 25));
+        request.setSeasonYear((short) TestSeasons.CURRENT);
         request.setCaptainAId(captainA.getId());
         request.setCaptainBId(captainB.getId());
         request.setScoreA((short) 1);
@@ -323,7 +325,7 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
 
         Player updated = playerRepository.findByIdWithFullDetails(player1.getId()).orElseThrow();
         var stats = updated.getSeasonStats().stream()
-                .filter(s -> s.getSeasonYear() == 2026)
+                .filter(s -> s.getSeasonYear() == TestSeasons.CURRENT)
                 .findFirst()
                 .orElseThrow();
 
@@ -333,8 +335,8 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldNotUpdateStatsForExhibitionMatch() {
         CreateMatchRequest request = new CreateMatchRequest();
-        request.setMatchDate(LocalDate.of(2026, 8, 25));
-        request.setSeasonYear((short) 2026);
+        request.setMatchDate(LocalDate.of(TestSeasons.CURRENT, 8, 25));
+        request.setSeasonYear((short) TestSeasons.CURRENT);
         request.setCaptainAId(captainA.getId());
         request.setCaptainBId(captainB.getId());
         request.setScoreA((short) 5);
@@ -354,8 +356,8 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     void shouldUpdateMatchAndRecalculateStats() {
         CreateMatchRequest request = new CreateMatchRequest();
-        request.setMatchDate(LocalDate.of(2026, 8, 25));
-        request.setSeasonYear((short) 2026);
+        request.setMatchDate(LocalDate.of(TestSeasons.CURRENT, 8, 25));
+        request.setSeasonYear((short) TestSeasons.CURRENT);
         request.setCaptainAId(captainA.getId());
         request.setCaptainBId(captainB.getId());
         request.setScoreA((short) 3);
@@ -369,8 +371,8 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
 
         // Update to a draw
         CreateMatchRequest updateRequest = new CreateMatchRequest();
-        updateRequest.setMatchDate(LocalDate.of(2026, 8, 25));
-        updateRequest.setSeasonYear((short) 2026);
+        updateRequest.setMatchDate(LocalDate.of(TestSeasons.CURRENT, 8, 25));
+        updateRequest.setSeasonYear((short) TestSeasons.CURRENT);
         updateRequest.setCaptainAId(captainA.getId());
         updateRequest.setCaptainBId(captainB.getId());
         updateRequest.setScoreA((short) 2);
@@ -384,7 +386,7 @@ public class MatchServiceIntegrationTest extends BaseIntegrationTest {
 
         Player updatedPlayer1 = playerRepository.findByIdWithFullDetails(player1.getId()).orElseThrow();
         var stats = updatedPlayer1.getSeasonStats().stream()
-                .filter(s -> s.getSeasonYear() == 2026)
+                .filter(s -> s.getSeasonYear() == TestSeasons.CURRENT)
                 .findFirst()
                 .orElseThrow();
 
