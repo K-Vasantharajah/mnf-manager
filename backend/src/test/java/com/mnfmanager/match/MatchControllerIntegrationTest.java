@@ -2,6 +2,7 @@ package com.mnfmanager.match;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mnfmanager.BaseIntegrationTest;
+import com.mnfmanager.TestSeasons;
 import com.mnfmanager.player.Player;
 import com.mnfmanager.player.PlayerRepository;
 
@@ -219,7 +220,7 @@ public class MatchControllerIntegrationTest extends BaseIntegrationTest {
     void shouldUpdateMatchWithStatus200() throws Exception {
         Map<String, Object> match = Map.of(
                 "matchDate", "2026-08-25",
-                "seasonYear", 2026,
+                "seasonYear", TestSeasons.CURRENT,
                 "captainAId", captainA.getId(),
                 "captainBId", captainB.getId(),
                 "scoreA", 3,
@@ -241,7 +242,7 @@ public class MatchControllerIntegrationTest extends BaseIntegrationTest {
 
         Map<String, Object> updatedMatch = Map.of(
                 "matchDate", "2026-08-25",
-                "seasonYear", 2026,
+                "seasonYear", TestSeasons.CURRENT,
                 "captainAId", captainA.getId(),
                 "captainBId", captainB.getId(),
                 "scoreA", 2,
