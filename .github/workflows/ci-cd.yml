@@ -125,14 +125,12 @@ jobs:
           az containerapp update --name mnf-backend \
             --resource-group $RESOURCE_GROUP --image $IMAGE
 
-      - name: ML service
+      - name: Ratings job
         if: needs.changes.outputs.ml == 'true'
         run: |
           IMAGE=$REGISTRY/mnf-ml-service:${{ github.sha }}
           docker build -t $IMAGE ml-service
           docker push $IMAGE
-          az containerapp update --name mnf-ml-service \
-            --resource-group $RESOURCE_GROUP --image $IMAGE
           az containerapp job update --name mnf-ratings-job \
             --resource-group $RESOURCE_GROUP --image $IMAGE
 
@@ -171,6 +169,5 @@ jobs:
 
           failed=0
           [ "${{ needs.changes.outputs.backend }}" = "true" ] && { check mnf-backend || failed=1; }
-          [ "${{ needs.changes.outputs.ml }}" = "true" ]      && { check mnf-ml-service || failed=1; }
           [ "${{ needs.changes.outputs.frontend }}" = "true" ] && { check mnf-frontend || failed=1; }
           exit $failed
