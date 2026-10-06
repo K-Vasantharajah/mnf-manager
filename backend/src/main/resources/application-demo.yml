@@ -1,0 +1,9 @@
+# Demo profile: a public sandbox with synthetic data. The database is wiped and
+# reseeded on every startup (see DemoResetStrategy), so this profile must only
+# ever point at a database whose name ends in _demo.
+spring:
+  flyway:
+    clean-disabled: false
+  sql:
+    init:
+      mode: never

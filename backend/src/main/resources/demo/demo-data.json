@@ -1,0 +1,3782 @@
+{
+  "players": [
+    {
+      "name": "Rohan",
+      "position": "CB"
+    },
+    {
+      "name": "Dev",
+      "position": "CB"
+    },
+    {
+      "name": "Tariq",
+      "position": "CB"
+    },
+    {
+      "name": "Callum",
+      "position": "CB"
+    },
+    {
+      "name": "Nikhil",
+      "position": "LB"
+    },
+    {
+      "name": "Zak",
+      "position": "LB"
+    },
+    {
+      "name": "Omar",
+      "position": "RB"
+    },
+    {
+      "name": "Liam",
+      "position": "RB"
+    },
+    {
+      "name": "Arjun",
+      "position": "CDM"
+    },
+    {
+      "name": "Kieran",
+      "position": "CDM"
+    },
+    {
+      "name": "Bilal",
+      "position": "CDM"
+    },
+    {
+      "name": "Rehan",
+      "position": "CM"
+    },
+    {
+      "name": "Theo",
+      "position": "CM"
+    },
+    {
+      "name": "Marcus",
+      "position": "CM"
+    },
+    {
+      "name": "Imran",
+      "position": "CAM"
+    },
+    {
+      "name": "Sami",
+      "position": "CAM"
+    },
+    {
+      "name": "Hamid",
+      "position": "CAM"
+    },
+    {
+      "name": "Ethan",
+      "position": "LW"
+    },
+    {
+      "name": "Kai",
+      "position": "LW"
+    },
+    {
+      "name": "Leon",
+      "position": "RW"
+    },
+    {
+      "name": "Yasin",
+      "position": "RW"
+    },
+    {
+      "name": "Owen",
+      "position": "ST"
+    },
+    {
+      "name": "Farhan",
+      "position": "ST"
+    },
+    {
+      "name": "Dan",
+      "position": "ST"
+    },
+    {
+      "name": "Rory",
+      "position": "ST"
+    },
+    {
+      "name": "Adil",
+      "position": "GK"
+    },
+    {
+      "name": "Tom",
+      "position": "CB"
+    },
+    {
+      "name": "Jude",
+      "position": "CM"
+    },
+    {
+      "name": "Sunny",
+      "position": "LW"
+    },
+    {
+      "name": "Nathan",
+      "position": "RB"
+    },
+    {
+      "name": "Waqas",
+      "position": "ST"
+    },
+    {
+      "name": "Luca",
+      "position": "CAM"
+    }
+  ],
+  "matches": [
+    {
+      "weeksAgo": 59,
+      "exhibition": false,
+      "captainA": "Tom",
+      "captainB": "Adil",
+      "scoreA": 3,
+      "scoreB": 4,
+      "teamA": [
+        "Tom",
+        "Kieran",
+        "Liam",
+        "Arjun",
+        "Ethan",
+        "Rory",
+        "Rohan",
+        "Hamid",
+        "Rehan"
+      ],
+      "teamB": [
+        "Adil",
+        "Farhan",
+        "Omar",
+        "Imran",
+        "Marcus",
+        "Zak",
+        "Nikhil",
+        "Leon",
+        "Callum"
+      ],
+      "goals": [
+        {
+          "player": "Tom",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Hamid",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Arjun",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Leon",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Zak",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 58,
+      "exhibition": false,
+      "captainA": "Yasin",
+      "captainB": "Liam",
+      "scoreA": 3,
+      "scoreB": 2,
+      "teamA": [
+        "Yasin",
+        "Imran",
+        "Bilal",
+        "Luca",
+        "Omar",
+        "Marcus",
+        "Callum",
+        "Nikhil",
+        "Hamid"
+      ],
+      "teamB": [
+        "Liam",
+        "Theo",
+        "Arjun",
+        "Zak",
+        "Dev",
+        "Kai",
+        "Rory",
+        "Sami",
+        "Rehan"
+      ],
+      "goals": [
+        {
+          "player": "Marcus",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Hamid",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Arjun",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Theo",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 57,
+      "exhibition": false,
+      "captainA": "Yasin",
+      "captainB": "Theo",
+      "scoreA": 4,
+      "scoreB": 5,
+      "teamA": [
+        "Yasin",
+        "Kai",
+        "Bilal",
+        "Omar",
+        "Jude",
+        "Ethan",
+        "Tariq",
+        "Leon",
+        "Sami"
+      ],
+      "teamB": [
+        "Theo",
+        "Waqas",
+        "Imran",
+        "Farhan",
+        "Luca",
+        "Rohan",
+        "Liam",
+        "Marcus",
+        "Tom"
+      ],
+      "goals": [
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Sami",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Jude",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Waqas",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Marcus",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Theo",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 56,
+      "exhibition": false,
+      "captainA": "Theo",
+      "captainB": "Sami",
+      "scoreA": 3,
+      "scoreB": 2,
+      "teamA": [
+        "Theo",
+        "Imran",
+        "Zak",
+        "Adil",
+        "Omar",
+        "Rohan",
+        "Yasin",
+        "Dev",
+        "Hamid"
+      ],
+      "teamB": [
+        "Sami",
+        "Farhan",
+        "Owen",
+        "Ethan",
+        "Rory",
+        "Liam",
+        "Tariq",
+        "Nikhil",
+        "Rehan"
+      ],
+      "goals": [
+        {
+          "player": "Imran",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Omar",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 55,
+      "exhibition": false,
+      "captainA": "Rohan",
+      "captainB": "Owen",
+      "scoreA": 5,
+      "scoreB": 1,
+      "teamA": [
+        "Rohan",
+        "Kieran",
+        "Liam",
+        "Tariq",
+        "Imran",
+        "Marcus",
+        "Omar",
+        "Sami",
+        "Hamid"
+      ],
+      "teamB": [
+        "Owen",
+        "Jude",
+        "Kai",
+        "Yasin",
+        "Farhan",
+        "Bilal",
+        "Adil",
+        "Ethan",
+        "Leon"
+      ],
+      "goals": [
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kieran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Marcus",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Omar",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Liam",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Owen",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 54,
+      "exhibition": false,
+      "captainA": "Hamid",
+      "captainB": "Arjun",
+      "scoreA": 1,
+      "scoreB": 7,
+      "teamA": [
+        "Hamid",
+        "Kai",
+        "Imran",
+        "Zak",
+        "Adil",
+        "Farhan",
+        "Tom",
+        "Sami",
+        "Leon"
+      ],
+      "teamB": [
+        "Arjun",
+        "Jude",
+        "Dev",
+        "Theo",
+        "Tariq",
+        "Yasin",
+        "Rehan",
+        "Luca",
+        "Rory"
+      ],
+      "goals": [
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Arjun",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Luca",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Jude",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Tom",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": true
+        }
+      ]
+    },
+    {
+      "weeksAgo": 53,
+      "exhibition": false,
+      "captainA": "Omar",
+      "captainB": "Imran",
+      "scoreA": 3,
+      "scoreB": 4,
+      "teamA": [
+        "Omar",
+        "Bilal",
+        "Tariq",
+        "Rohan",
+        "Leon",
+        "Marcus",
+        "Owen",
+        "Liam",
+        "Callum"
+      ],
+      "teamB": [
+        "Imran",
+        "Kieran",
+        "Theo",
+        "Rory",
+        "Dan",
+        "Ethan",
+        "Yasin",
+        "Dev",
+        "Luca"
+      ],
+      "goals": [
+        {
+          "player": "Owen",
+          "goals": 3,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Theo",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Dan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Rory",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 52,
+      "exhibition": false,
+      "captainA": "Dan",
+      "captainB": "Zak",
+      "scoreA": 1,
+      "scoreB": 1,
+      "teamA": [
+        "Dan",
+        "Owen",
+        "Omar",
+        "Marcus",
+        "Rory",
+        "Arjun",
+        "Rehan",
+        "Leon",
+        "Ethan"
+      ],
+      "teamB": [
+        "Zak",
+        "Bilal",
+        "Liam",
+        "Farhan",
+        "Rohan",
+        "Tariq",
+        "Dev",
+        "Adil",
+        "Hamid"
+      ],
+      "goals": [
+        {
+          "player": "Hamid",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": true
+        },
+        {
+          "player": "Zak",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 51,
+      "exhibition": false,
+      "captainA": "Dan",
+      "captainB": "Ethan",
+      "scoreA": 1,
+      "scoreB": 4,
+      "teamA": [
+        "Dan",
+        "Imran",
+        "Bilal",
+        "Kai",
+        "Arjun",
+        "Dev",
+        "Tariq",
+        "Adil",
+        "Hamid"
+      ],
+      "teamB": [
+        "Ethan",
+        "Nathan",
+        "Kieran",
+        "Owen",
+        "Nikhil",
+        "Rohan",
+        "Liam",
+        "Zak",
+        "Leon"
+      ],
+      "goals": [
+        {
+          "player": "Dan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kieran",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Ethan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Owen",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Leon",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 50,
+      "exhibition": false,
+      "captainA": "Ethan",
+      "captainB": "Dev",
+      "scoreA": 3,
+      "scoreB": 2,
+      "teamA": [
+        "Ethan",
+        "Kai",
+        "Farhan",
+        "Owen",
+        "Rohan",
+        "Nikhil",
+        "Adil",
+        "Rory",
+        "Hamid"
+      ],
+      "teamB": [
+        "Dev",
+        "Bilal",
+        "Omar",
+        "Imran",
+        "Theo",
+        "Marcus",
+        "Sami",
+        "Liam",
+        "Yasin"
+      ],
+      "goals": [
+        {
+          "player": "Farhan",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": true
+        },
+        {
+          "player": "Adil",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": true
+        },
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 49,
+      "exhibition": false,
+      "captainA": "Nikhil",
+      "captainB": "Kai",
+      "scoreA": 6,
+      "scoreB": 2,
+      "teamA": [
+        "Nikhil",
+        "Waqas",
+        "Zak",
+        "Dan",
+        "Tariq",
+        "Farhan",
+        "Rory",
+        "Arjun",
+        "Hamid"
+      ],
+      "teamB": [
+        "Kai",
+        "Imran",
+        "Owen",
+        "Omar",
+        "Theo",
+        "Sami",
+        "Tom",
+        "Rehan",
+        "Adil"
+      ],
+      "goals": [
+        {
+          "player": "Dan",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Rory",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Tom",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 48,
+      "exhibition": false,
+      "captainA": "Nikhil",
+      "captainB": "Luca",
+      "scoreA": 2,
+      "scoreB": 5,
+      "teamA": [
+        "Nikhil",
+        "Bilal",
+        "Liam",
+        "Dan",
+        "Kai",
+        "Tariq",
+        "Rory",
+        "Sami",
+        "Rehan"
+      ],
+      "teamB": [
+        "Luca",
+        "Imran",
+        "Zak",
+        "Ethan",
+        "Farhan",
+        "Arjun",
+        "Yasin",
+        "Rohan",
+        "Leon"
+      ],
+      "goals": [
+        {
+          "player": "Tariq",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Rory",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 4,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Arjun",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 47,
+      "exhibition": false,
+      "captainA": "Farhan",
+      "captainB": "Waqas",
+      "scoreA": 2,
+      "scoreB": 5,
+      "teamA": [
+        "Farhan",
+        "Kieran",
+        "Kai",
+        "Arjun",
+        "Nikhil",
+        "Tariq",
+        "Liam",
+        "Zak",
+        "Hamid"
+      ],
+      "teamB": [
+        "Waqas",
+        "Nathan",
+        "Imran",
+        "Yasin",
+        "Owen",
+        "Dan",
+        "Dev",
+        "Adil",
+        "Sami"
+      ],
+      "goals": [
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kieran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Waqas",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Dan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Owen",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Sami",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 46,
+      "exhibition": false,
+      "captainA": "Callum",
+      "captainB": "Rory",
+      "scoreA": 3,
+      "scoreB": 2,
+      "teamA": [
+        "Callum",
+        "Kai",
+        "Omar",
+        "Arjun",
+        "Imran",
+        "Rohan",
+        "Nikhil",
+        "Sami",
+        "Hamid"
+      ],
+      "teamB": [
+        "Rory",
+        "Kieran",
+        "Farhan",
+        "Dan",
+        "Zak",
+        "Ethan",
+        "Tariq",
+        "Liam",
+        "Rehan"
+      ],
+      "goals": [
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Omar",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Dan",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 45,
+      "exhibition": false,
+      "captainA": "Tariq",
+      "captainB": "Marcus",
+      "scoreA": 0,
+      "scoreB": 3,
+      "teamA": [
+        "Tariq",
+        "Dan",
+        "Owen",
+        "Dev",
+        "Kai",
+        "Bilal",
+        "Zak",
+        "Nikhil",
+        "Hamid"
+      ],
+      "teamB": [
+        "Marcus",
+        "Kieran",
+        "Omar",
+        "Yasin",
+        "Sunny",
+        "Arjun",
+        "Imran",
+        "Ethan",
+        "Rehan"
+      ],
+      "goals": [
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Marcus",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Sunny",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 44,
+      "exhibition": false,
+      "captainA": "Marcus",
+      "captainB": "Leon",
+      "scoreA": 5,
+      "scoreB": 0,
+      "teamA": [
+        "Marcus",
+        "Bilal",
+        "Kieran",
+        "Omar",
+        "Dev",
+        "Yasin",
+        "Ethan",
+        "Sami",
+        "Owen"
+      ],
+      "teamB": [
+        "Leon",
+        "Dan",
+        "Farhan",
+        "Arjun",
+        "Liam",
+        "Rohan",
+        "Tariq",
+        "Rehan",
+        "Callum"
+      ],
+      "goals": [
+        {
+          "player": "Owen",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Bilal",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kieran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 43,
+      "exhibition": false,
+      "captainA": "Marcus",
+      "captainB": "Bilal",
+      "scoreA": 4,
+      "scoreB": 1,
+      "teamA": [
+        "Marcus",
+        "Kai",
+        "Owen",
+        "Liam",
+        "Nikhil",
+        "Zak",
+        "Dan",
+        "Yasin",
+        "Hamid"
+      ],
+      "teamB": [
+        "Bilal",
+        "Kieran",
+        "Omar",
+        "Farhan",
+        "Tariq",
+        "Arjun",
+        "Ethan",
+        "Adil",
+        "Callum"
+      ],
+      "goals": [
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Dan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Owen",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 42,
+      "exhibition": false,
+      "captainA": "Marcus",
+      "captainB": "Rehan",
+      "scoreA": 2,
+      "scoreB": 3,
+      "teamA": [
+        "Marcus",
+        "Kieran",
+        "Arjun",
+        "Yasin",
+        "Liam",
+        "Ethan",
+        "Adil",
+        "Leon",
+        "Tom"
+      ],
+      "teamB": [
+        "Rehan",
+        "Farhan",
+        "Bilal",
+        "Kai",
+        "Tariq",
+        "Dev",
+        "Owen",
+        "Nikhil",
+        "Sami"
+      ],
+      "goals": [
+        {
+          "player": "Kieran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 41,
+      "exhibition": false,
+      "captainA": "Sunny",
+      "captainB": "Tom",
+      "scoreA": 1,
+      "scoreB": 4,
+      "teamA": [
+        "Sunny",
+        "Dan",
+        "Imran",
+        "Waqas",
+        "Omar",
+        "Yasin",
+        "Farhan",
+        "Owen",
+        "Hamid"
+      ],
+      "teamB": [
+        "Tom",
+        "Liam",
+        "Theo",
+        "Bilal",
+        "Kai",
+        "Tariq",
+        "Zak",
+        "Arjun",
+        "Marcus"
+      ],
+      "goals": [
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Marcus",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Tom",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 40,
+      "exhibition": false,
+      "captainA": "Kieran",
+      "captainB": "Liam",
+      "scoreA": 3,
+      "scoreB": 7,
+      "teamA": [
+        "Kieran",
+        "Farhan",
+        "Kai",
+        "Ethan",
+        "Dev",
+        "Luca",
+        "Leon",
+        "Rehan",
+        "Hamid"
+      ],
+      "teamB": [
+        "Liam",
+        "Waqas",
+        "Imran",
+        "Omar",
+        "Theo",
+        "Marcus",
+        "Tariq",
+        "Sami",
+        "Callum"
+      ],
+      "goals": [
+        {
+          "player": "Ethan",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Luca",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Waqas",
+          "goals": 3,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Tariq",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Callum",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 39,
+      "exhibition": true,
+      "captainA": "Liam",
+      "captainB": "Nathan",
+      "scoreA": 8,
+      "scoreB": 1,
+      "teamA": [
+        "Liam",
+        "Imran",
+        "Kieran",
+        "Rohan",
+        "Tom",
+        "Sami",
+        "Nikhil",
+        "Callum",
+        "Adil"
+      ],
+      "teamB": [
+        "Nathan",
+        "Bilal",
+        "Farhan",
+        "Kai",
+        "Tariq",
+        "Yasin",
+        "Owen",
+        "Ethan",
+        "Rehan"
+      ],
+      "goals": [
+        {
+          "player": "Liam",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kieran",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Adil",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Sami",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Callum",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 38,
+      "exhibition": false,
+      "captainA": "Jude",
+      "captainB": "Adil",
+      "scoreA": 1,
+      "scoreB": 3,
+      "teamA": [
+        "Jude",
+        "Theo",
+        "Dan",
+        "Omar",
+        "Bilal",
+        "Yasin",
+        "Sami",
+        "Rehan",
+        "Callum"
+      ],
+      "teamB": [
+        "Adil",
+        "Kai",
+        "Zak",
+        "Arjun",
+        "Sunny",
+        "Tariq",
+        "Dev",
+        "Rory",
+        "Leon"
+      ],
+      "goals": [
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Leon",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Sunny",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Arjun",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 37,
+      "exhibition": false,
+      "captainA": "Theo",
+      "captainB": "Sami",
+      "scoreA": 3,
+      "scoreB": 0,
+      "teamA": [
+        "Theo",
+        "Bilal",
+        "Omar",
+        "Tariq",
+        "Rory",
+        "Farhan",
+        "Nikhil",
+        "Marcus",
+        "Hamid"
+      ],
+      "teamB": [
+        "Sami",
+        "Zak",
+        "Imran",
+        "Kai",
+        "Liam",
+        "Leon",
+        "Arjun",
+        "Rehan",
+        "Ethan"
+      ],
+      "goals": [
+        {
+          "player": "Rory",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 36,
+      "exhibition": false,
+      "captainA": "Yasin",
+      "captainB": "Hamid",
+      "scoreA": 3,
+      "scoreB": 5,
+      "teamA": [
+        "Yasin",
+        "Bilal",
+        "Kieran",
+        "Imran",
+        "Luca",
+        "Zak",
+        "Dan",
+        "Rory",
+        "Leon"
+      ],
+      "teamB": [
+        "Hamid",
+        "Nathan",
+        "Farhan",
+        "Arjun",
+        "Liam",
+        "Kai",
+        "Nikhil",
+        "Ethan",
+        "Sami"
+      ],
+      "goals": [
+        {
+          "player": "Zak",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Leon",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Ethan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Nathan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 35,
+      "exhibition": false,
+      "captainA": "Hamid",
+      "captainB": "Owen",
+      "scoreA": 5,
+      "scoreB": 3,
+      "teamA": [
+        "Hamid",
+        "Zak",
+        "Liam",
+        "Kai",
+        "Tom",
+        "Sami",
+        "Omar",
+        "Adil",
+        "Leon"
+      ],
+      "teamB": [
+        "Owen",
+        "Nathan",
+        "Yasin",
+        "Theo",
+        "Tariq",
+        "Imran",
+        "Ethan",
+        "Arjun",
+        "Callum"
+      ],
+      "goals": [
+        {
+          "player": "Tom",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Leon",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Zak",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Owen",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Ethan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 34,
+      "exhibition": false,
+      "captainA": "Rohan",
+      "captainB": "Arjun",
+      "scoreA": 3,
+      "scoreB": 2,
+      "teamA": [
+        "Rohan",
+        "Nathan",
+        "Theo",
+        "Nikhil",
+        "Tariq",
+        "Zak",
+        "Bilal",
+        "Rehan",
+        "Leon"
+      ],
+      "teamB": [
+        "Arjun",
+        "Kieran",
+        "Omar",
+        "Dan",
+        "Yasin",
+        "Owen",
+        "Ethan",
+        "Marcus",
+        "Rory"
+      ],
+      "goals": [
+        {
+          "player": "Bilal",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Zak",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Tariq",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 33,
+      "exhibition": false,
+      "captainA": "Rohan",
+      "captainB": "Imran",
+      "scoreA": 1,
+      "scoreB": 1,
+      "teamA": [
+        "Rohan",
+        "Farhan",
+        "Kai",
+        "Owen",
+        "Luca",
+        "Leon",
+        "Callum",
+        "Rory",
+        "Hamid"
+      ],
+      "teamB": [
+        "Imran",
+        "Nathan",
+        "Kieran",
+        "Liam",
+        "Adil",
+        "Dev",
+        "Tariq",
+        "Rehan",
+        "Ethan"
+      ],
+      "goals": [
+        {
+          "player": "Luca",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 32,
+      "exhibition": false,
+      "captainA": "Omar",
+      "captainB": "Zak",
+      "scoreA": 1,
+      "scoreB": 5,
+      "teamA": [
+        "Omar",
+        "Imran",
+        "Liam",
+        "Nikhil",
+        "Bilal",
+        "Arjun",
+        "Ethan",
+        "Leon",
+        "Dev"
+      ],
+      "teamB": [
+        "Zak",
+        "Kieran",
+        "Farhan",
+        "Kai",
+        "Owen",
+        "Dan",
+        "Yasin",
+        "Tariq",
+        "Rehan"
+      ],
+      "goals": [
+        {
+          "player": "Bilal",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Zak",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Rehan",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 31,
+      "exhibition": false,
+      "captainA": "Zak",
+      "captainB": "Dan",
+      "scoreA": 3,
+      "scoreB": 0,
+      "teamA": [
+        "Zak",
+        "Waqas",
+        "Yasin",
+        "Omar",
+        "Dev",
+        "Bilal",
+        "Rory",
+        "Ethan",
+        "Hamid"
+      ],
+      "teamB": [
+        "Dan",
+        "Theo",
+        "Imran",
+        "Kieran",
+        "Arjun",
+        "Sami",
+        "Marcus",
+        "Liam",
+        "Tom"
+      ],
+      "goals": [
+        {
+          "player": "Yasin",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Rory",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 30,
+      "exhibition": false,
+      "captainA": "Zak",
+      "captainB": "Ethan",
+      "scoreA": 2,
+      "scoreB": 6,
+      "teamA": [
+        "Zak",
+        "Waqas",
+        "Dan",
+        "Tariq",
+        "Dev",
+        "Rory",
+        "Nikhil",
+        "Adil",
+        "Hamid"
+      ],
+      "teamB": [
+        "Ethan",
+        "Kieran",
+        "Farhan",
+        "Rohan",
+        "Arjun",
+        "Marcus",
+        "Liam",
+        "Leon",
+        "Sami"
+      ],
+      "goals": [
+        {
+          "player": "Waqas",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Rory",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Sami",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Liam",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Ethan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Leon",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 29,
+      "exhibition": false,
+      "captainA": "Ethan",
+      "captainB": "Kai",
+      "scoreA": 1,
+      "scoreB": 3,
+      "teamA": [
+        "Ethan",
+        "Dan",
+        "Rohan",
+        "Yasin",
+        "Arjun",
+        "Adil",
+        "Marcus",
+        "Leon",
+        "Hamid"
+      ],
+      "teamB": [
+        "Kai",
+        "Imran",
+        "Omar",
+        "Tariq",
+        "Owen",
+        "Luca",
+        "Bilal",
+        "Tom",
+        "Rehan"
+      ],
+      "goals": [
+        {
+          "player": "Dan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Owen",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Rehan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 28,
+      "exhibition": false,
+      "captainA": "Kai",
+      "captainB": "Farhan",
+      "scoreA": 5,
+      "scoreB": 3,
+      "teamA": [
+        "Kai",
+        "Omar",
+        "Nathan",
+        "Arjun",
+        "Liam",
+        "Tom",
+        "Tariq",
+        "Rehan",
+        "Ethan"
+      ],
+      "teamB": [
+        "Farhan",
+        "Waqas",
+        "Kieran",
+        "Zak",
+        "Bilal",
+        "Sunny",
+        "Owen",
+        "Rory",
+        "Sami"
+      ],
+      "goals": [
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Tom",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Rehan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Nathan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Bilal",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": true
+        },
+        {
+          "player": "Owen",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Waqas",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 27,
+      "exhibition": false,
+      "captainA": "Kai",
+      "captainB": "Dev",
+      "scoreA": 1,
+      "scoreB": 5,
+      "teamA": [
+        "Kai",
+        "Farhan",
+        "Kieran",
+        "Ethan",
+        "Arjun",
+        "Yasin",
+        "Leon",
+        "Rehan",
+        "Callum"
+      ],
+      "teamB": [
+        "Dev",
+        "Theo",
+        "Luca",
+        "Imran",
+        "Omar",
+        "Tariq",
+        "Liam",
+        "Adil",
+        "Owen"
+      ],
+      "goals": [
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Theo",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Owen",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Omar",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Luca",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 26,
+      "exhibition": false,
+      "captainA": "Waqas",
+      "captainB": "Rory",
+      "scoreA": 1,
+      "scoreB": 2,
+      "teamA": [
+        "Waqas",
+        "Kieran",
+        "Dan",
+        "Liam",
+        "Zak",
+        "Adil",
+        "Sami",
+        "Callum",
+        "Hamid"
+      ],
+      "teamB": [
+        "Rory",
+        "Imran",
+        "Bilal",
+        "Farhan",
+        "Omar",
+        "Ethan",
+        "Tariq",
+        "Leon",
+        "Rehan"
+      ],
+      "goals": [
+        {
+          "player": "Waqas",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Omar",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 25,
+      "exhibition": false,
+      "captainA": "Tariq",
+      "captainB": "Leon",
+      "scoreA": 5,
+      "scoreB": 2,
+      "teamA": [
+        "Tariq",
+        "Waqas",
+        "Dan",
+        "Arjun",
+        "Bilal",
+        "Yasin",
+        "Ethan",
+        "Rehan",
+        "Hamid"
+      ],
+      "teamB": [
+        "Leon",
+        "Jude",
+        "Omar",
+        "Theo",
+        "Imran",
+        "Farhan",
+        "Sami",
+        "Adil",
+        "Owen"
+      ],
+      "goals": [
+        {
+          "player": "Ethan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Bilal",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Tariq",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Waqas",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Owen",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 24,
+      "exhibition": false,
+      "captainA": "Tariq",
+      "captainB": "Nikhil",
+      "scoreA": 1,
+      "scoreB": 4,
+      "teamA": [
+        "Tariq",
+        "Dan",
+        "Zak",
+        "Arjun",
+        "Liam",
+        "Kai",
+        "Owen",
+        "Callum",
+        "Hamid"
+      ],
+      "teamB": [
+        "Nikhil",
+        "Omar",
+        "Bilal",
+        "Rory",
+        "Dev",
+        "Farhan",
+        "Ethan",
+        "Sami",
+        "Leon"
+      ],
+      "goals": [
+        {
+          "player": "Dan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Ethan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Leon",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Liam",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": true
+        },
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 23,
+      "exhibition": false,
+      "captainA": "Bilal",
+      "captainB": "Rehan",
+      "scoreA": 2,
+      "scoreB": 3,
+      "teamA": [
+        "Bilal",
+        "Imran",
+        "Omar",
+        "Theo",
+        "Zak",
+        "Dev",
+        "Rohan",
+        "Adil",
+        "Ethan"
+      ],
+      "teamB": [
+        "Rehan",
+        "Kieran",
+        "Owen",
+        "Kai",
+        "Liam",
+        "Marcus",
+        "Rory",
+        "Yasin",
+        "Hamid"
+      ],
+      "goals": [
+        {
+          "player": "Bilal",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 22,
+      "exhibition": false,
+      "captainA": "Marcus",
+      "captainB": "Adil",
+      "scoreA": 3,
+      "scoreB": 7,
+      "teamA": [
+        "Marcus",
+        "Waqas",
+        "Arjun",
+        "Rohan",
+        "Zak",
+        "Nikhil",
+        "Tariq",
+        "Leon",
+        "Ethan"
+      ],
+      "teamB": [
+        "Adil",
+        "Imran",
+        "Theo",
+        "Kai",
+        "Omar",
+        "Rory",
+        "Dan",
+        "Owen",
+        "Sami"
+      ],
+      "goals": [
+        {
+          "player": "Marcus",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Zak",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Dan",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Theo",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Omar",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Sami",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 21,
+      "exhibition": false,
+      "captainA": "Adil",
+      "captainB": "Liam",
+      "scoreA": 2,
+      "scoreB": 2,
+      "teamA": [
+        "Adil",
+        "Imran",
+        "Kai",
+        "Omar",
+        "Bilal",
+        "Dan",
+        "Sami",
+        "Rory",
+        "Hamid"
+      ],
+      "teamB": [
+        "Liam",
+        "Jude",
+        "Arjun",
+        "Farhan",
+        "Theo",
+        "Tariq",
+        "Dev",
+        "Leon",
+        "Rehan"
+      ],
+      "goals": [
+        {
+          "player": "Rory",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Theo",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Jude",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 20,
+      "exhibition": false,
+      "captainA": "Adil",
+      "captainB": "Luca",
+      "scoreA": 3,
+      "scoreB": 2,
+      "teamA": [
+        "Adil",
+        "Kieran",
+        "Farhan",
+        "Nikhil",
+        "Rohan",
+        "Tariq",
+        "Ethan",
+        "Rehan",
+        "Callum"
+      ],
+      "teamB": [
+        "Luca",
+        "Theo",
+        "Rory",
+        "Omar",
+        "Owen",
+        "Kai",
+        "Tom",
+        "Yasin",
+        "Sami"
+      ],
+      "goals": [
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Ethan",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Owen",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Omar",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 19,
+      "exhibition": true,
+      "captainA": "Adil",
+      "captainB": "Callum",
+      "scoreA": 5,
+      "scoreB": 2,
+      "teamA": [
+        "Adil",
+        "Kieran",
+        "Nathan",
+        "Kai",
+        "Dan",
+        "Nikhil",
+        "Tariq",
+        "Sami",
+        "Hamid"
+      ],
+      "teamB": [
+        "Callum",
+        "Jude",
+        "Omar",
+        "Arjun",
+        "Bilal",
+        "Owen",
+        "Luca",
+        "Marcus",
+        "Leon"
+      ],
+      "goals": [
+        {
+          "player": "Luca",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": true
+        },
+        {
+          "player": "Tariq",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Nathan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Sami",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Dan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Owen",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Jude",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 18,
+      "exhibition": false,
+      "captainA": "Kieran",
+      "captainB": "Jude",
+      "scoreA": 4,
+      "scoreB": 3,
+      "teamA": [
+        "Kieran",
+        "Arjun",
+        "Kai",
+        "Dan",
+        "Ethan",
+        "Rohan",
+        "Yasin",
+        "Dev",
+        "Hamid"
+      ],
+      "teamB": [
+        "Jude",
+        "Theo",
+        "Farhan",
+        "Omar",
+        "Leon",
+        "Bilal",
+        "Zak",
+        "Marcus",
+        "Callum"
+      ],
+      "goals": [
+        {
+          "player": "Theo",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": true
+        },
+        {
+          "player": "Ethan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": true
+        },
+        {
+          "player": "Callum",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Jude",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 17,
+      "exhibition": false,
+      "captainA": "Kieran",
+      "captainB": "Yasin",
+      "scoreA": 3,
+      "scoreB": 4,
+      "teamA": [
+        "Kieran",
+        "Omar",
+        "Liam",
+        "Farhan",
+        "Dev",
+        "Nikhil",
+        "Marcus",
+        "Callum",
+        "Hamid"
+      ],
+      "teamB": [
+        "Yasin",
+        "Imran",
+        "Dan",
+        "Bilal",
+        "Ethan",
+        "Rory",
+        "Tariq",
+        "Rehan",
+        "Leon"
+      ],
+      "goals": [
+        {
+          "player": "Farhan",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kieran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Leon",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Rory",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Rehan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 16,
+      "exhibition": false,
+      "captainA": "Yasin",
+      "captainB": "Theo",
+      "scoreA": 0,
+      "scoreB": 2,
+      "teamA": [
+        "Yasin",
+        "Kieran",
+        "Arjun",
+        "Liam",
+        "Zak",
+        "Dan",
+        "Sami",
+        "Rehan",
+        "Leon"
+      ],
+      "teamB": [
+        "Theo",
+        "Omar",
+        "Kai",
+        "Bilal",
+        "Marcus",
+        "Rohan",
+        "Ethan",
+        "Adil",
+        "Callum"
+      ],
+      "goals": [
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Marcus",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 15,
+      "exhibition": false,
+      "captainA": "Theo",
+      "captainB": "Hamid",
+      "scoreA": 2,
+      "scoreB": 4,
+      "teamA": [
+        "Theo",
+        "Dev",
+        "Kieran",
+        "Tariq",
+        "Bilal",
+        "Dan",
+        "Rohan",
+        "Liam",
+        "Rory"
+      ],
+      "teamB": [
+        "Hamid",
+        "Jude",
+        "Omar",
+        "Farhan",
+        "Marcus",
+        "Imran",
+        "Zak",
+        "Yasin",
+        "Arjun"
+      ],
+      "goals": [
+        {
+          "player": "Kieran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Rory",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Jude",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Liam",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": true
+        },
+        {
+          "player": "Omar",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 14,
+      "exhibition": false,
+      "captainA": "Hamid",
+      "captainB": "Sami",
+      "scoreA": 4,
+      "scoreB": 3,
+      "teamA": [
+        "Hamid",
+        "Theo",
+        "Zak",
+        "Bilal",
+        "Owen",
+        "Yasin",
+        "Rory",
+        "Leon",
+        "Callum"
+      ],
+      "teamB": [
+        "Sami",
+        "Farhan",
+        "Omar",
+        "Dev",
+        "Dan",
+        "Ethan",
+        "Adil",
+        "Rehan",
+        "Tariq"
+      ],
+      "goals": [
+        {
+          "player": "Rory",
+          "goals": 3,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Omar",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 13,
+      "exhibition": false,
+      "captainA": "Hamid",
+      "captainB": "Arjun",
+      "scoreA": 2,
+      "scoreB": 3,
+      "teamA": [
+        "Hamid",
+        "Farhan",
+        "Bilal",
+        "Kai",
+        "Zak",
+        "Dan",
+        "Nikhil",
+        "Tariq",
+        "Rehan"
+      ],
+      "teamB": [
+        "Arjun",
+        "Omar",
+        "Imran",
+        "Kieran",
+        "Rohan",
+        "Theo",
+        "Ethan",
+        "Leon",
+        "Rory"
+      ],
+      "goals": [
+        {
+          "player": "Farhan",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Omar",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 12,
+      "exhibition": false,
+      "captainA": "Arjun",
+      "captainB": "Tom",
+      "scoreA": 3,
+      "scoreB": 2,
+      "teamA": [
+        "Arjun",
+        "Imran",
+        "Liam",
+        "Tariq",
+        "Dev",
+        "Leon",
+        "Rohan",
+        "Rehan",
+        "Adil"
+      ],
+      "teamB": [
+        "Tom",
+        "Dan",
+        "Omar",
+        "Kai",
+        "Zak",
+        "Owen",
+        "Callum",
+        "Ethan",
+        "Sami"
+      ],
+      "goals": [
+        {
+          "player": "Dev",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Leon",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Tom",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Ethan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 11,
+      "exhibition": false,
+      "captainA": "Arjun",
+      "captainB": "Sunny",
+      "scoreA": 2,
+      "scoreB": 3,
+      "teamA": [
+        "Arjun",
+        "Imran",
+        "Rory",
+        "Liam",
+        "Tariq",
+        "Owen",
+        "Marcus",
+        "Leon",
+        "Sami"
+      ],
+      "teamB": [
+        "Sunny",
+        "Kai",
+        "Theo",
+        "Waqas",
+        "Farhan",
+        "Bilal",
+        "Ethan",
+        "Dev",
+        "Callum"
+      ],
+      "goals": [
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Sami",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Sunny",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Waqas",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 10,
+      "exhibition": false,
+      "captainA": "Sunny",
+      "captainB": "Owen",
+      "scoreA": 7,
+      "scoreB": 2,
+      "teamA": [
+        "Sunny",
+        "Farhan",
+        "Omar",
+        "Yasin",
+        "Arjun",
+        "Rohan",
+        "Nikhil",
+        "Marcus",
+        "Callum"
+      ],
+      "teamB": [
+        "Owen",
+        "Kai",
+        "Imran",
+        "Kieran",
+        "Tariq",
+        "Leon",
+        "Zak",
+        "Ethan",
+        "Dan"
+      ],
+      "goals": [
+        {
+          "player": "Farhan",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Nikhil",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Marcus",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Sunny",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kieran",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 9,
+      "exhibition": false,
+      "captainA": "Rohan",
+      "captainB": "Imran",
+      "scoreA": 5,
+      "scoreB": 2,
+      "teamA": [
+        "Rohan",
+        "Yasin",
+        "Farhan",
+        "Leon",
+        "Rory",
+        "Liam",
+        "Rehan",
+        "Nikhil",
+        "Hamid"
+      ],
+      "teamB": [
+        "Imran",
+        "Theo",
+        "Omar",
+        "Dan",
+        "Owen",
+        "Bilal",
+        "Tariq",
+        "Zak",
+        "Ethan"
+      ],
+      "goals": [
+        {
+          "player": "Leon",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Rory",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 8,
+      "exhibition": false,
+      "captainA": "Omar",
+      "captainB": "Ethan",
+      "scoreA": 0,
+      "scoreB": 1,
+      "teamA": [
+        "Omar",
+        "Kieran",
+        "Dev",
+        "Liam",
+        "Arjun",
+        "Marcus",
+        "Owen",
+        "Rehan",
+        "Hamid"
+      ],
+      "teamB": [
+        "Ethan",
+        "Imran",
+        "Kai",
+        "Bilal",
+        "Tariq",
+        "Nikhil",
+        "Sami",
+        "Adil",
+        "Callum"
+      ],
+      "goals": [
+        {
+          "player": "Sami",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 7,
+      "exhibition": false,
+      "captainA": "Ethan",
+      "captainB": "Nathan",
+      "scoreA": 5,
+      "scoreB": 0,
+      "teamA": [
+        "Ethan",
+        "Dan",
+        "Marcus",
+        "Tariq",
+        "Omar",
+        "Rohan",
+        "Owen",
+        "Adil",
+        "Sami"
+      ],
+      "teamB": [
+        "Nathan",
+        "Imran",
+        "Liam",
+        "Kieran",
+        "Kai",
+        "Nikhil",
+        "Rehan",
+        "Leon",
+        "Dev"
+      ],
+      "goals": [
+        {
+          "player": "Tariq",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Dan",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Sami",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Marcus",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 6,
+      "exhibition": false,
+      "captainA": "Dan",
+      "captainB": "Zak",
+      "scoreA": 2,
+      "scoreB": 0,
+      "teamA": [
+        "Dan",
+        "Omar",
+        "Kai",
+        "Luca",
+        "Tariq",
+        "Arjun",
+        "Adil",
+        "Sami",
+        "Rehan"
+      ],
+      "teamB": [
+        "Zak",
+        "Farhan",
+        "Liam",
+        "Imran",
+        "Owen",
+        "Marcus",
+        "Dev",
+        "Rory",
+        "Nikhil"
+      ],
+      "goals": [
+        {
+          "player": "Dan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 5,
+      "exhibition": false,
+      "captainA": "Kai",
+      "captainB": "Rory",
+      "scoreA": 6,
+      "scoreB": 5,
+      "teamA": [
+        "Kai",
+        "Kieran",
+        "Imran",
+        "Yasin",
+        "Zak",
+        "Liam",
+        "Marcus",
+        "Owen",
+        "Hamid"
+      ],
+      "teamB": [
+        "Rory",
+        "Bilal",
+        "Nikhil",
+        "Theo",
+        "Luca",
+        "Arjun",
+        "Sami",
+        "Adil",
+        "Leon"
+      ],
+      "goals": [
+        {
+          "player": "Kai",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Kieran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Owen",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Bilal",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Sami",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": true
+        },
+        {
+          "player": "Luca",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 4,
+      "exhibition": false,
+      "captainA": "Kai",
+      "captainB": "Farhan",
+      "scoreA": 6,
+      "scoreB": 5,
+      "teamA": [
+        "Kai",
+        "Nathan",
+        "Zak",
+        "Bilal",
+        "Marcus",
+        "Yasin",
+        "Rory",
+        "Tom",
+        "Rehan"
+      ],
+      "teamB": [
+        "Farhan",
+        "Kieran",
+        "Imran",
+        "Arjun",
+        "Nikhil",
+        "Tariq",
+        "Ethan",
+        "Adil",
+        "Callum"
+      ],
+      "goals": [
+        {
+          "player": "Tom",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Yasin",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Nathan",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": true
+        },
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Arjun",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": true
+        },
+        {
+          "player": "Kieran",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Farhan",
+          "goals": 3,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 3,
+      "exhibition": false,
+      "captainA": "Kai",
+      "captainB": "Dev",
+      "scoreA": 2,
+      "scoreB": 0,
+      "teamA": [
+        "Kai",
+        "Zak",
+        "Kieran",
+        "Theo",
+        "Rory",
+        "Imran",
+        "Sami",
+        "Yasin",
+        "Hamid"
+      ],
+      "teamB": [
+        "Dev",
+        "Bilal",
+        "Liam",
+        "Farhan",
+        "Omar",
+        "Arjun",
+        "Owen",
+        "Ethan",
+        "Leon"
+      ],
+      "goals": [
+        {
+          "player": "Kai",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Hamid",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 2,
+      "exhibition": false,
+      "captainA": "Kai",
+      "captainB": "Leon",
+      "scoreA": 3,
+      "scoreB": 4,
+      "teamA": [
+        "Kai",
+        "Jude",
+        "Omar",
+        "Nikhil",
+        "Bilal",
+        "Yasin",
+        "Adil",
+        "Tariq",
+        "Hamid"
+      ],
+      "teamB": [
+        "Leon",
+        "Nathan",
+        "Imran",
+        "Arjun",
+        "Dev",
+        "Ethan",
+        "Rory",
+        "Liam",
+        "Rehan"
+      ],
+      "goals": [
+        {
+          "player": "Yasin",
+          "goals": 2,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Omar",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Imran",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Nathan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Liam",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 1,
+      "exhibition": false,
+      "captainA": "Waqas",
+      "captainB": "Nikhil",
+      "scoreA": 2,
+      "scoreB": 3,
+      "teamA": [
+        "Waqas",
+        "Arjun",
+        "Luca",
+        "Dev",
+        "Kai",
+        "Marcus",
+        "Owen",
+        "Callum",
+        "Sami"
+      ],
+      "teamB": [
+        "Nikhil",
+        "Bilal",
+        "Kieran",
+        "Theo",
+        "Dan",
+        "Adil",
+        "Rory",
+        "Ethan",
+        "Hamid"
+      ],
+      "goals": [
+        {
+          "player": "Waqas",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Sami",
+          "goals": 1,
+          "team": "A",
+          "ownGoal": false
+        },
+        {
+          "player": "Dan",
+          "goals": 2,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Rory",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    },
+    {
+      "weeksAgo": 0,
+      "exhibition": false,
+      "captainA": "Bilal",
+      "captainB": "Liam",
+      "scoreA": 0,
+      "scoreB": 4,
+      "teamA": [
+        "Bilal",
+        "Arjun",
+        "Farhan",
+        "Theo",
+        "Kai",
+        "Dev",
+        "Rohan",
+        "Adil",
+        "Callum"
+      ],
+      "teamB": [
+        "Liam",
+        "Kieran",
+        "Waqas",
+        "Omar",
+        "Zak",
+        "Tom",
+        "Ethan",
+        "Sami",
+        "Hamid"
+      ],
+      "goals": [
+        {
+          "player": "Kieran",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Sami",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Liam",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        },
+        {
+          "player": "Ethan",
+          "goals": 1,
+          "team": "B",
+          "ownGoal": false
+        }
+      ]
+    }
+  ]
+}
