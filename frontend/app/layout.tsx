@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import Providers from './providers';
+import DemoBanner from '@/components/demo/DemoBanner';
 
 // Self-hosted rather than next/font/google: Google Fonts sometimes returns URLs
 // that break Turbopack builds (vercel/next.js#99114). Files are the latin subset
@@ -57,7 +58,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${fraunces.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable}`}
     >
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <DemoBanner />
+          {children}
+        </Providers>
       </body>
     </html>
   );
