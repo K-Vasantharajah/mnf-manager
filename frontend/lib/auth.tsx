@@ -1,6 +1,8 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
+import { hasAccess } from './access';
+import { isDemo } from './demo';
 
 interface User {
   email: string;
@@ -37,8 +39,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function logout() {
+    const wasDemo = isDemo();
     setUser(null);
     localStorage.removeItem('mnf_user');
+
+    if (wasDemo || !hasAccess()) {
+      // A full reload, not router.push: it clears React Query's cache, so no data
+      // from the signed-out session is shown
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.href = '/access';
+    }
   }
 
   return (

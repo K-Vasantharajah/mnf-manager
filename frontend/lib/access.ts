@@ -1,5 +1,5 @@
 export const ACCESS_KEY = 'mnf_access';
-const ADMIN_KEY = 'mnf_user';
+export const ADMIN_KEY = 'mnf_user';
 
 export function getAccessToken(): string | null {
   if (typeof window === 'undefined') return null;

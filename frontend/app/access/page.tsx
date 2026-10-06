@@ -6,6 +6,8 @@ import Image from 'next/image';
 import api from '@/lib/api';
 import { setAccessToken } from '@/lib/access';
 import Footer from '@/components/ui/Footer';
+import TryDemoButton from '@/components/demo/TryDemoButton';
+import { demoAvailable } from '@/lib/demo';
 
 export default function AccessPage() {
   const router = useRouter();
@@ -74,6 +76,16 @@ export default function AccessPage() {
               {submitting ? 'Checking\u2026' : 'Enter'}
             </button>
           </form>
+          {demoAvailable() && (
+            <>
+              <div className="flex items-center gap-3 my-6">
+                <div className="flex-1 border-t border-line" />
+                <span className="text-xs text-muted">or</span>
+                <div className="flex-1 border-t border-line" />
+              </div>
+              <TryDemoButton />
+            </>
+          )}
         </div>
       </div>
       <Footer />
