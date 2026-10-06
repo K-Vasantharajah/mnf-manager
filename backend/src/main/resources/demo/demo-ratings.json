@@ -1,0 +1,184 @@
+[
+  {
+    "name": "Adil",
+    "attackRating": 75,
+    "defenceRating": 77,
+    "overallRating": 76,
+    "reliability": 81
+  },
+  {
+    "name": "Arjun",
+    "attackRating": 66,
+    "defenceRating": 65,
+    "overallRating": 66,
+    "reliability": 87
+  },
+  {
+    "name": "Bilal",
+    "attackRating": 74,
+    "defenceRating": 74,
+    "overallRating": 74,
+    "reliability": 85
+  },
+  {
+    "name": "Callum",
+    "attackRating": 70,
+    "defenceRating": 70,
+    "overallRating": 70,
+    "reliability": 75
+  },
+  {
+    "name": "Dan",
+    "attackRating": 72,
+    "defenceRating": 67,
+    "overallRating": 70,
+    "reliability": 81
+  },
+  {
+    "name": "Dev",
+    "attackRating": 67,
+    "defenceRating": 69,
+    "overallRating": 68,
+    "reliability": 81
+  },
+  {
+    "name": "Ethan",
+    "attackRating": 76,
+    "defenceRating": 81,
+    "overallRating": 77,
+    "reliability": 89
+  },
+  {
+    "name": "Farhan",
+    "attackRating": 80,
+    "defenceRating": 74,
+    "overallRating": 78,
+    "reliability": 84
+  },
+  {
+    "name": "Hamid",
+    "attackRating": 81,
+    "defenceRating": 84,
+    "overallRating": 82,
+    "reliability": 84
+  },
+  {
+    "name": "Imran",
+    "attackRating": 81,
+    "defenceRating": 74,
+    "overallRating": 78,
+    "reliability": 86
+  },
+  {
+    "name": "Kai",
+    "attackRating": 79,
+    "defenceRating": 77,
+    "overallRating": 78,
+    "reliability": 87
+  },
+  {
+    "name": "Kieran",
+    "attackRating": 72,
+    "defenceRating": 71,
+    "overallRating": 71,
+    "reliability": 81
+  },
+  {
+    "name": "Leon",
+    "attackRating": 69,
+    "defenceRating": 71,
+    "overallRating": 70,
+    "reliability": 84
+  },
+  {
+    "name": "Liam",
+    "attackRating": 73,
+    "defenceRating": 72,
+    "overallRating": 72,
+    "reliability": 86
+  },
+  {
+    "name": "Marcus",
+    "attackRating": 80,
+    "defenceRating": 82,
+    "overallRating": 81,
+    "reliability": 79
+  },
+  {
+    "name": "Nikhil",
+    "attackRating": 80,
+    "defenceRating": 75,
+    "overallRating": 77,
+    "reliability": 79
+  },
+  {
+    "name": "Omar",
+    "attackRating": 85,
+    "defenceRating": 85,
+    "overallRating": 85,
+    "reliability": 88
+  },
+  {
+    "name": "Owen",
+    "attackRating": 71,
+    "defenceRating": 70,
+    "overallRating": 70,
+    "reliability": 82
+  },
+  {
+    "name": "Rehan",
+    "attackRating": 80,
+    "defenceRating": 80,
+    "overallRating": 80,
+    "reliability": 82
+  },
+  {
+    "name": "Rohan",
+    "attackRating": 82,
+    "defenceRating": 82,
+    "overallRating": 82,
+    "reliability": 76
+  },
+  {
+    "name": "Rory",
+    "attackRating": 80,
+    "defenceRating": 84,
+    "overallRating": 81,
+    "reliability": 82
+  },
+  {
+    "name": "Sami",
+    "attackRating": 75,
+    "defenceRating": 76,
+    "overallRating": 76,
+    "reliability": 82
+  },
+  {
+    "name": "Tariq",
+    "attackRating": 79,
+    "defenceRating": 78,
+    "overallRating": 78,
+    "reliability": 88
+  },
+  {
+    "name": "Theo",
+    "attackRating": 76,
+    "defenceRating": 75,
+    "overallRating": 76,
+    "reliability": 79
+  },
+  {
+    "name": "Yasin",
+    "attackRating": 85,
+    "defenceRating": 85,
+    "overallRating": 85,
+    "reliability": 82
+  },
+  {
+    "name": "Zak",
+    "attackRating": 75,
+    "defenceRating": 73,
+    "overallRating": 74,
+    "reliability": 84
+  }
+]

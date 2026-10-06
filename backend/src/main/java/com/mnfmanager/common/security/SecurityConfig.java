@@ -38,6 +38,7 @@ public class SecurityConfig {
                         // rule must stay above the POST rule below.
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/access").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/demo/enter").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         // Calculations only, but responses include player names
                         .requestMatchers("/api/v1/draft/**").hasAnyRole("MEMBER", "ADMIN")
