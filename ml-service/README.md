@@ -1,9 +1,17 @@
-# MNF Manager — ML Service
+# MNF Manager — Ratings and evaluation
 
-> **Note:** the ratings model is being reworked. This document describes the
-> current implementation, which will change. See "Known limitations" below.
+Despite the folder name, this is no longer a service. It holds:
 
-Python microservice for ML-derived player ratings, draft simulation, and chemistry analysis.
+- **`update_ratings.py`**: recalculates player ratings. Runs in production as a
+  daily Azure Container Apps Job.
+- **`models/ratings.py`**: the ratings model.
+- **`evaluation/`**: the harness that compares rating models against held-out
+  matches, and the chemistry permutation test.
+- **`demo/`**: the generator for the public demo's synthetic group.
+
+The folder and image are still called `ml-service` from when this was a Flask
+service. Renaming would touch CI, the image name and the job configuration at
+once, so it hasn't been done.
 
 ## Setup
 
@@ -15,130 +23,99 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Running
+The database connection comes from `DATABASE_URL`, falling back to the local
+development database.
 
-```bash
-source venv/bin/activate
-flask run --port 5001
-```
-
-Service runs on `http://localhost:5001`.
-
-In production the service has internal ingress only — it isn't reachable from
-the internet, and all calls come through the backend's `DraftController`.
-
-## Configuration
-
-The database connection is read from `DATABASE_URL`, falling back to a local
-development database:
+## Updating ratings
 
 ```bash
 DATABASE_URL='postgresql://user:password@host:5432/mnfmanager?sslmode=require' python update_ratings.py
 ```
 
-## Endpoints
+It only recalculates if a competitive match has been recorded since the last
+update. Running twice for the same match night would compare ratings against
+themselves and reset every delta to zero. `--force` overrides the check, for
+example after correcting a result.
 
-| Method | Endpoint                             | Description                                 |
-| ------ | ------------------------------------ | ------------------------------------------- |
-| GET    | `/health`                            | Health check                                |
-| GET    | `/api/ratings/`                      | ML-derived ratings for all players          |
-| GET    | `/api/ratings/player/{id}`           | ML-derived rating for a specific player     |
-| POST   | `/api/draft/preferences/{captainId}` | Captain pick preferences from co-occurrence |
-| POST   | `/api/draft/captain-recommendations` | Captain rotation suggestions                |
+In production, `mnf-ratings-job` runs this daily at 06:00 UTC, so ratings from a
+Monday match are ready by Tuesday morning. It uses the same image CI builds from
+this folder.
+
+Deltas are only stored for players who played in the latest match: ratings are
+relative, so an absent player's rating can move when others' results change.
 
 ## How ratings are calculated
 
-### Attack and defence ratings
+Each player is compared with others in the same position group (defence,
+midfield or attack) on four statistics, each converted to a percentile within
+the group and weighted by position:
 
-Ridge regression adjusted plus-minus model (α=50). Each match produces two
-training rows — one per team — with binary player presence features. The model
-solves for each player's individual contribution to goals scored (attack) and
-goals conceded (defence), controlling for teammate quality.
+|          | Points % | Goals | Clean sheets | Goals conceded |
+| -------- | -------- | ----- | ------------ | -------------- |
+| Attack   | 50%      | 40%   | 0%           | 10%            |
+| Midfield | 50%      | 20%   | 15%          | 15%            |
+| Defence  | 50%      | 10%   | 20%          | 20%            |
 
-Both are placed on a shared centred scale: the group average sits at 5.5, and
-each standard deviation of impact moves a rating by 1.5 points, clipped to a
-3–10 range. Because the scale is anchored to the group's mean and spread rather
-than its extremes, one player's unusual result no longer rescales everyone else.
+- **Attack** blends points and goals; **defence** blends points, clean sheets and
+  goals conceded; **overall** blends the two by position (65/35 for forwards to
+  35/65 for defenders)
+- **Recency**: a player's own appearances decay with a 40-appearance half-life,
+  and all matches decay with a 60-match-week half-life, so stale evidence counts
+  for less
+- **Shrinkage** pulls ratings towards the middle in proportion to how little is
+  known about a player
+- **Minimum**: 20 appearances before a player is rated
+- **Scale**: 60–95, so no rating reads as a verdict
+- **Reliability** is attendance, scaled separately and kept out of overall
 
-An 8 in attack and an 8 in defence represent the same magnitude of contribution.
+Ratings describe recorded results, not ability.
 
-### Overall rating
-
-A position-weighted blend of attack and defence, calculated from the unrounded
-values so rounding doesn't compound. Weights range from 65/35 for forwards to
-35/65 for defenders. These are starting parameters rather than football truth —
-they should be validated against how well they predict future results.
-
-### Reliability rating
-
-Attendance rate (matches played / total competitive matches), scaled
-independently. Reliability measures availability, not ability, and is kept
-separate from the football ratings for that reason.
-
-### Minimum threshold
-
-Players with fewer than 10 appearances receive no rating. A null is more honest
-than a floor value.
-
-### Delta tracking
-
-Each update stores the previous ratings before recalculating, and writes the
-change back to the database. Deltas only make sense when the script is run once
-per match night: running it twice in succession compares a result against
-itself and produces zeros.
-
-## Chemistry analysis
-
-Pairwise win rate vs expected win rate for all player combinations with 5+
-matches together. Chemistry score = win rate together − average individual win
-rate. Positive means they perform better together, negative means worse.
-
-## Draft simulator
-
-Captain preferences are inferred from historical team co-occurrence rates. Match
-outcome prediction uses ridge regression impact coefficients to estimate expected
-goals per team, converted to a win probability via a sigmoid function.
-
-## Updating ratings
-
-After each match night, once results are recorded:
+## Evaluation
 
 ```bash
-source venv/bin/activate
-DATABASE_URL='<connection string>' python update_ratings.py
+python -m evaluation.run             # compare models on held-out weeks
+python -m evaluation.chemistry_null  # permutation test for pair chemistry
+python -m evaluation.tune            # see how each parameter moves the table
 ```
 
-This is currently a manual step; scheduling it is on the roadmap.
+`evaluation.run` trains each candidate on all matches before a given week and
+predicts that week, then measures rank stability on random subsamples. The
+findings that shaped the app:
 
-## Known limitations
+- No model, including the original ridge regression, predicted results better
+  than chance
+- The percentile model's ranks are about as stable as the ridge model's, compared
+  over the same eligible players
+- Chemistry scores were indistinguishable from chance in a permutation test that
+  swaps match results while keeping line-ups fixed (spread p = 0.44)
 
-The model measures **impact on results, not ability**. It can't distinguish a
-player who performed poorly from one who performed well on a losing team.
+The ridge model (`models/impact.py`) and the chemistry calculation
+(`models/chemistry.py`) stay as baselines for the harness.
 
-With a squad of around thirty and teams picked by captains in alternating order,
-the same players frequently appear together. Ridge regression handles the
-resulting instability by shrinking coefficients toward zero, but that solves a
-variance problem rather than an identification one: when two players almost
-always share a team, the data can't say which of them drove the result.
+`tune.py` reads an optional `WATCH` environment variable of comma-separated
+names to highlight, so no names live in the code.
 
-Team selection isn't random either. The challenging captain picks first, so
-players picked late tend to share teammates with other late picks, and the model
-attributes their teams' results to them individually.
+## Demo data
 
-Specific gaps being addressed in the next version:
+The public demo uses an invented group:
 
-- **No opposition adjustment.** Conceding three against a strong attack counts
-  the same as conceding three against a weak one.
-- **No uncertainty.** A rating derived from ten appearances with the same eight
-  teammates is presented as confidently as one derived from varied line-ups.
-- **Goals are modelled as continuous.** They're counts, so a Poisson or negative
-  binomial model would suit them better than ordinary least squares.
-- **α is fixed at 50** rather than tuned against held-out matches.
+```bash
+python demo/generate_demo_data.py    # writes the fixture the demo backend seeds from
+```
 
-## Caching
+To refresh the demo's ratings, seed a local demo database by running the backend
+with the `demo` profile, then:
 
-The impact model, ratings and chemistry calculations each cache their results in
-module-level variables, with a `force_refresh` parameter to bust the cache. Note
-that in a long-running service this means the model keeps using the data it
-loaded at startup until something forces a refresh, so newly recorded matches
-won't appear in predictions immediately.
+```bash
+DATABASE_URL='postgresql://mnf:mnf_local_password@localhost:5432/mnfmanager_demo' python update_ratings.py --force
+DATABASE_URL='postgresql://mnf:mnf_local_password@localhost:5432/mnfmanager_demo' python demo/export_demo_ratings.py
+```
+
+The exporter refuses any database not ending in `_demo`, so real ratings can never
+be written into the repository.
+
+## Tests
+
+```bash
+python -m pytest tests/
+```
