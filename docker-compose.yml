@@ -6,7 +6,8 @@ services:
       POSTGRES_DB: mnfmanager
       POSTGRES_USER: mnf
       POSTGRES_PASSWORD: mnf_local_password
-      POSTGRES_MULTIPLE_DATABASES: mnfmanager,mnfmanager_test
+      # Created on first start only (when the data volume is empty)
+      POSTGRES_MULTIPLE_DATABASES: mnfmanager,mnfmanager_test,mnfmanager_demo
     ports:
       - "5432:5432"
     volumes:
@@ -18,6 +19,8 @@ services:
       timeout: 5s
       retries: 5
 
+  # The full stack in containers. For day-to-day development, run only postgres
+  # and start the backend and frontend directly (see the README).
   backend:
     build: ./backend
     container_name: mnf-backend
@@ -27,32 +30,31 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mnfmanager
       SPRING_DATASOURCE_USERNAME: mnf
       SPRING_DATASOURCE_PASSWORD: mnf_local_password
-      ML_SERVICE_URL: http://ml-service:5001
-    depends_on:
-      postgres:
-        condition: service_healthy
-
-  ml-service:
-    build: ./ml-service
-    container_name: mnf-ml-service
-    ports:
-      - "5001:5001"
-    environment:
-      DATABASE_URL: postgresql://mnf:mnf_local_password@postgres:5432/mnfmanager
-      FLASK_ENV: production
     depends_on:
       postgres:
         condition: service_healthy
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        # NEXT_PUBLIC_* values are baked in at build time
+        NEXT_PUBLIC_API_URL: http://localhost:8080
     container_name: mnf-frontend
     ports:
       - "3000:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8080
     depends_on:
       - backend
+
+  # Runs once and exits: docker compose run --rm ratings [--force]
+  ratings:
+    build: ./ml-service
+    profiles: ["tools"]
+    environment:
+      DATABASE_URL: postgresql://mnf:mnf_local_password@postgres:5432/mnfmanager
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:

@@ -1,203 +1,142 @@
-# MNF Manager — Product Roadmap
+# MNF Manager — Roadmap
 
-## What's been built
+## Status
 
-### Core platform ✅
+In weekly use and in maintenance mode. The planned work is done; the items
+below are ideas, not commitments.
 
-- Full match recording with team composition, goal scorers and own goals
-- Exhibition match support — excluded from all competitive statistics
+## What's built
+
+### Core platform
+- Match recording with teams, goal scorers and own goals
+- Exhibition matches, excluded from all competitive statistics
 - Game week auto-calculation and season filtering
-- Edit match feature with stat reversal and recalculation
-- Score validation — blocks submission if goals don't match score
-- Team size limit — maximum 9 players per team
+- Match editing with stat reversal and recalculation
+- Score validation: goals must match the final score
+- Team size limit of 9 per side
 
-### Player management ✅
+### Players
+- Profiles with career and season stats and points percentage
+- Position tracking, with filtering by position group
+- Profile editing: name, position, strong foot, active status
+- Match history per season
 
-- Player profiles with career stats, pt% and season breakdown
-- Position tracking with filter by position group
-- Edit player profile — name, position, strong foot, active status
-- Player match history — click season row to view all matches
-- Own goal tracking — excluded from player goal tallies
+### Ratings
+- Percentile model: players compared within their position group on points %,
+  goals, clean sheets and goals conceded, weighted by position
+- Recency weighting (form and staleness), shrinkage for thin evidence, and a
+  20-appearance minimum
+- 60–95 scale, with reliability (attendance) kept separate
+- Updated by a daily scheduled job that only runs when there's a new match
+- Admin-only for now
 
-### ML ratings ✅
+### Leaderboard and captains
+- Points %: (W×3 + D) / (MP×3) × 100, with minimum match thresholds
+- Goals and appearances tables
+- Captain records, most-picked players, match history and unbeaten streaks
+- Captain rotation recommendations
 
-- Ridge regression adjusted plus-minus impact model (α=50)
-- Attack and defence on a shared centred scale, so one player's outlier result
-  no longer rescales everyone else's rating
-- Position-weighted overall rating
-- Reliability rating from attendance rate, scaled separately
-- Minimum 10 appearances — below that, no rating rather than a floor value
-- Delta tracking between updates
-- Currently visible to admins only while the model is reworked
+### Draft simulator
+- Squad and captain selection
+- Positional balance check per side, with average rating for admins
+- How often each player has ended up on the current captain's team, with counts
+  and a minimum-history threshold
+- *On the night*: appearance, goal and captaincy milestones, win, scoring,
+  unbeaten and attendance streaks, and pair records
 
-### Leaderboard ✅
+### Demo
+- Public, self-resetting demo with an invented group and full admin access
+- Isolated by construction: own database, own database user, own JWT secret
 
-- Points percentage: (W×3 + D) / (MP×3) × 100
-- Minimum match threshold (14 season, 28 all time)
-- ML ratings tables: attack, defence, reliability
-- Expandable modals for full rankings
-- Clickable player names navigate to profile
+### Access and privacy
+- Shared access code for members; Google OAuth for admins
+- Ratings stripped server-side for non-admins
+- Public privacy notice and story page; search indexing disabled
 
-### Captain stats ✅
+### Deployment
+- Azure Container Apps; backend and demo scale to zero
+- GitHub Actions builds only the services that changed, deploys on merge to main,
+  and verifies each deploy
 
-- Pt% per captain with W/D/L record
-- Most picked players (captain excluded from own list)
-- Match history modal per captain
-- Unbeaten streak tracking — season and all time
-- Captain rotation recommendations (who should captain next)
+## Removed, and why
 
-### Draft simulator ✅
+- **Match prediction.** An evaluation harness found no model predicted results
+  better than chance. Replaced by the balance check.
+- **Chemistry scores.** A permutation test found them indistinguishable from luck.
+  Pair records remain as plain facts.
+- **The always-on ML service.** Nothing live needed it once prediction went.
+  Draft queries moved into the backend; ratings became a scheduled job.
 
-- Squad selection up to 18 players
-- Captain preference recommendations from historical co-occurrence
-- Live win probability bar using ridge regression impact coefficients
-- Team chemistry scores — pairwise win rate vs expected
-- Last-3-players rule auto-assignment
-- Undo last pick support
+## Answered questions
 
-### Chemistry analysis ✅
+- **Is picking first an advantage?** No. The challenging captain wins 40.6% of
+  decisive matches.
+- **Which defensive combinations concede most?** Not answerable at this scale:
+  the chemistry permutation test showed combination effects are indistinguishable
+  from noise.
 
-- Pairwise chemistry scores for all player combinations with 5+ matches together
-- Chemistry score = win rate together − average individual win rate
-- Team chemistry score for any group of players
-- Exposed via draft simulator UI with colour-coded badges
+## Ideas
 
-### Dashboard ✅
+### Ratings visible to all members
+Remove the admin-only restriction (server-side serializer and UI condition), with
+a short "how ratings work" explainer, an updated privacy notice, and a decision
+on letting players opt out.
 
-- Current winning captain and unbeaten streak
-- Season longest streak and all time record
-- Top performers — pt% leader, top scorer, most played
-- Recent match results in GW format
+### Centre-back check in the balance panel
+The balance check groups positions into defence, midfield and attack, so three
+full-backs and no centre-back reads as balanced. Warn when one side has a
+centre-back or goalkeeper and the other doesn't.
 
-### Access and privacy ✅
-
-- Shared access code gates all match data, exchanged for a 30-day member token
-- BCrypt-hashed code held in an environment variable, rate limited per IP
-- Google OAuth 2.0 for admins, with the admin list supplied by the environment
-- Ratings stripped from API responses for non-admins, not just hidden in the UI
-- Public privacy notice with a route to request correction or removal
-- Public story page explaining what the ratings do and don't measure
-- Search engine indexing disabled
-
-### Deployment ✅
-
-- Azure Container Apps for frontend, backend and ML service
-- Azure Container Registry, PostgreSQL Flexible Server, custom domain with TLS
-- Secrets held as Container App secrets rather than baked into images
-- GitHub Actions: tests on every push, deploy to Azure on merge to main
-- Only the services that changed are rebuilt; images tagged with the commit SHA
-
-### Testing ✅
-
-- 74 integration tests running against a real PostgreSQL instance
-- Service layer, domain logic, HTTP layer and access rules covered
-- Tests gate deployment — a failure blocks the release
-
----
-
-## Up next
-
-### Ratings V2
-
-The current model measures impact on results, which isn't the same as ability,
-and the draft's alternating pick order means late picks share teammates in ways
-the regression struggles to separate. Planned work:
-
-- Model opposition strength, so conceding against a strong attack differs from
-  conceding against a weak one
-- Include a challenger-side term, since the first-pick advantage belongs to the
-  draft rather than to individual players
-- Surface confidence, marking players with sparse or highly correlated line-ups
-  as provisional rather than assigning an authoritative-looking number
-- Validate against held-out weeks, and against simulated players whose true
-  skill is known, before releasing ratings to the group
-
-### Component refactor
-
-Break the larger page components into reusable pieces.
-
----
-
-## Future features
-
-### Goals against analysis
-
-Track which defensive combinations concede the most goals.
-
-- Identify players who concede most when on the pitch
-- Identify vulnerable defensive setups for opposing captains to target
-- Feeds into draft simulator recommendations
-
-### First pick advantage analysis
-
-Does picking first actually correlate with winning?
-
-- The challenging captain picks first — is this a meaningful advantage?
-- If it is, both the prediction engine and the ratings model should account for it
+### Suppress deltas after a position change
+Changing a player's position compares them with a different group, and the jump
+appears as that week's delta, which reads as if it came from the match. Skip
+deltas for players whose position changed since the last update.
 
 ### Goalkeeper tracking
+Record who played in goal each match, for goals conceded per goalkeeper.
 
-Track who played in goal per match.
+### Player availability
+Record who's available before the draft, so the simulator starts from tonight's
+actual squad.
 
-- Enables goals conceded per goalkeeper analysis
-- Feeds into defensive strength calculations
+### Draft pitch view
+A top-down pitch with formation slots that fill as players are picked.
 
-### Player availability tracking
+### Match reports
+A short post-match summary generated from the recorded match.
 
-Track who is available each week before the draft.
+## Housekeeping
 
-- Reduces uncertainty in draft prediction
-- Enables "who should I pick given tonight's availability" queries
-
-### Draft simulator pitch view
-
-- Top-down SVG with formation slots
-- Players animate into position as they are picked
-- Chemistry badges and win probability panel alongside the pitch
-
-### AI generated match reports
-
-Post-match narrative generated from match data.
-
----
-
-## Operational improvements
-
-- Run the ML service under gunicorn rather than Flask's development server
-- Reduce backend logging from DEBUG to INFO in production
-- Schedule the weekly ratings update rather than running it manually
+- Check exhibition game-week numbering: `createMatch` always assigns `GW`
+  numbers, while exhibitions were historically `EX`
+- Give services a `java.time.Clock`, so tests can fix "today" rather than
+  computing seasons relative to it
+- Run the ML tests in CI, and remove the unused Testcontainers dependency (tests
+  use a local or CI service container)
+- Consider renaming `ml-service/` to reflect what it now holds
 - Move the database behind a private endpoint, which needs the Container Apps
   environment rebuilt with VNet integration
 
----
+## MNF rules reference
 
-## MNF Rules Reference
-
-### Captaincy system
-
-- The winning captain retains captaincy the following week
-- The winning captain picks second (challenging captain picks first), and picks
-  alternate from there
-- On a draw: both captains return the following week, pick order reverses
-- If the winning captain is absent: the most recent winning captain resumes when
+### Captaincy
+- The winning captain keeps the captaincy the following week
+- The challenging captain picks first; picks alternate from there
+- On a draw, both captains return the following week and pick order reverses
+- If the winning captain is absent, the most recent winning captain resumes when
   they return
-- Streaks carry forwards through absences
+- Streaks carry forward through absences
 
-### Streak definitions
-
-- Undefeated streak: consecutive matches as captain without a loss (draws count)
-- Winning streak: consecutive wins as captain (draws break the streak)
-- Dashboard shows undefeated streak as primary metric
+### Streaks
+- Unbeaten streak: consecutive matches as captain without a loss (draws count)
+- Winning streak: consecutive wins as captain (draws break it)
+- The dashboard shows the unbeaten streak as its primary metric
 
 ### Points percentage
-
-- Formula: (Wins × 3 + Draws × 1) / (Matches × 3) × 100
-- Primary ranking metric across leaderboard, player profiles and captain stats
+- (Wins × 3 + Draws) / (Matches × 3) × 100
+- The primary ranking metric across the leaderboard, profiles and captain stats
 - Minimum 14 matches for season rankings, 28 for all time
 
 ### Exhibition matches
-
-- Prefixed with EX (EX1, EX2 etc.)
-- Played when there are last minute dropouts (8v8 or 8v9)
-- Excluded from all competitive statistics
-- Only 9v9 matches count towards rankings
+- Played when last-minute dropouts leave 8v8 or 8v9
+- Excluded from all competitive statistics; only 9v9 matches count
