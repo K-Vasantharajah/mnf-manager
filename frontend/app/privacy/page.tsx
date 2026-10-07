@@ -16,7 +16,7 @@ export default function PrivacyPage() {
         </Link>
 
         <h1 className="font-display text-3xl text-paper mt-6">Privacy</h1>
-        <p className="text-xs text-muted mt-2">Last updated 23 September 2026</p>
+        <p className="text-xs text-muted mt-2">Last updated 7 October 2026</p>
 
         <div className="mt-10 space-y-8">
           <Section title="Who runs MNF Manager">
@@ -34,9 +34,9 @@ export default function PrivacyPage() {
               team, goals scored, and match results.
             </p>
             <p>
-              We also calculate statistical ratings from match results. These are visible only to
-              the group&apos;s admins, and they are a recreational estimate, not an assessment of
-              anyone&apos;s football ability.
+              We also calculate statistical ratings from match results, recalculated automatically
+              after each match. These are visible only to the group&apos;s admins, and they are a
+              recreational estimate, not an assessment of anyone&apos;s football ability.
             </p>
             <p>
               We don&apos;t collect contact details, dates of birth, addresses or any other personal
@@ -60,18 +60,35 @@ export default function PrivacyPage() {
             </p>
           </Section>
 
+          <Section title="The demo">
+            <p>
+              The public demo uses invented players and matches only. It runs on a separate database
+              and contains no information about any real MNF player.
+            </p>
+          </Section>
+
           <Section title="Where it's kept">
             <p>
               The app and its database are hosted on Microsoft Azure in the UK (UK South region).
               Admins sign in with Google, so Google processes their sign-in.
             </p>
+            <p>
+              Azure keeps server logs for 30 days for troubleshooting. They record admin sign-ins,
+              including the admin&apos;s email address. To stop the access code being guessed, the
+              IP address of each attempt is held in memory for 15 minutes and isn&apos;t stored.
+            </p>
           </Section>
 
           <Section title="Cookies and tracking">
             <p>
-              We don&apos;t use analytics, advertising or tracking of any kind. Your browser stores
-              a single access token after you enter the code, so you don&apos;t have to re-enter it
-              each visit. It expires after 30 days.
+              We don&apos;t use cookies, analytics, advertising or tracking of any kind. Your
+              browser&apos;s local storage keeps a sign-in token so you don&apos;t have to re-enter
+              the access code each visit. It expires after 30 days.
+            </p>
+            <p>
+              Admins who sign in with Google also have their name, email address and profile picture
+              kept in their own browser, so the site can show who&apos;s signed in. This stays on
+              their device and is removed when they sign out.
             </p>
           </Section>
 

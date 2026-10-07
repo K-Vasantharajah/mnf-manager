@@ -55,6 +55,11 @@ export default function StoryPage() {
             </p>
             <p>They measure what the stat sheet shows, not ability.</p>
             <p>
+              Because everyone is compared with their position group, your rating can go down after
+              a match you won, if others in your position had a better night. Changing position does
+              the same: you&apos;re suddenly compared with a different group.
+            </p>
+            <p>
               They also can&apos;t see that it&apos;s Monday: a full day&apos;s work behind you, a
               family at home, and somehow you&apos;re expected to find a through ball.
             </p>
@@ -82,6 +87,13 @@ export default function StoryPage() {
                 privacy page
               </Link>
               .
+            </p>
+            <p>
+              Curious how it works without the code? The{' '}
+              <Link href="/access" className="text-pitch hover:opacity-80">
+                demo
+              </Link>{' '}
+              runs the same app on an invented group.
             </p>
           </Section>
         </div>
