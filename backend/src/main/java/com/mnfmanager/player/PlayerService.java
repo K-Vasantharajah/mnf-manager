@@ -55,9 +55,6 @@ public class PlayerService {
         existing.setStrongFoot(updatedPlayer.getStrongFoot());
         existing.setActive(updatedPlayer.getActive());
         existing.setPosition(updatedPlayer.getPosition());
-        if (updatedPlayer.getRatingHidden() != null) {
-            existing.setRatingHidden(updatedPlayer.getRatingHidden());
-        }
         return playerRepository.save(existing);
     }
 
