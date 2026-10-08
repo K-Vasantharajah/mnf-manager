@@ -16,7 +16,7 @@ export default function PrivacyPage() {
         </Link>
 
         <h1 className="font-display text-3xl text-paper mt-6">Privacy</h1>
-        <p className="text-xs text-muted mt-2">Last updated 7 October 2026</p>
+        <p className="text-xs text-muted mt-2">Last updated 9 October 2026</p>
 
         <div className="mt-10 space-y-8">
           <Section title="Who runs MNF Manager">
@@ -35,8 +35,8 @@ export default function PrivacyPage() {
             </p>
             <p>
               We also calculate statistical ratings from match results, recalculated automatically
-              after each match. These are visible only to the group&apos;s admins, and they are a
-              recreational estimate, not an assessment of anyone&apos;s football ability.
+              after each match. They are a recreational estimate, not an assessment of anyone&apos;s
+              football ability.
             </p>
             <p>
               We don&apos;t collect contact details, dates of birth, addresses or any other personal
@@ -57,6 +57,10 @@ export default function PrivacyPage() {
               Only MNF members with the group&apos;s access code, and the group&apos;s admins, who
               can also correct player and match records. The data is not public, and the site asks
               search engines not to index it.
+            </p>
+            <p>
+              Members can see each other&apos;s ratings. If you&apos;d rather yours were visible
+              only to the group&apos;s admins, ask and we&apos;ll hide it.
             </p>
           </Section>
 
@@ -110,9 +114,10 @@ export default function PrivacyPage() {
 
           <Section title="Your choices">
             <p>
-              You can ask to see what&apos;s held about you, to correct it, to be hidden, or to be
-              removed. If you&apos;re removed, past matches will show you as &ldquo;Former
-              Player&rdquo; so the results still add up.
+              You can ask to see what&apos;s held about you, to correct it, to have your rating
+              hidden from other members, to be hidden entirely, or to be removed. If you&apos;re
+              removed, past matches will show you as &ldquo;Former Player&rdquo; so the results
+              still add up.
             </p>
             <p>
               Message Kobi in the MNF group chat or email{' '}
