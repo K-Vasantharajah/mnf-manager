@@ -17,7 +17,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.mnfmanager.common.security.AdminOnlySerializer;
+import com.mnfmanager.common.security.RatingVisibilitySerializer;
 
 @Entity
 @Table(name = "players")
@@ -41,6 +41,10 @@ public class Player {
     @Builder.Default
     private Boolean active = true;
 
+    @Column(name = "rating_hidden", nullable = false)
+    @Builder.Default
+    private Boolean ratingHidden = false;
+
     @Column(name = "strong_foot", nullable = false, length = 5)
     @Builder.Default
     private String strongFoot = "Right";
@@ -52,7 +56,7 @@ public class Player {
     @Builder.Default
     private Set<PlayerPosition> positions = new HashSet<>();
 
-    @JsonSerialize(using = AdminOnlySerializer.class)
+    @JsonSerialize(using = RatingVisibilitySerializer.class)
     @OneToOne(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private PlayerRating rating;
 

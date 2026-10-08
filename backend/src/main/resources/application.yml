@@ -46,6 +46,10 @@ app:
 mnf:
   access-code-hash: ${MNF_ACCESS_CODE_HASH:}
   member-token-expiration: 2592000000 # 30 days
+  ratings:
+    # Off: ratings are admin-only. Turn on (RATINGS_PUBLIC=true) to show them
+    # to members, after telling the group and updating the privacy notice.
+    public: ${RATINGS_PUBLIC:false}
 
 logging:
   level:

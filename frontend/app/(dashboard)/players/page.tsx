@@ -4,6 +4,7 @@ import { useAllPlayers } from '@/lib/hooks';
 import { Player } from '@/lib/types';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useAuth } from '@/lib/auth';
 
 import RatingBar from '@/components/ui/RatingBar';
 import DeltaBadge from '@/components/ui/DeltaBadge';
@@ -18,8 +19,17 @@ const POSITION_GROUPS = {
   Attack: ['LW', 'RW', 'ST'],
 };
 
-function PlayerCard({ player, showRatings }: { player: Player; showRatings: boolean }) {
+function PlayerCard({
+  player,
+  showRatings,
+  isAdmin,
+}: {
+  player: Player;
+  showRatings: boolean;
+  isAdmin: boolean;
+}) {
   const initials = player.name.slice(0, 2).toUpperCase();
+
   return (
     <Link href={`/players/${player.id}`}>
       <div
@@ -86,7 +96,7 @@ function PlayerCard({ player, showRatings }: { player: Player; showRatings: bool
           </div>
         ) : showRatings ? (
           <div className="text-xs text-muted text-center py-2">
-            {player.active ? 'Needs 20+ matches for ML rating' : 'No ratings yet'}
+            {isAdmin ? 'Needs 20 matches for a rating' : 'No rating shown'}
           </div>
         ) : null}
       </div>
@@ -96,6 +106,7 @@ function PlayerCard({ player, showRatings }: { player: Player; showRatings: bool
 
 export default function PlayersPage() {
   const { data: players, isLoading, isError } = useAllPlayers();
+  const { isAdmin } = useAuth();
   const [positionFilter, setPositionFilter] = useState<string>('All');
   const [showInactive, setShowInactive] = useState(false);
 
@@ -134,8 +145,8 @@ export default function PlayersPage() {
           <p className="text-xs text-muted mt-3">
             Ratings compare each player against others in their position group, using points
             percentage, goals, clean sheets and goals conceded. Recent matches count for more. They
-            reflect recorded outcomes rather than individual skill, and need 20+ appearances before
-            they appear.
+            reflect recorded outcomes rather than individual skill. Players need 20 appearances
+            before they&apos;re rated, and some keep their rating private.
           </p>
         )}
       </div>
@@ -159,7 +170,7 @@ export default function PlayersPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {filteredPlayers.map((player) => (
-          <PlayerCard key={player.id} player={player} showRatings={showRatings} />
+          <PlayerCard key={player.id} player={player} showRatings={showRatings} isAdmin={isAdmin} />
         ))}
       </div>
 

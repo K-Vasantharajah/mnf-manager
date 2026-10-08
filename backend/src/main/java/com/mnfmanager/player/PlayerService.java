@@ -1,7 +1,7 @@
 package com.mnfmanager.player;
 
 import com.mnfmanager.common.exception.ResourceNotFoundException;
-import com.mnfmanager.common.security.SecurityUtils;
+import com.mnfmanager.common.security.RatingVisibility;
 import com.mnfmanager.match.Match;
 import com.mnfmanager.match.MatchPlayer;
 import com.mnfmanager.match.MatchRepository;
@@ -23,6 +23,7 @@ public class PlayerService {
 
     private final PlayerRepository playerRepository;
     private final MatchRepository matchRepository;
+    private final RatingVisibility ratingVisibility;
 
     public List<Player> getAllPlayers() {
         log.debug("Fetching all players including inactive");
@@ -54,6 +55,9 @@ public class PlayerService {
         existing.setStrongFoot(updatedPlayer.getStrongFoot());
         existing.setActive(updatedPlayer.getActive());
         existing.setPosition(updatedPlayer.getPosition());
+        if (updatedPlayer.getRatingHidden() != null) {
+            existing.setRatingHidden(updatedPlayer.getRatingHidden());
+        }
         return playerRepository.save(existing);
     }
 
@@ -122,7 +126,8 @@ public class PlayerService {
         Player player = playerRepository.findByIdWithFullDetails(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Player", id));
 
-        PlayerRating rating = SecurityUtils.isAdmin() ? player.getRating() : null;
+        boolean ratingVisible = ratingVisibility.canSee(player);
+        PlayerRating rating = ratingVisible ? player.getRating() : null;
 
         List<PlayerProfileResponse.SeasonStatsDetail> seasonStats = player.getSeasonStats()
                 .stream()
@@ -187,7 +192,7 @@ public class PlayerService {
                         .careerPointsPercentage(careerPointsPercentage)
                         .careerGoalsPerGame(careerGoalsPerGame)
                         .build())
-                .ratingsVisible(SecurityUtils.isAdmin())
+                .ratingsVisible(ratingVisible)
                 .build();
     }
 
