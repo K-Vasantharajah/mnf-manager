@@ -8,6 +8,7 @@ below are ideas, not commitments.
 ## What's built
 
 ### Core platform
+
 - Match recording with teams, goal scorers and own goals
 - Exhibition matches, excluded from all competitive statistics
 - Game week auto-calculation and season filtering
@@ -16,12 +17,14 @@ below are ideas, not commitments.
 - Team size limit of 9 per side
 
 ### Players
+
 - Profiles with career and season stats and points percentage
 - Position tracking, with filtering by position group
 - Profile editing: name, position, strong foot, active status
 - Match history per season
 
 ### Ratings
+
 - Percentile model: players compared within their position group on points %,
   goals, clean sheets and goals conceded, weighted by position
 - Recency weighting (form and staleness), shrinkage for thin evidence, and a
@@ -31,29 +34,34 @@ below are ideas, not commitments.
 - Admin-only for now
 
 ### Leaderboard and captains
+
 - Points %: (W×3 + D) / (MP×3) × 100, with minimum match thresholds
 - Goals and appearances tables
 - Captain records, most-picked players, match history and unbeaten streaks
 - Captain rotation recommendations
 
 ### Draft simulator
+
 - Squad and captain selection
 - Positional balance check per side, with average rating for admins
 - How often each player has ended up on the current captain's team, with counts
   and a minimum-history threshold
-- *On the night*: appearance, goal and captaincy milestones, win, scoring,
+- _On the night_: appearance, goal and captaincy milestones, win, scoring,
   unbeaten and attendance streaks, and pair records
 
 ### Demo
+
 - Public, self-resetting demo with an invented group and full admin access
 - Isolated by construction: own database, own database user, own JWT secret
 
 ### Access and privacy
+
 - Shared access code for members; Google OAuth for admins
 - Ratings stripped server-side for non-admins
 - Public privacy notice and story page; search indexing disabled
 
 ### Deployment
+
 - Azure Container Apps; backend and demo scale to zero
 - GitHub Actions builds only the services that changed, deploys on merge to main,
   and verifies each deploy
@@ -78,31 +86,38 @@ below are ideas, not commitments.
 ## Ideas
 
 ### Ratings visible to all members
+
 Remove the admin-only restriction (server-side serializer and UI condition), with
 a short "how ratings work" explainer, an updated privacy notice, and a decision
 on letting players opt out.
 
 ### Centre-back check in the balance panel
+
 The balance check groups positions into defence, midfield and attack, so three
 full-backs and no centre-back reads as balanced. Warn when one side has a
 centre-back or goalkeeper and the other doesn't.
 
 ### Suppress deltas after a position change
+
 Changing a player's position compares them with a different group, and the jump
 appears as that week's delta, which reads as if it came from the match. Skip
 deltas for players whose position changed since the last update.
 
 ### Goalkeeper tracking
+
 Record who played in goal each match, for goals conceded per goalkeeper.
 
 ### Player availability
+
 Record who's available before the draft, so the simulator starts from tonight's
 actual squad.
 
 ### Draft pitch view
+
 A top-down pitch with formation slots that fill as players are picked.
 
 ### Match reports
+
 A short post-match summary generated from the recorded match.
 
 ## Housekeeping
@@ -116,10 +131,15 @@ A short post-match summary generated from the recorded match.
 - Consider renaming `ml-service/` to reflect what it now holds
 - Move the database behind a private endpoint, which needs the Container Apps
   environment rebuilt with VNet integration
+- Give the rating opt-out its own admin endpoint and a checkbox in the UI. For
+  now an admin sets it with
+  `UPDATE players SET rating_hidden = true WHERE name = '...';`. It's
+  deliberately not part of the general player edit, which would clear it.
 
 ## MNF rules reference
 
 ### Captaincy
+
 - The winning captain keeps the captaincy the following week
 - The challenging captain picks first; picks alternate from there
 - On a draw, both captains return the following week and pick order reverses
@@ -128,15 +148,18 @@ A short post-match summary generated from the recorded match.
 - Streaks carry forward through absences
 
 ### Streaks
+
 - Unbeaten streak: consecutive matches as captain without a loss (draws count)
 - Winning streak: consecutive wins as captain (draws break it)
 - The dashboard shows the unbeaten streak as its primary metric
 
 ### Points percentage
+
 - (Wins × 3 + Draws) / (Matches × 3) × 100
 - The primary ranking metric across the leaderboard, profiles and captain stats
 - Minimum 14 matches for season rankings, 28 for all time
 
 ### Exhibition matches
+
 - Played when last-minute dropouts leave 8v8 or 8v9
 - Excluded from all competitive statistics; only 9v9 matches count
