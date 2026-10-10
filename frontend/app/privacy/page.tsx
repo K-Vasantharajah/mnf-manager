@@ -16,7 +16,7 @@ export default function PrivacyPage() {
         </Link>
 
         <h1 className="font-display text-3xl text-paper mt-6">Privacy</h1>
-        <p className="text-xs text-muted mt-2">Last updated 9 October 2026</p>
+        <p className="text-xs text-muted mt-2">Last updated 10 October 2026</p>
 
         <div className="mt-10 space-y-8">
           <Section title="Who runs MNF Manager">
