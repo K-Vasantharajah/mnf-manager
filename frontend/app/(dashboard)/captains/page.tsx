@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import MatchDetailModal from '../matches/MatchDetailModal';
 import MatchListModal, { MatchListRow } from '@/components/ui/MatchListModal';
 import SegmentedControl from '@/components/ui/SegmentedControl';
+import { seasonOptions, useSeasons } from '@/lib/useSeasons';
+import { OUTCOME_COLOUR } from '@/lib/outcome';
 
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorState from '@/components/ui/ErrorState';
@@ -23,12 +25,14 @@ function captainMatchRows(captain: CaptainStats): MatchListRow[] {
 }
 
 export default function CaptainsPage() {
-  const [seasonYear, setSeasonYear] = useState<number | undefined>(2026);
+  const [seasonFilter, setSeasonFilter] = useState<number | 'all'>(new Date().getFullYear());
+  const seasonYear = seasonFilter === 'all' ? undefined : seasonFilter;
   const { data: captains, isLoading, isError } = useCaptainStats(seasonYear);
   const [selectedCaptain, setSelectedCaptain] = useState<CaptainStats | null>(null);
   const router = useRouter();
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
   const [previousCaptain, setPreviousCaptain] = useState<CaptainStats | null>(null);
+  const seasons = useSeasons();
 
   if (isLoading) {
     return <LoadingState message="Loading captain stats..." />;
@@ -37,6 +41,8 @@ export default function CaptainsPage() {
   if (isError) {
     return <ErrorState message="Failed to load data. Is the backend running?" />;
   }
+
+  const periodLabel = seasonFilter === 'all' ? 'all time' : `in ${seasonFilter}`;
 
   return (
     <div>
@@ -76,21 +82,19 @@ export default function CaptainsPage() {
       <div className="flex items-end justify-between mb-10 pb-6 border-b border-line">
         <div>
           <h1 className="font-display text-4xl text-paper">Captains</h1>
-          <p className="text-sm text-muted mt-2">{captains?.length} captains this season</p>
+          <p className="text-sm text-muted mt-2">
+            {captains?.length} captains {periodLabel}
+          </p>
         </div>
         <SegmentedControl
-          options={[
-            { label: '2026', value: 2026 },
-            { label: '2025', value: 2025 },
-            { label: 'All time', value: undefined },
-          ]}
-          value={seasonYear}
-          onChange={setSeasonYear}
+          options={seasonOptions(seasons)}
+          value={seasonFilter}
+          onChange={setSeasonFilter}
         />
       </div>
 
       {captains?.length === 0 ? (
-        <div className="text-center py-16 text-muted">No captain data for this season</div>
+        <div className="text-center py-16 text-muted">No captain data {periodLabel}</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {captains?.map((captain, index) => {
@@ -154,11 +158,15 @@ export default function CaptainsPage() {
                 <div className="px-6 py-4 border-b border-line">
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
-                      <div className="font-mono text-xl text-paper">{captain.wins}</div>
+                      <div className={`font-mono text-xl ${OUTCOME_COLOUR.win}`}>
+                        {captain.wins}
+                      </div>
                       <div className="text-xs text-muted mt-1">Wins</div>
                     </div>
                     <div>
-                      <div className="font-mono text-xl text-paper">{captain.draws}</div>
+                      <div className={`font-mono text-xl ${OUTCOME_COLOUR.draw}`}>
+                        {captain.draws}
+                      </div>
                       <div className="text-xs text-muted mt-1">Draws</div>
                     </div>
                     <div>

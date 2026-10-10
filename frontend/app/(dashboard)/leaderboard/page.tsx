@@ -6,6 +6,7 @@ import { PlayerLeaderboardEntry } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { CloseIcon } from '@/components/ui/icons';
 import SegmentedControl from '@/components/ui/SegmentedControl';
+import { seasonOptions, useSeasons } from '@/lib/useSeasons';
 
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorState from '@/components/ui/ErrorState';
@@ -173,8 +174,10 @@ function LeaderboardModal({
 }
 
 export default function LeaderboardPage() {
-  const [seasonYear, setSeasonYear] = useState<number | undefined>(2026);
+  const [seasonFilter, setSeasonFilter] = useState<number | 'all'>(new Date().getFullYear());
+  const seasonYear = seasonFilter === 'all' ? undefined : seasonFilter;
   const { data: entries, isLoading, isError } = useLeaderboard(seasonYear);
+  const seasons = useSeasons();
 
   const [modalData, setModalData] = useState<{
     title: string;
@@ -215,13 +218,9 @@ export default function LeaderboardPage() {
           <p className="text-sm text-muted mt-2">{playedEntries.length} players with match data</p>
         </div>
         <SegmentedControl
-          options={[
-            { label: '2026', value: 2026 },
-            { label: '2025', value: 2025 },
-            { label: 'All time', value: undefined },
-          ]}
-          value={seasonYear}
-          onChange={setSeasonYear}
+          options={seasonOptions(seasons)}
+          value={seasonFilter}
+          onChange={setSeasonFilter}
         />
       </div>
 

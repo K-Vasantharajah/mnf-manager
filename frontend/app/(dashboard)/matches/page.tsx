@@ -9,12 +9,15 @@ import SegmentedControl from '@/components/ui/SegmentedControl';
 
 import LoadingState from '@/components/ui/LoadingState';
 import ErrorState from '@/components/ui/ErrorState';
+import { OUTCOME_COLOUR, OUTCOME_BADGE, outcome } from '@/lib/outcome';
+import { seasonOptions, useSeasons } from '@/lib/useSeasons';
 
 export default function MatchesPage() {
   const { data: matches, isLoading, isError } = useMatches();
   const [seasonFilter, setSeasonFilter] = useState<number | 'all'>('all');
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
   const { isAdmin } = useAuth();
+  const seasons = useSeasons();
 
   if (isLoading) return <LoadingState message="Loading matches..." />;
 
@@ -37,11 +40,7 @@ export default function MatchesPage() {
         </div>
         <div className="flex items-center gap-3">
           <SegmentedControl
-            options={[
-              { label: '2026', value: 2026 },
-              { label: '2025', value: 2025 },
-              { label: 'All', value: 'all' as const },
-            ]}
+            options={seasonOptions(seasons)}
             value={seasonFilter}
             onChange={setSeasonFilter}
           />
@@ -62,10 +61,15 @@ export default function MatchesPage() {
 
       <div className="space-y-4">
         {filteredMatches.map((match) => {
-          const isDraw = match.isDraw;
-          const winnerName = match.winner?.name;
           const captainAName = match.captainA?.name ?? 'Unknown';
           const captainBName = match.captainB?.name ?? 'Unknown';
+
+          // Every result style comes from these two, so names, scores and the
+          // badge can never disagree
+          const sideA = outcome(match.scoreA, match.scoreB);
+          const sideB = outcome(match.scoreB, match.scoreA);
+          const isDraw = sideA === 'draw';
+          const winnerName = sideA === 'win' ? captainAName : captainBName;
 
           return (
             <div
@@ -100,7 +104,7 @@ export default function MatchesPage() {
               <div className="flex items-center justify-between">
                 <div className="flex-1 text-right">
                   <div
-                    className={`text-lg ${winnerName === captainAName ? 'text-pitch' : 'text-muted'}`}
+                    className={`text-lg ${OUTCOME_COLOUR[sideA]} ${sideA === 'win' ? 'font-semibold' : ''}`}
                   >
                     {captainAName}
                   </div>
@@ -108,34 +112,18 @@ export default function MatchesPage() {
                 </div>
 
                 <div className="flex items-center gap-3 px-6">
-                  <span
-                    className={`text-3xl font-mono ${
-                      match.scoreA > match.scoreB
-                        ? 'text-pitch'
-                        : isDraw
-                          ? 'text-amber'
-                          : 'text-muted'
-                    }`}
-                  >
+                  <span className={`text-3xl font-mono ${OUTCOME_COLOUR[sideA]}`}>
                     {match.scoreA}
                   </span>
                   <span className="text-muted font-light">&ndash;</span>
-                  <span
-                    className={`text-3xl font-mono ${
-                      match.scoreB > match.scoreA
-                        ? 'text-pitch'
-                        : isDraw
-                          ? 'text-amber'
-                          : 'text-muted'
-                    }`}
-                  >
+                  <span className={`text-3xl font-mono ${OUTCOME_COLOUR[sideB]}`}>
                     {match.scoreB}
                   </span>
                 </div>
 
                 <div className="flex-1">
                   <div
-                    className={`text-lg ${winnerName === captainBName ? 'text-pitch' : 'text-muted'}`}
+                    className={`text-lg ${OUTCOME_COLOUR[sideB]} ${sideB === 'win' ? 'font-semibold' : ''}`}
                   >
                     {captainBName}
                   </div>
@@ -145,9 +133,7 @@ export default function MatchesPage() {
 
               <div className="mt-3 pt-3 border-t border-line flex items-center justify-between">
                 <span
-                  className={`text-xs px-3 py-1 rounded-full ${
-                    isDraw ? 'bg-amber/10 text-amber' : 'bg-pitch/10 text-pitch'
-                  }`}
+                  className={`text-xs px-3 py-1 rounded-full ${OUTCOME_BADGE[isDraw ? 'draw' : 'win']}`}
                 >
                   {isDraw ? 'Draw' : `${winnerName} wins`}
                 </span>

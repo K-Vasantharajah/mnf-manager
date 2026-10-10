@@ -5,16 +5,18 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { usePlayers, useMatches, useDashboardStats, useLeaderboard } from '@/lib/hooks';
 import { Match, Streak } from '@/lib/types';
+import { OUTCOME_COLOUR, outcome } from '@/lib/outcome';
 
 import LoadingState from '@/components/ui/LoadingState';
 import MatchListModal, { MatchListRow } from '@/components/ui/MatchListModal';
 import MatchDetailModal from '../matches/MatchDetailModal';
 
-/** Build modal rows for a streak, in the order the matches were played. */
+/** Build modal rows for a streak, most recent match first. */
 function streakRows(streak: Streak | undefined, matches: Match[] | undefined): MatchListRow[] {
   if (!streak || !matches) return [];
   const byId = new Map(matches.map((m) => [m.id, m]));
-  return streak.matchIds
+  return [...streak.matchIds]
+    .sort((a, b) => b - a)
     .map((id) => byId.get(id))
     .filter((m): m is Match => Boolean(m))
     .map((m) => ({
@@ -226,60 +228,44 @@ export default function DashboardPage() {
           {recentMatches.length === 0 ? (
             <div className="px-5 py-8 text-center text-muted text-sm">No matches recorded yet</div>
           ) : (
-            recentMatches.map((match) => (
-              <div
-                key={match.id}
-                onClick={() => setSelectedMatchId(match.id)}
-                className="px-5 py-3 border-b border-line last:border-0 hover:bg-surface-2 cursor-pointer transition-colors"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`text-sm ${
-                        match.winner?.name === match.captainA?.name ? 'text-pitch' : 'text-muted'
-                      }`}
-                    >
-                      {match.captainA?.name ?? 'Unknown'}
-                    </span>
-                    <span
-                      className={`text-lg font-mono ${
-                        match.isDraw
-                          ? 'text-amber'
-                          : match.winner?.name === match.captainA?.name
-                            ? 'text-pitch'
-                            : 'text-muted'
-                      }`}
-                    >
-                      {match.scoreA}
-                    </span>
-                    <span className="text-muted">&ndash;</span>
-                    <span
-                      className={`text-lg font-mono ${
-                        match.isDraw
-                          ? 'text-amber'
-                          : match.winner?.name === match.captainB?.name
-                            ? 'text-pitch'
-                            : 'text-muted'
-                      }`}
-                    >
-                      {match.scoreB}
-                    </span>
-                    <span
-                      className={`text-sm ${
-                        match.winner?.name === match.captainB?.name ? 'text-pitch' : 'text-muted'
-                      }`}
-                    >
-                      {match.captainB?.name ?? 'Unknown'}
+            recentMatches.map((match) => {
+              const sideA = outcome(match.scoreA, match.scoreB);
+              const sideB = outcome(match.scoreB, match.scoreA);
+              return (
+                <div
+                  key={match.id}
+                  onClick={() => setSelectedMatchId(match.id)}
+                  className="px-5 py-3 border-b border-line last:border-0 hover:bg-surface-2 cursor-pointer transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`text-sm ${OUTCOME_COLOUR[sideA]} ${sideA === 'win' ? 'font-semibold' : ''}`}
+                      >
+                        {match.captainA?.name ?? 'Unknown'}
+                      </span>
+                      <span className={`text-lg font-mono ${OUTCOME_COLOUR[sideA]}`}>
+                        {match.scoreA}
+                      </span>
+                      <span className="text-muted">&ndash;</span>
+                      <span className={`text-lg font-mono ${OUTCOME_COLOUR[sideB]}`}>
+                        {match.scoreB}
+                      </span>
+                      <span
+                        className={`text-sm ${OUTCOME_COLOUR[sideB]} ${sideB === 'win' ? 'font-semibold' : ''}`}
+                      >
+                        {match.captainB?.name ?? 'Unknown'}
+                      </span>
+                    </div>
+                    <span className="text-xs font-mono text-muted">
+                      {match.gameWeek
+                        ? `${match.gameWeek} \u00b7 ${match.seasonYear}`
+                        : `Season ${match.seasonYear}`}
                     </span>
                   </div>
-                  <span className="text-xs font-mono text-muted">
-                    {match.gameWeek
-                      ? `${match.gameWeek} \u00b7 ${match.seasonYear}`
-                      : `Season ${match.seasonYear}`}
-                  </span>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
