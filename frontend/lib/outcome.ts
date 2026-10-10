@@ -19,5 +19,5 @@ export const OUTCOME_COLOUR: Record<Outcome, string> = {
 export const OUTCOME_BADGE: Record<Outcome, string> = {
   win: 'bg-pitch/10 text-pitch',
   draw: 'bg-amber/10 text-amber',
-  loss: 'bg-line text-muted',
+  loss: 'bg-signal/10 text-signal',
 };
