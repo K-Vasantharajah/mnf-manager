@@ -3,12 +3,66 @@
 import { useMatchDetail } from '@/lib/hooks';
 import LoadingState from '@/components/ui/LoadingState';
 import { BackIcon, CloseIcon } from '@/components/ui/icons';
+import { OUTCOME_COLOUR, OUTCOME_BADGE, outcome } from '@/lib/outcome';
+import type { GoalScorerDetail, TeamPlayer } from '@/lib/types';
 
 function CaptainBadge() {
   return (
     <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber/15 text-amber text-[10px] font-mono mr-1.5 align-middle">
       C
     </span>
+  );
+}
+
+function TeamList({
+  label,
+  team,
+  players,
+  captainId,
+  goalScorers,
+}: {
+  label: string;
+  team: 'A' | 'B';
+  players: TeamPlayer[];
+  captainId: number;
+  goalScorers: GoalScorerDetail[];
+}) {
+  return (
+    <div>
+      <h3 className="text-sm text-muted mb-3">{label}</h3>
+      <div className="space-y-1.5">
+        {players.map((player) => {
+          const scored = (ownGoal: boolean) =>
+            goalScorers.find(
+              (gs) =>
+                gs.playerId === player.playerId && gs.team === team && gs.isOwnGoal === ownGoal
+            );
+          const regularGoal = scored(false);
+          const ownGoal = scored(true);
+
+          return (
+            <div key={player.playerId} className="flex items-center justify-between text-sm">
+              <span className={regularGoal || ownGoal ? 'text-paper' : 'text-muted'}>
+                {player.playerId === captainId && <CaptainBadge />}
+                {player.playerName}
+              </span>
+              <span className="flex items-center gap-1.5 text-xs font-mono">
+                {regularGoal && (
+                  <span className="text-pitch">
+                    &#9917;{regularGoal.goals > 1 ? ` \u00d7${regularGoal.goals}` : ''}
+                  </span>
+                )}
+                {ownGoal && (
+                  <span className="text-signal">
+                    OG{ownGoal.goals > 1 ? ` \u00d7${ownGoal.goals}` : ''}
+                  </span>
+                )}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -22,6 +76,12 @@ export default function MatchDetailModal({
   onBack?: () => void;
 }) {
   const { data: match, isLoading } = useMatchDetail(matchId);
+
+  // Every result style comes from these, so names, scores and the badge agree
+  const sideA = match ? outcome(match.scoreA, match.scoreB) : null;
+  const sideB = match ? outcome(match.scoreB, match.scoreA) : null;
+  const isDraw = sideA === 'draw';
+  const winnerName = sideA === 'win' ? match?.captainAName : match?.captainBName;
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
@@ -63,50 +123,30 @@ export default function MatchDetailModal({
         {/* Body */}
         {isLoading ? (
           <LoadingState message="Loading match details..." />
-        ) : match ? (
+        ) : match && sideA && sideB ? (
           <div className="overflow-y-auto flex-1 p-5">
             {/* Score */}
             <div className="flex items-center justify-between mb-6 bg-surface-2 border border-line rounded-xl p-4">
               <div className="text-center flex-1">
                 <div
-                  className={`text-lg ${
-                    match.winnerId === match.captainAId ? 'text-pitch' : 'text-muted'
-                  }`}
+                  className={`text-lg ${OUTCOME_COLOUR[sideA]} ${sideA === 'win' ? 'font-semibold' : ''}`}
                 >
                   {match.captainAName}
                 </div>
                 <div className="text-xs text-muted">captain</div>
               </div>
               <div className="flex items-center gap-3 px-4">
-                <span
-                  className={`text-4xl font-mono ${
-                    match.scoreA > match.scoreB
-                      ? 'text-pitch'
-                      : match.isDraw
-                        ? 'text-amber'
-                        : 'text-muted'
-                  }`}
-                >
+                <span className={`text-4xl font-mono ${OUTCOME_COLOUR[sideA]}`}>
                   {match.scoreA}
                 </span>
                 <span className="text-muted">&ndash;</span>
-                <span
-                  className={`text-4xl font-mono ${
-                    match.scoreB > match.scoreA
-                      ? 'text-pitch'
-                      : match.isDraw
-                        ? 'text-amber'
-                        : 'text-muted'
-                  }`}
-                >
+                <span className={`text-4xl font-mono ${OUTCOME_COLOUR[sideB]}`}>
                   {match.scoreB}
                 </span>
               </div>
               <div className="text-center flex-1">
                 <div
-                  className={`text-lg ${
-                    match.winnerId === match.captainBId ? 'text-pitch' : 'text-muted'
-                  }`}
+                  className={`text-lg ${OUTCOME_COLOUR[sideB]} ${sideB === 'win' ? 'font-semibold' : ''}`}
                 >
                   {match.captainBName}
                 </div>
@@ -117,95 +157,28 @@ export default function MatchDetailModal({
             {/* Result badge */}
             <div className="text-center mb-6">
               <span
-                className={`text-xs px-3 py-1 rounded-full ${
-                  match.isDraw ? 'bg-amber/10 text-amber' : 'bg-pitch/10 text-pitch'
-                }`}
+                className={`text-xs px-3 py-1 rounded-full ${OUTCOME_BADGE[isDraw ? 'draw' : 'win']}`}
               >
-                {match.isDraw
-                  ? 'Draw'
-                  : `${match.winnerId === match.captainAId ? match.captainAName : match.captainBName} wins`}
+                {isDraw ? 'Draw' : `${winnerName} wins`}
               </span>
             </div>
 
             {/* Teams */}
             <div className="grid grid-cols-2 gap-4">
-              {/* Team A */}
-              <div>
-                <h3 className="text-sm text-muted mb-3">Team A</h3>
-                <div className="space-y-1.5">
-                  {match.teamAPlayers.map((player) => {
-                    const regularGoal = match.goalScorers.find(
-                      (gs) => gs.playerId === player.playerId && gs.team === 'A' && !gs.isOwnGoal
-                    );
-                    const ownGoal = match.goalScorers.find(
-                      (gs) => gs.playerId === player.playerId && gs.team === 'A' && gs.isOwnGoal
-                    );
-
-                    return (
-                      <div
-                        key={player.playerId}
-                        className="flex items-center justify-between text-sm"
-                      >
-                        <span className={regularGoal || ownGoal ? 'text-paper' : 'text-muted'}>
-                          {player.playerId === match.captainAId && <CaptainBadge />}
-                          {player.playerName}
-                        </span>
-                        <span className="flex items-center gap-1.5 text-xs font-mono">
-                          {regularGoal && (
-                            <span className="text-pitch">
-                              &#9917;{regularGoal.goals > 1 ? ` \u00d7${regularGoal.goals}` : ''}
-                            </span>
-                          )}
-                          {ownGoal && (
-                            <span className="text-signal">
-                              OG{ownGoal.goals > 1 ? ` \u00d7${ownGoal.goals}` : ''}
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Team B */}
-              <div>
-                <h3 className="text-sm text-muted mb-3">Team B</h3>
-                <div className="space-y-1.5">
-                  {match.teamBPlayers.map((player) => {
-                    const regularGoal = match.goalScorers.find(
-                      (gs) => gs.playerId === player.playerId && gs.team === 'B' && !gs.isOwnGoal
-                    );
-                    const ownGoal = match.goalScorers.find(
-                      (gs) => gs.playerId === player.playerId && gs.team === 'B' && gs.isOwnGoal
-                    );
-
-                    return (
-                      <div
-                        key={player.playerId}
-                        className="flex items-center justify-between text-sm"
-                      >
-                        <span className={regularGoal || ownGoal ? 'text-paper' : 'text-muted'}>
-                          {player.playerId === match.captainBId && <CaptainBadge />}
-                          {player.playerName}
-                        </span>
-                        <span className="flex items-center gap-1.5 text-xs font-mono">
-                          {regularGoal && (
-                            <span className="text-pitch">
-                              &#9917;{regularGoal.goals > 1 ? ` \u00d7${regularGoal.goals}` : ''}
-                            </span>
-                          )}
-                          {ownGoal && (
-                            <span className="text-signal">
-                              OG{ownGoal.goals > 1 ? ` \u00d7${ownGoal.goals}` : ''}
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              <TeamList
+                label="Team A"
+                team="A"
+                players={match.teamAPlayers}
+                captainId={match.captainAId}
+                goalScorers={match.goalScorers}
+              />
+              <TeamList
+                label="Team B"
+                team="B"
+                players={match.teamBPlayers}
+                captainId={match.captainBId}
+                goalScorers={match.goalScorers}
+              />
             </div>
           </div>
         ) : null}

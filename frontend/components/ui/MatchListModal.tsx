@@ -1,7 +1,7 @@
 'use client';
 
 import { CloseIcon } from '@/components/ui/icons';
-import { resultStyles } from '@/components/ui/resultStyles';
+import { OUTCOME_BADGE, fromResult } from '@/lib/outcome';
 
 export interface MatchListRow {
   matchId: number;
@@ -63,7 +63,7 @@ export default function MatchListModal({
                 {row.result && (
                   <span
                     className={`text-xs font-mono px-2 py-0.5 rounded min-w-14 text-center ${
-                      resultStyles[row.result]
+                      OUTCOME_BADGE[fromResult(row.result)]
                     }`}
                   >
                     {row.result}
