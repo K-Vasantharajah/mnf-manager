@@ -77,6 +77,25 @@ They must be passed as `--build-arg` when the image is built, which the pipeline
 does for `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_DEMO_API_URL` and
 `NEXT_PUBLIC_GOOGLE_CLIENT_ID`.
 
+## Configuration switches
+
+| Setting          | Where it's set                                            | Default in code                                     | Effect                                                                                       |
+| ---------------- | --------------------------------------------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `RATINGS_PUBLIC` | Environment variable on the **mnf-backend** container app | `false` (`mnf.ratings.public` in `application.yml`) | `true` shows ratings to members, except players who've opted out. Admins always see ratings. |
+
+Deploys don't reset it: CI only updates the image, and environment variables
+carry over to each new revision. To check or change it:
+
+```bash
+az containerapp show -n mnf-backend -g mnf-manager-rg \
+  --query "properties.template.containers[0].env[?name=='RATINGS_PUBLIC'].value" -o tsv
+
+az containerapp update -n mnf-backend -g mnf-manager-rg --set-env-vars RATINGS_PUBLIC=true
+```
+
+Turning it off makes ratings admin-only again. If you do, update the privacy
+notice to match.
+
 ## Local vs production
 
 Locally, the backend reads secrets from `application-secrets.yml`, which is
