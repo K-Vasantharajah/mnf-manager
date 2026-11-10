@@ -30,6 +30,7 @@ export default function EditMatchPage() {
       team: gs.team,
       isOwnGoal: gs.isOwnGoal || false,
     })),
+    isExhibition: match.isExhibition ?? false,
   };
 
   return (

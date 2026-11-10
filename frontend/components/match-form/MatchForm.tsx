@@ -29,6 +29,7 @@ export interface MatchFormValues {
   teamAPlayerIds: number[];
   teamBPlayerIds: number[];
   goalScorers: GoalScorerInput[];
+  isExhibition: boolean;
 }
 
 export interface MatchPayload {
@@ -42,6 +43,7 @@ export interface MatchPayload {
   teamAPlayerIds: number[];
   teamBPlayerIds: number[];
   goalScorers: GoalScorerInput[];
+  isExhibition: boolean;
 }
 
 export default function MatchForm({
@@ -97,6 +99,7 @@ export default function MatchForm({
   const [scoreA, setScoreA] = useState(initial?.scoreA ?? 0);
   const [scoreB, setScoreB] = useState(initial?.scoreB ?? 0);
   const [submitting, setSubmitting] = useState(false);
+  const [isExhibition, setIsExhibition] = useState(initial?.isExhibition ?? false);
 
   const [initialised, setInitialised] = useState(!initial);
   if (initial && !initialised) {
@@ -148,6 +151,7 @@ export default function MatchForm({
           team: gs.team,
           isOwnGoal: gs.isOwnGoal,
         })),
+        isExhibition,
       });
       await queryClient.invalidateQueries({ queryKey: ['matches'] });
       router.push('/matches');
@@ -194,6 +198,21 @@ export default function MatchForm({
               />
             </div>
           )}
+          <label className="flex items-start gap-2 mt-4 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isExhibition}
+              onChange={(e) => setIsExhibition(e.target.checked)}
+              className="accent-pitch mt-0.5"
+            />
+            <span className="text-sm text-paper">
+              Exhibition match
+              <span className="block text-xs text-muted mt-0.5">
+                Not counted in stats, ratings, streaks or milestones. Numbered EX1, EX2, … instead
+                of a game week.
+              </span>
+            </span>
+          </label>
         </div>
       </div>
 

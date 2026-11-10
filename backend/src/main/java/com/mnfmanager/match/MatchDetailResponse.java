@@ -26,6 +26,7 @@ public class MatchDetailResponse {
     private List<TeamPlayer> teamAPlayers;
     private List<TeamPlayer> teamBPlayers;
     private List<GoalScorerDetail> goalScorers;
+    private Boolean isExhibition;
 
     @Data
     @Builder

@@ -97,6 +97,7 @@ public class MatchService {
                 .scoreB(match.getScoreB())
                 .winnerId(match.getWinner() != null ? match.getWinner().getId() : null)
                 .isDraw(match.getIsDraw())
+                .isExhibition(match.getIsExhibition())
                 .durationMins(match.getDurationMins())
                 .teamAPlayers(teamAPlayers)
                 .teamBPlayers(teamBPlayers)
@@ -116,13 +117,14 @@ public class MatchService {
         boolean isDraw = request.getScoreA().equals(request.getScoreB());
         Player winner = isDraw ? null : request.getScoreA() > request.getScoreB() ? captainA : captainB;
 
-        request.setGameWeek(calculateNextGameWeek(request.getSeasonYear()));
+        boolean exhibition = Boolean.TRUE.equals(request.getIsExhibition());
+        request.setGameWeek(calculateNextGameWeek(request.getSeasonYear(), exhibition));
 
         Match match = Match.builder()
                 .matchDate(request.getMatchDate())
                 .seasonYear(request.getSeasonYear())
                 .gameWeek(request.getGameWeek())
-                .isExhibition(request.getIsExhibition() != null ? request.getIsExhibition() : false)
+                .isExhibition(exhibition)
                 .captainA(captainA)
                 .captainB(captainB)
                 .scoreA(request.getScoreA())
@@ -155,10 +157,6 @@ public class MatchService {
         Player captainA = findPlayerById(request.getCaptainAId());
         Player captainB = findPlayerById(request.getCaptainBId());
 
-        // Reverse the old stats before applying any changes, while the entity
-        // still holds the previous team lists and score. flush/clear forces those
-        // writes to the database and detaches the stale entities, so the update
-        // below re-reads fresh state rather than working from the persistence cache.
         reversePlayerSeasonStats(match);
         entityManager.flush();
         entityManager.clear();
@@ -166,10 +164,19 @@ public class MatchService {
         boolean isDraw = request.getScoreA().equals(request.getScoreB());
         Player winner = isDraw ? null : request.getScoreA() > request.getScoreB() ? captainA : captainB;
 
-        if (request.getGameWeek() == null || request.getGameWeek().isBlank()) {
+        boolean wasExhibition = Boolean.TRUE.equals(match.getIsExhibition());
+        boolean exhibition = request.getIsExhibition() != null
+                ? request.getIsExhibition()
+                : wasExhibition;
+
+        if (exhibition != wasExhibition) {
+            request.setGameWeek(calculateNextGameWeek(request.getSeasonYear(), exhibition));
+        } else if (request.getGameWeek() == null || request.getGameWeek().isBlank()) {
             request.setGameWeek(match.getGameWeek() != null ? match.getGameWeek()
-                    : calculateNextGameWeek(request.getSeasonYear()));
+                    : calculateNextGameWeek(request.getSeasonYear(), exhibition));
         }
+
+        match.setIsExhibition(exhibition);
 
         match.setCaptainA(captainA);
         match.setCaptainB(captainB);
@@ -286,18 +293,18 @@ public class MatchService {
                 .orElseThrow(() -> new ResourceNotFoundException("Player", id));
     }
 
-    private String calculateNextGameWeek(Short seasonYear) {
-        List<String> gameWeeks = matchRepository.findLastGameWeekForSeason(seasonYear);
-        String lastGameWeek = gameWeeks.isEmpty() ? null : gameWeeks.get(0);
-        if (lastGameWeek != null && lastGameWeek.startsWith("GW")) {
+    private String calculateNextGameWeek(Short seasonYear, boolean exhibition) {
+        String prefix = exhibition ? "EX" : "GW";
+        List<String> gameWeeks = matchRepository.findGameWeeksForSeason(seasonYear, prefix);
+        String last = gameWeeks.isEmpty() ? null : gameWeeks.get(0);
+        if (last != null) {
             try {
-                int lastGW = Integer.parseInt(lastGameWeek.substring(2));
-                return "GW" + (lastGW + 1);
+                return prefix + (Integer.parseInt(last.substring(prefix.length())) + 1);
             } catch (NumberFormatException e) {
-                log.warn("Could not parse game week: {}", lastGameWeek);
+                log.warn("Could not parse game week: {}", last);
             }
         }
-        return "GW1";
+        return prefix + "1";
     }
 
     private void addMatchPlayers(Match match, List<Long> playerIds, char team) {
