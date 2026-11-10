@@ -42,6 +42,7 @@ export interface Match {
   isDraw: boolean;
   durationMins: number;
   createdAt: string;
+  isExhibition: boolean;
 }
 
 export interface PlayerLeaderboardEntry {
@@ -88,6 +89,7 @@ export interface MatchDetail {
   teamAPlayers: TeamPlayer[];
   teamBPlayers: TeamPlayer[];
   goalScorers: GoalScorerDetail[];
+  isExhibition: boolean;
 }
 
 export interface SeasonStatsDetail {

@@ -52,10 +52,10 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     @Query("""
                 SELECT m.gameWeek FROM Match m
                 WHERE m.seasonYear = :seasonYear
-                AND m.gameWeek LIKE 'GW%'
+                AND m.gameWeek LIKE CONCAT(:prefix, '%')
                 ORDER BY m.id DESC
             """)
-    List<String> findLastGameWeekForSeason(Short seasonYear);
+    List<String> findGameWeeksForSeason(Short seasonYear, String prefix);
 
     @Query("""
                 SELECT DISTINCT m FROM Match m

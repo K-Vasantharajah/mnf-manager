@@ -16,7 +16,7 @@ public class CreateMatchRequest {
 
     private String gameWeek;
 
-    private Boolean isExhibition = false;
+    private Boolean isExhibition;
 
     @NotNull
     private Long captainAId;

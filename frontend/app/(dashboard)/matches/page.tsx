@@ -99,6 +99,9 @@ export default function MatchesPage() {
                     </>
                   )}
                 </span>
+                {match.isExhibition && (
+                  <span className="text-xs px-2 py-0.5 rounded bg-line text-muted">Exhibition</span>
+                )}
               </div>
 
               <div className="flex items-center justify-between">
